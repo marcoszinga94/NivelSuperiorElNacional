@@ -6,10 +6,10 @@ dist/
 # dependencies
 node_modules/
 
-# binarios pesados: no van al repo (GitHub rechaza archivos de mas de 100 MB).
-# Los .exe se reparten aparte y los game.zip se reconstruyen con tools/build-web-games.py
+# binarios pesados: los .exe no van al repo (GitHub rechaza archivos de mas de
+# 100 MB y cartas espaciales.exe pesa 145 MB). Se reparten aparte.
+# Los game.zip de public/jugar/ si van: son los que corren los juegos online.
 public/Ejecutadores/
-public/jugar/*/juego/game.zip
 
 # python
 __pycache__/
