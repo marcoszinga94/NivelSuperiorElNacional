@@ -3,17 +3,17 @@ import Counter from "../react/Counter";
 import { heroStats, site } from "../../data/site";
 ---
 
-<section
-  id="inicio"
-  class="relative grid min-h-screen grid-cols-1 items-center gap-12 overflow-hidden pt-[calc(60px+60px)] pb-20 text-center lg:grid-cols-2 lg:text-left"
->
+<section id="inicio" class="relative min-h-screen overflow-hidden">
   <div class="pointer-events-none absolute inset-0 grid-bg"></div>
   <div
     class="pointer-events-none absolute left-[-10%] top-[20%] h-[60%] w-1/2 bg-[radial-gradient(ellipse,rgba(79,127,255,.08)_0%,transparent_70%)] blur-[40px]"
   >
   </div>
 
-  <div class="relative z-[1] flex flex-col items-center gap-6 lg:items-start lg:pl-10">
+  <div
+    class="relative z-[1] mx-auto grid min-h-screen w-full max-w-[1120px] grid-cols-1 items-center gap-12 px-5 pt-[calc(60px+60px)] pb-20 text-center md:px-10 lg:grid-cols-2 lg:text-left"
+  >
+    <div class="relative z-[1] flex flex-col items-center gap-6 lg:items-start">
     <div
       class="reveal inline-flex items-center gap-2 self-center rounded-full border border-a1/20 bg-a1/7 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-a1/85 lg:self-start"
     >
@@ -30,7 +30,7 @@ import { heroStats, site } from "../../data/site";
 
     <p class="reveal reveal-d2 max-w-[520px] text-[clamp(14px,1.5vw,17px)] font-light leading-[1.75] text-t2">
       Somos los estudiantes de <strong class="font-medium text-t1">Práctica Profesionalizante I y Programación II</strong
-      > del El Nacional. Durante un cuatrimestre armamos ocho videojuegos de astronomía para los nenes de primer grado. Los
+      > de la Escuela Superior El Nacional. Durante un cuatrimestre armamos ocho videojuegos de astronomía para los nenes de primer grado. Los
       probamos con ellos en la muestra y este es el resultado.
     </p>
 
@@ -69,7 +69,7 @@ import { heroStats, site } from "../../data/site";
     </div>
   </div>
 
-  <div class="relative z-[1] lg:pr-10">
+  <div class="relative z-[1]">
     <div
       class="reveal reveal-d2 relative overflow-hidden rounded-[20px] border border-a1/20 shadow-[0_0_0_1px_rgba(79,127,255,.06),0_32px_80px_rgba(0,0,0,.7)]"
     >
@@ -87,10 +87,11 @@ import { heroStats, site } from "../../data/site";
     </div>
     <div class="reveal reveal-d3 mt-3.5 flex items-center gap-2 font-mono text-[10px] tracking-[0.08em] text-t3">
       <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-green shadow-[0_0_6px_var(--color-green)]"></span>
-      {site.event} · El Nacional · UPC · {site.location}
+      {site.event} · {site.institution} · {site.location}
     </div>
     <div class="reveal reveal-d4 mt-2 text-right font-hand text-xl text-t2">
       — 2° año · Tecnicatura en Programación Full Stack
     </div>
+  </div>
   </div>
 </section>
