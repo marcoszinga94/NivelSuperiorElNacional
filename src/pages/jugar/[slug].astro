@@ -1,0 +1,198 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import GamePlayer from "../../components/GamePlayer.astro";
+import { playableGames } from "../../data/games";
+
+export function getStaticPaths() {
+  return playableGames.map((game) => ({
+    params: { slug: game.web as string },
+    props: { game },
+  }));
+}
+
+const { game } = Astro.props;
+const index = playableGames.findIndex((g) => g.id === game.id);
+const prev = index > 0 ? playableGames[index - 1] : null;
+const next = index >= 0 && index < playableGames.length - 1 ? playableGames[index + 1] : null;
+const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : null;
+---
+
+<Base
+  title={`Jugar a ${game.title} · Muestra Institucional 2026`}
+  description={`${game.description} Juego hecho en Python y Pygame por ${game.author}. Se juega online, sin instalar nada.`}
+>
+  <Section id="jugar">
+    <nav class="reveal mb-8 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-t3">
+      <a href="/juegos" class="transition hover:text-a1">Los juegos</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-t2">{game.title}</span>
+    </nav>
+
+    <header class="reveal mb-8 flex flex-col gap-4">
+      <div class="flex flex-wrap items-center gap-1.5">
+        <span class="inline-flex items-center rounded border border-a1/20 bg-a1/10 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-a1">
+          {game.category}
+        </span>
+        <span class="inline-flex items-center rounded border border-green/20 bg-green/8 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-green">
+          1° Grado
+        </span>
+        {
+          game.weeks && (
+            <span class="inline-flex items-center rounded border border-line1 bg-bg4 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-t3">
+              {game.weeks}
+            </span>
+          )
+        }
+      </div>
+
+      <h1 class="max-w-[680px] text-4xl font-bold leading-[1.1] tracking-[-0.03em] text-gradient">
+        {game.title}
+      </h1>
+
+      <p class="max-w-[680px] text-base font-light leading-relaxed text-t2">
+        Por <span class="font-medium text-t1">{game.author}</span>. Corre en el navegador con el
+        motor de Python compilado a WebAssembly: no hay que bajar ni instalar nada.
+      </p>
+    </header>
+
+    <GamePlayer slug={game.web as string} title={game.title} gradient={game.gradient} />
+
+    <p class="reveal mt-4 max-w-[680px] text-sm leading-relaxed text-t3">
+      La primera carga descarga el motor del juego (unos 10 MB) y después el navegador lo guarda
+      en caché, así que los demás juegos abren mucho más rápido. Si algo queda raro, probá con
+      Reiniciar. Los juegos se manejan con teclado: en el celular conviene abrir el teclado en pantalla.
+    </p>
+  </Section>
+
+  <Section bg="bg2">
+    <div class="grid gap-6 md:grid-cols-[1.15fr_1fr]">
+      <div class="reveal flex flex-col gap-4">
+        <h2 class="text-lg font-semibold tracking-[-0.02em] text-t1">Cómo se juega</h2>
+        <div class="rounded-2xl border border-line1 bg-bg3 p-5">
+          <p class="text-sm leading-relaxed text-t2">
+            {game.controls || "Cada nivel te dice qué teclas usar. El mouse también sirve para elegir opciones en los menús."}
+          </p>
+        </div>
+
+        {
+          game.ported && (
+            <p class="rounded-2xl border border-orange/25 bg-orange/8 p-5 text-sm leading-relaxed text-t2">
+              <span class="font-medium text-t1">Versión web adaptada. </span>
+              El original es una aplicación de escritorio, así que esta versión se reescribió con
+              Pygame para que pueda correr en el navegador. Se mantienen las mismas reglas, los
+              mismos gráficos y el mismo contenido.
+            </p>
+          )
+        }
+
+        <h2 class="mt-2 text-lg font-semibold tracking-[-0.02em] text-t1">Qué vas a encontrar</h2>
+        <p class="text-sm leading-relaxed text-t2">
+          <span class="font-medium text-t1">La idea: </span>{game.objective}
+        </p>
+        <p class="text-sm leading-relaxed text-t2">{game.description}</p>
+
+        {
+          game.quote && (
+            <blockquote class="mt-2 rounded-2xl border border-line1 bg-bg3 p-5">
+              <p class="text-[15px] font-light italic leading-relaxed text-t1">“{game.quote}”</p>
+              <footer class="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-t3">
+                {game.author} · {game.role}
+              </footer>
+            </blockquote>
+          )
+        }
+      </div>
+
+      <aside class="reveal flex flex-col gap-4">
+        <div class="flex items-center gap-3 rounded-2xl border border-line1 bg-bg3 p-5">
+          <span
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-mono text-[13px] font-semibold text-white"
+            style={`background:${game.accent}`}
+            aria-hidden="true">{game.initials}</span
+          >
+          <span class="flex flex-col">
+            <span class="text-sm font-semibold text-t1">{game.author}</span>
+            <span class="font-mono text-[10px] uppercase tracking-[0.12em] text-t3">{game.role}</span>
+          </span>
+        </div>
+
+        <div class="rounded-2xl border border-line1 bg-bg3 p-5">
+          <h2 class="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-a1/75">
+            Hecho con
+          </h2>
+          <div class="flex flex-wrap gap-1.5">
+            {game.studentTech.map((t) => (
+              <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[10px] text-t3">{t}</span>
+            ))}
+          </div>
+        </div>
+
+        {
+          exeHref && (
+            <a
+              href={exeHref}
+              download
+              class="flex flex-col gap-1 rounded-2xl border border-line1 bg-bg3 p-5 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:bg-bg4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+            >
+              <span class="text-sm font-semibold text-t1">Descargar la versión Windows</span>
+              <span class="text-[12px] leading-relaxed text-t3">
+                El mismo juego para PC, tal como lo entregó el estudiante. Requiere Windows y no
+                hace falta instalar nada.
+              </span>
+            </a>
+          )
+        }
+      </aside>
+    </div>
+  </Section>
+
+  <div class="mx-auto max-w-[1120px] px-5 pb-24 md:px-10">
+    <div class="flex flex-wrap items-stretch justify-between gap-3 border-t border-line1 pt-8">
+      {
+        prev ? (
+          <a
+            href={`/jugar/${prev.web}`}
+            class="group flex items-center gap-3 rounded-xl border border-line1 bg-bg3 px-5 py-4 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40"
+          >
+            <span class="text-a1/60 transition-transform group-hover:-translate-x-0.5">←</span>
+            <span>
+              <span class="block font-mono text-[9px] uppercase tracking-[0.14em] text-t3">Otro juego</span>
+              <span class="block text-[13px] font-semibold text-t1">{prev.icon} {prev.title}</span>
+            </span>
+          </a>
+        ) : (
+          <a
+            href="/juegos"
+            class="group flex items-center gap-3 rounded-xl border border-line1 bg-bg3 px-5 py-4 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40"
+          >
+            <span class="text-a1/60 transition-transform group-hover:-translate-x-0.5">←</span>
+            <span class="block text-[13px] font-semibold text-t1">Volver a los juegos</span>
+          </a>
+        )
+      }
+      {
+        next ? (
+          <a
+            href={`/jugar/${next.web}`}
+            class="group ml-auto flex items-center gap-3 rounded-xl border border-line1 bg-bg3 px-5 py-4 text-right transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40"
+          >
+            <span>
+              <span class="block font-mono text-[9px] uppercase tracking-[0.14em] text-t3">Otro juego</span>
+              <span class="block text-[13px] font-semibold text-t1">{next.title} {next.icon}</span>
+            </span>
+            <span class="text-a1/60 transition-transform group-hover:translate-x-0.5">→</span>
+          </a>
+        ) : (
+          <a
+            href="/juegos"
+            class="group ml-auto flex items-center gap-3 rounded-xl border border-line1 bg-bg3 px-5 py-4 text-right transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40"
+          >
+            <span class="block text-[13px] font-semibold text-t1">Volver a los juegos</span>
+            <span class="text-a1/60 transition-transform group-hover:translate-x-0.5">→</span>
+          </a>
+        )
+      }
+    </div>
+  </div>
+</Base>

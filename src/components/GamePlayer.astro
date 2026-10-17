@@ -1,0 +1,70 @@
+---
+/**
+ * Embeds a recovered pygame game (pygbag build) served from
+ * `public/jugar/<slug>/juego/`. The game keeps its own document so the
+ * fullscreen button hands the whole screen to the emulator, not the page.
+ */
+interface Props {
+  /** Folder under `public/jugar/` holding the build. */
+  slug: string;
+  title: string;
+  /** Card gradient reused behind the frame while the engine downloads. */
+  gradient?: string;
+}
+
+const { slug, title, gradient } = Astro.props;
+const frameSrc = `/jugar/${slug}/juego/index.html`;
+---
+
+<div class="game-player reveal" data-player>
+  <div
+    class="relative aspect-video w-full overflow-hidden rounded-xl bg-bg4"
+    style={gradient ? `background:${gradient}` : undefined}
+  >
+    <iframe
+      src={frameSrc}
+      title={`Jugar a ${title} en el navegador`}
+      class="relative z-[1] h-full w-full border-0 bg-black"
+      loading="lazy"
+      allow="autoplay; fullscreen; gamepad"
+      data-player-frame
+    ></iframe>
+  </div>
+
+  <div class="mt-3 flex flex-wrap items-center gap-2">
+    <button
+      type="button"
+      data-player-fullscreen
+      class="inline-flex items-center gap-2 rounded-lg border border-line1 bg-bg3 px-3.5 py-2 text-sm font-semibold text-t1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:bg-bg4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+    >
+      <span aria-hidden="true">⛶</span> Pantalla completa
+    </button>
+    <button
+      type="button"
+      data-player-reload
+      class="inline-flex items-center gap-2 rounded-lg border border-line1 bg-bg3 px-3.5 py-2 text-sm font-semibold text-t1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:bg-bg4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+    >
+      <span aria-hidden="true">⟲</span> Reiniciar
+    </button>
+    <p class="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-t3">
+      Esc para salir de pantalla completa
+    </p>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-player]").forEach((player) => {
+    const frame = player.querySelector<HTMLIFrameElement>("[data-player-frame]");
+    const stage = player.querySelector<HTMLElement>(".aspect-video");
+    player.querySelector("[data-player-fullscreen]")?.addEventListener("click", () => {
+      const target = stage ?? player;
+      if (document.fullscreenElement) void document.exitFullscreen();
+      else void target.requestFullscreen?.();
+    });
+    player.querySelector("[data-player-reload]")?.addEventListener("click", () => {
+      if (!frame) return;
+      // Re-assigning src restarts the emulator without touching the host page.
+      frame.src = frame.src;
+    });
+  });
+</script>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Jugar a ArcSpace</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body { height: 100%; margin: 0; background: #05060a; overflow: hidden;
+        font-family: system-ui, sans-serif; }
+      body { display: grid; place-items: center; }
+      #canvas { display: block; background: #000; }
+      #player-overlay { position: fixed; inset: 0; display: grid; place-items: center;
+        padding: 24px; text-align: center; z-index: 10;
+        background: radial-gradient(circle at 50% 20%, #101a3a 0%, #05060a 70%);
+        transition: opacity 500ms cubic-bezier(0.32, 0.72, 0, 1); }
+      #player-overlay.is-hidden { opacity: 0; pointer-events: none; }
+      .panel { max-width: 420px; display: flex; flex-direction: column; gap: 16px;
+        align-items: center; }
+      h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+        color: #eef2ff; }
+      #player-status { margin: 0; font-size: 14px; line-height: 1.6; color: #93a2c4; }
+      #player-status.is-error { color: #ff9d9d; }
+      button { padding: 8px 12px; font-size: 16px; font-weight: 600; color: #fff;
+        background: #3b62e8; border: 0; border-radius: 12px; cursor: pointer;
+        transition: background 500ms cubic-bezier(0.32, 0.72, 0, 1); }
+      button:hover { background: #4f7fff; }
+      button:focus-visible { outline: 2px solid #9bb0ff; outline-offset: 2px; }
+      .hint { margin: 0; font-size: 12px; color: #64708c; }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="1280" height="720"></canvas>
+    <div id="player-overlay">
+      <div class="panel">
+        <h1>ArcSpace</h1>
+        <p id="player-status">
+          Se juega con teclado. La primera vez tarda unos segundos en cargar el motor.
+        </p>
+        <button id="player-start" type="button">▶ Jugar</button>
+        <p class="hint">Si el teclado no responde, hacé clic sobre la imagen.</p>
+      </div>
+    </div>
+    <script>
+      window.GAME_CONFIG = {"title": "ArcSpace", "pyodide": "0.29.5", "entry": "main.pyc", "archive": "game.zip"};
+    </script>
+    <script src="/jugar/player.js"></script>
+  </body>
+</html>
