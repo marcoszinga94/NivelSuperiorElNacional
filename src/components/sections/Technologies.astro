@@ -1,0 +1,50 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+
+const tech = [
+  { logo: "Py", logoStyle: "background:linear-gradient(135deg,#306998,#ffd43b)", role: "Lenguaje principal", name: "Python", desc: "El lenguaje que usamos para programar. Versátil, claro y muy pedido en la industria.", bridge: "IA · datos · backend" },
+  { logo: "Pg", logoStyle: "background:linear-gradient(135deg,#1a7a1a,#2ecc40)", role: "Videojuegos 2D", name: "Pygame", desc: "La librería para hacer videojuegos en Python: gráficos, audio, físicas y eventos.", bridge: "juegos indie · prototipos" },
+  { logo: "H5", logoStyle: "background:linear-gradient(135deg,#e44d26,#f16529)", role: "Estructura web", name: "HTML5", desc: "El lenguaje con el que se arma la estructura de cualquier página web.", bridge: "toda la web" },
+  { logo: "CSS", logoStyle: "background:linear-gradient(135deg,#1572b6,#33a9dc)", role: "Diseño visual", name: "CSS3", desc: "Estilos, animaciones y diseño responsive. Lo que hace que la web se vea bien.", bridge: "diseño UI · apps" },
+  { logo: "JS", logoStyle: "background:linear-gradient(135deg,#f0db4f,#c8a800);color:#333", role: "Interactividad", name: "JavaScript", desc: "El lenguaje del navegador: interactividad, lógica de cliente y APIs.", bridge: "React · Node.js" },
+  { logo: "Git", logoStyle: "background:linear-gradient(135deg,#24292e,#555)", role: "Control de versiones", name: "GitHub", desc: "La plataforma donde guardamos y compartimos el código entre todos.", bridge: "equipo · portafolio" },
+];
+---
+
+<Section id="tecnologias" bg="bg2">
+  <SectionHeader
+    eyebrow="Herramientas"
+    sub="Lo que usamos para hacer los juegos y esta página. Las mismas herramientas que se usan en la industria."
+  >
+    Con qué <span class="text-gradient-2">programamos</span>
+  </SectionHeader>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      tech.map((t, i) => (
+        <div
+          class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex flex-col gap-3.5 rounded-xl border border-line1 bg-bg3 p-6 transition hover:-translate-y-0.5 hover:border-a1/30"]}
+        >
+          <div class="flex items-center gap-3.5">
+            <div
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] font-mono text-[13px] font-semibold text-white"
+              style={t.logoStyle}
+            >
+              {t.logo}
+            </div>
+            <div>
+              <div class="font-mono text-[9px] uppercase tracking-[0.12em] text-t3">{t.role}</div>
+              <div class="text-[15px] font-semibold text-t1">{t.name}</div>
+            </div>
+          </div>
+          <p class="text-[13px] font-light leading-relaxed text-t2">{t.desc}</p>
+          <div class="mt-auto flex items-center gap-2 border-t border-line1 pt-3 text-[11px] text-t3">
+            <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-a1/70">Industria</span>
+            {t.bridge}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Section>

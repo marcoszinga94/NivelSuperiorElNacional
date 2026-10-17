@@ -1,0 +1,72 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+
+const comps = [
+  { icon: "💻", title: "Programación", text: "Lógica, algoritmos y código en Python: de cero a un producto terminado." },
+  { icon: "🎨", title: "Diseño de Interfaces", text: "Interfaces usables y atractivas pensadas para el usuario real." },
+  { icon: "🤝", title: "Trabajo en Equipo", text: "Colaborar, comunicar y coordinar entre varios desarrolladores." },
+  { icon: "🔍", title: "Resolución de Problemas", text: "Diagnosticar y depurar errores reales con pensamiento algorítmico." },
+  { icon: "🧪", title: "Testing", text: "Probar el software para garantizar calidad y usabilidad." },
+  { icon: "📢", title: "Comunicación", text: "Presentar y defender decisiones técnicas ante cualquier audiencia." },
+];
+
+const salida = [
+  "Desarrollador Full Stack",
+  "Programador de aplicaciones",
+  "Analista de sistemas",
+  "Desarrollador de videojuegos",
+  "Freelancer / Emprendedor tech",
+];
+---
+
+<Section id="competencias" bg="bg2">
+  <div class="grid gap-10 lg:grid-cols-[1fr_340px]">
+    <div>
+      <SectionHeader
+        eyebrow="Competencias"
+        sub="Más allá de programar: las habilidades que te llevás de la tecnicatura y sirven en cualquier trabajo."
+      >
+        Lo que te llevás <span class="text-gradient-2">al mundo real</span>
+      </SectionHeader>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        {
+          comps.map((c, i) => (
+            <div class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex items-start gap-3 rounded-xl border border-line1 bg-bg3 p-5"]}>
+              <span class="text-lg">{c.icon}</span>
+              <div>
+                <div class="mb-1 text-[14px] font-semibold text-t1">{c.title}</div>
+                <p class="text-[12px] leading-relaxed text-t2">{c.text}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-5 self-start lg:sticky lg:top-24 reveal reveal-d2">
+      <div class="rounded-xl border border-ba bg-[linear-gradient(135deg,rgba(79,127,255,.08),transparent)] p-7">
+        <div class="mb-3 font-mono text-5xl leading-none text-a1/40">"</div>
+        <p class="mb-4 text-[15px] font-light italic leading-[1.8] text-t1">
+          No aprendemos a programar para después trabajar. Trabajamos desde el primer día para aprender a programar
+          mejor.
+        </p>
+        <div class="text-[11px] text-t3">— La filosofía de la tecnicatura</div>
+      </div>
+      <div class="flex flex-col gap-3 rounded-xl border border-line1 bg-bg3 p-6">
+        <div class="font-mono text-[9px] uppercase tracking-[0.14em] text-a1">Salida laboral</div>
+        <div class="flex flex-col gap-2">
+          {
+            salida.map((s) => (
+              <div class="flex items-center gap-2 text-[13px] text-t2">
+                <span class="text-green">✓</span>
+                {s}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>

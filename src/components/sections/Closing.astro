@@ -1,0 +1,50 @@
+---
+import Section from "../Section.astro";
+---
+
+<Section id="cierre" bg="bg2" class="overflow-hidden">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(79,127,255,.08),transparent_70%)]"
+  >
+  </div>
+
+  <div class="flex flex-col items-center text-center">
+    <div class="reveal mb-3.5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-a1/75">
+      <span class="h-px w-5 bg-a1/50"></span>
+      Muestra Institucional 2026
+    </div>
+
+    <h2
+      class="reveal reveal-d1 mb-8 text-[clamp(26px,4vw,46px)] font-bold leading-[1.12] tracking-[-0.03em] text-t1"
+    >
+      Formando desarrolladores<br />
+      <span class="text-gradient">que crean soluciones reales</span>
+    </h2>
+
+    <div class="reveal reveal-d2 mb-9 max-w-[680px] rounded-2xl border border-line1 bg-bg3 p-8">
+      <div class="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-a1/75">
+        Tecnicatura en Programación Full Stack · UPC · El Nacional
+      </div>
+      <div class="mb-3 text-[17px] font-semibold text-t1">Desarrollo de Software aplicado a la Educación</div>
+      <p class="text-[13px] font-light leading-relaxed text-t2">
+        Los estudiantes de <strong class="font-medium text-t1">Práctica Profesionalizante I y Programación II</strong>
+        aplican conocimientos técnicos en proyectos que generan <strong class="font-medium text-t1">impacto educativo real</strong
+        >, integrando programación, creatividad e innovación. Este proyecto demuestra que el software puede transformar la
+        forma en que los niños aprenden.
+      </p>
+    </div>
+
+    <div class="reveal reveal-d3 flex flex-wrap justify-center gap-3">
+      <a
+        href="/carrera"
+        class="inline-flex items-center gap-2 rounded-[10px] bg-a1 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(79,127,255,.35)] transition hover:-translate-y-0.5"
+        >Conocé la carrera →</a
+      >
+      <a
+        href="/equipo"
+        class="inline-flex items-center gap-2 rounded-[10px] border border-line2 px-7 py-3.5 text-sm font-medium text-t1 transition hover:bg-line1"
+        >Conocé al equipo</a
+      >
+    </div>
+  </div>
+</Section>

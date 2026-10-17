@@ -1,0 +1,95 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+---
+
+<Section id="institucion" bg="bg">
+  <SectionHeader
+    eyebrow="Institución educativa"
+    sub="Acá estudiamos. El Nacional queda en La Carlota, Córdoba, y tiene nivel secundario y superior. La Tecnicatura en Programación se cursa en convenio con la UPC."
+  >
+    Escuela Educativa Superior<br /><span class="text-gradient-2">El Nacional</span>
+  </SectionHeader>
+
+  <div
+    class="reveal rounded-[20px] border border-ba bg-[linear-gradient(135deg,rgba(79,127,255,.06),transparent_60%)] p-8 md:p-10"
+  >
+    <div class="grid gap-8 lg:grid-cols-[1fr_auto]">
+      <div>
+        <div class="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">
+          Institución educativa · La Carlota, Córdoba
+        </div>
+        <div class="mb-3 text-[clamp(22px,3vw,32px)] font-bold leading-tight text-t1">
+          Escuela Educativa<br />Superior <span class="text-gradient-2">"El Nacional"</span>
+        </div>
+        <div class="mb-4 text-[13px] text-t3">📍 La Carlota · Provincia de Córdoba · Argentina</div>
+        <p class="mb-5 max-w-[620px] text-sm font-light leading-relaxed text-t2">
+          Escuela de nivel secundario y superior. Dicta el bachillerato y varias tecnicaturas; la nuestra es Programación
+          Full Stack, con título universitario de la UPC. Muy práctica desde el arranque.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <span class="rounded-lg border border-green/25 bg-green/8 px-3 py-1 text-[11px] text-green">✓ Nivel secundario</span>
+          <span class="rounded-lg border border-green/25 bg-green/8 px-3 py-1 text-[11px] text-green">✓ Nivel superior</span>
+          <span class="rounded-lg border border-ba bg-ba2 px-3 py-1 text-[11px] text-a1">Convenio UPC</span>
+        </div>
+      </div>
+      <div class="flex gap-3 lg:flex-col">
+        <div class="flex-1 rounded-xl border border-line1 bg-bg3 p-5 text-center">
+          <div class="font-mono text-2xl font-medium text-t1">2<sup class="text-a1">+</sup></div>
+          <div class="mt-1 text-[10px] uppercase tracking-[0.08em] text-t3">Niveles educativos</div>
+        </div>
+        <div class="flex-1 rounded-xl border border-line1 bg-bg3 p-5 text-center">
+          <div class="font-mono text-2xl font-medium text-t1">3<sup class="text-a1">+</sup></div>
+          <div class="mt-1 text-[10px] uppercase tracking-[0.08em] text-t3">Tecnicaturas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 grid gap-4 lg:grid-cols-2">
+    <div class="reveal reveal-d1 flex flex-col gap-4 rounded-xl border border-line1 bg-bg3 p-7">
+      <div class="flex items-center gap-3.5">
+        <div class="flex h-11 w-11 items-center justify-center rounded-[10px] border border-line1 bg-bg4 text-xl">🏫</div>
+        <div>
+          <div class="text-[15px] font-semibold text-t1">Nivel Secundario</div>
+          <div class="text-[11px] text-t3">Educación obligatoria</div>
+        </div>
+      </div>
+      <p class="text-[13px] font-light leading-relaxed text-t2">
+        Bachillerato con orientación en ciencias y humanidades. Materias optativas que te acercan al pensamiento
+        científico y tecnológico.
+      </p>
+    </div>
+
+    <div class="reveal reveal-d2 flex flex-col gap-4 rounded-xl border border-line1 bg-bg3 p-7">
+      <div class="flex items-center gap-3.5">
+        <div class="flex h-11 w-11 items-center justify-center rounded-[10px] border border-line1 bg-bg4 text-xl">🎓</div>
+        <div>
+          <div class="text-[15px] font-semibold text-t1">Nivel Superior</div>
+          <div class="text-[11px] text-t3">Tecnicaturas universitarias · UPC</div>
+        </div>
+      </div>
+      <p class="text-[13px] font-light leading-relaxed text-t2">
+        Tecnicaturas en convenio con la
+        <strong class="font-medium text-t1">Universidad Provincial de Córdoba (UPC)</strong>. Título oficial y con
+        validez nacional: cuando terminás, podés ejercer.
+      </p>
+      <div class="mt-1 flex flex-col gap-2">
+        <div class="flex items-center gap-3 rounded-lg border border-ba bg-a1/5 px-3.5 py-2.5">
+          <span class="h-2 w-2 rounded-full bg-a1 shadow-[0_0_5px_var(--color-a1)]"></span>
+          <div>
+            <div class="text-[12px] font-semibold text-t1">Programación Full Stack</div>
+            <div class="text-[10px] text-t3">3 años · esta carrera</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 rounded-lg border border-line1 bg-bg4 px-3.5 py-2.5">
+          <span class="h-2 w-2 rounded-full bg-green shadow-[0_0_5px_var(--color-green)]"></span>
+          <div>
+            <div class="text-[12px] font-semibold text-t1">Administración de Empresas</div>
+            <div class="text-[10px] text-t3">Nivel superior</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>

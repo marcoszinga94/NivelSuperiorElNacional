@@ -1,0 +1,55 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+
+const testimonials = [
+  {
+    top: "linear-gradient(90deg,#4fbb7c,#00c8ff)",
+    avatar: "👦",
+    text: "Yo aprendí que las estrellas tienen nombres y que hay una que se llama igual que mi abuela. Y el juego me dejaba equivocarme sin retarme. Me gustó mucho.",
+    name: "Alumno de primer grado",
+    role: "Beneficiario · Estación 5",
+  },
+  {
+    top: "linear-gradient(90deg,#4f7fff,#7c4dff)",
+    avatar: "🎓",
+    text: "Al principio no sabía cómo hacer que los planetas se movieran. Busqué, pregunté, rompí el código cuatro veces. Cuando funcionó, entendí que eso es programar de verdad.",
+    name: "Estudiante desarrollador",
+    role: "Tecnicatura en Programación Full Stack",
+  },
+  {
+    top: "linear-gradient(90deg,#ff9f43,#ff6b6b)",
+    avatar: "👩‍🏫",
+    text: "Ver a mis alumnos explicarle a un nene de seis años cómo funciona su juego fue uno de los momentos más poderosos que viví como docente. Eso no se planifica, se construye.",
+    name: "Docente de la carrera",
+    role: "Práctica Profesionalizante I · El Nacional · UPC",
+  },
+];
+---
+
+<Section id="testimonios" bg="bg">
+  <SectionHeader
+    eyebrow="Voces del proyecto"
+    sub="Tres voces del proyecto: un nene que jugó, un estudiante que lo hizo y una docente que acompañó."
+  >
+    Lo que dicen <span class="text-gradient-2">los protagonistas</span>
+  </SectionHeader>
+
+  <div class="grid gap-5 lg:grid-cols-3">
+    {
+      testimonials.map((t, i) => (
+        <div class:list={["reveal", `reveal-d${i + 1}`, "relative flex flex-col overflow-hidden rounded-xl border border-line1 bg-bg3 p-7"]}>
+          <div class="absolute inset-x-0 top-0 h-0.5" style={`background:${t.top}`} />
+          <p class="mb-6 flex-1 text-[14px] font-light italic leading-[1.8] text-t2">"{t.text}"</p>
+          <div class="mt-auto flex items-center gap-3.5 border-t border-line1 pt-4">
+            <div class="text-2xl">{t.avatar}</div>
+            <div>
+              <div class="text-[13px] font-semibold text-t1">{t.name}</div>
+              <div class="text-[11px] text-t3">{t.role}</div>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Section>

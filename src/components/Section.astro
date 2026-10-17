@@ -1,0 +1,18 @@
+---
+interface Props {
+  id?: string;
+  /** Background token: "bg" (default) or "bg2" (alternating) */
+  bg?: "bg" | "bg2" | "none";
+  class?: string;
+  containerClass?: string;
+}
+
+const { id, bg = "bg", class: className = "", containerClass = "" } = Astro.props;
+const bgClass = bg === "bg2" ? "bg-bg2" : bg === "none" ? "" : "bg-bg";
+---
+
+<section id={id} class:list={["relative py-24", bgClass, className]}>
+  <div class:list={["relative z-[1] mx-auto max-w-[1120px] px-5 md:px-10", containerClass]}>
+    <slot />
+  </div>
+</section>

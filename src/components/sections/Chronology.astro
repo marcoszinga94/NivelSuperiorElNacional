@@ -1,0 +1,95 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+
+const stages = [
+  { icon: "💡", phase: "Etapa 1", title: "Idea inicial", text: "Todo arrancó en la cátedra: armar videojuegos de astronomía para primer grado, enganchando con Programación II.", tags: ["PP1", "Programación II"] },
+  { icon: "🎨", phase: "Etapa 2", title: "Diseño", text: "Bocetos, mecánicas y colores pensados para nenes de 6 años.", tags: ["UI", "Mecánicas"] },
+  { icon: "⌨️", phase: "Etapa 3", title: "Desarrollo", text: "Programar, romper, arreglar y commitear. La etapa más larga de todas.", tags: ["Python", "Pygame", "Git"] },
+  { icon: "🧪", phase: "Etapa 4", title: "Pruebas", text: "Testing con los nenes y arreglo de los bugs que aparecieron.", tags: ["QA", "Testing"] },
+  { icon: "🏆", phase: "Etapa 5 · Hoy", title: "Muestra Institucional 2026", text: "Presentamos los juegos a la comunidad: nenes, docentes, autoridades y familias.", tags: ["Muestra 2026"] },
+];
+
+const stats = [
+  { icon: "📅", label: "Duración", sub: "Un cuatrimestre" },
+  { icon: "👥", label: "Estudiantes", sub: "15 en total" },
+  { icon: "🎮", label: "Juegos entregados", sub: "8 terminados" },
+  { icon: "📚", label: "Materias", sub: "PP1 · Programación II" },
+];
+
+const distribution = [
+  { label: "Investigar y diseñar", pct: 20 },
+  { label: "Desarrollo", pct: 55 },
+  { label: "Testing", pct: 18 },
+  { label: "Presentación", pct: 7 },
+];
+---
+
+<Section id="cronologia" bg="bg2">
+  <SectionHeader
+    eyebrow="Cronología"
+    sub="Nada de esto salió de un tirón. Esta fue la línea de tiempo, desde la primera idea hasta el día de la muestra."
+  >
+    La línea de tiempo <span class="text-gradient-2">del cuatrimestre</span>
+  </SectionHeader>
+
+  <div class="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
+    <div class="flex flex-col gap-3">
+      {
+        stages.map((s, i) => (
+          <div class:list={["reveal", `reveal-d${i}`, "flex gap-4"]}>
+            <div class="flex shrink-0 flex-col items-center">
+              <div class="flex h-11 w-11 items-center justify-center rounded-full border border-ba bg-bg3 text-lg">
+                {s.icon}
+              </div>
+              <div class="mt-1 font-mono text-[9px] text-t3">{String(i + 1).padStart(2, "0")}</div>
+            </div>
+            <div class="flex-1 rounded-xl border border-line1 bg-bg3 p-5">
+              <div class="mb-1 font-mono text-[9px] uppercase tracking-[0.14em] text-a1">{s.phase}</div>
+              <div class="mb-1.5 text-[15px] font-semibold text-t1">{s.title}</div>
+              <p class="mb-2.5 text-[13px] font-light leading-relaxed text-t2">{s.text}</p>
+              <div class="flex flex-wrap gap-1.5">
+                {s.tags.map((t) => (
+                  <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[9px] text-t3">{t}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="flex flex-col gap-5 self-start rounded-2xl border border-line1 bg-bg3 p-6 lg:sticky lg:top-24 reveal reveal-d2">
+      <div class="font-mono text-[9px] uppercase tracking-[0.18em] text-a1/70">Datos del proyecto</div>
+      <div class="grid grid-cols-2 gap-3">
+        {
+          stats.map((s) => (
+            <div class="rounded-xl border border-line1 bg-bg4 p-3.5">
+              <div class="text-lg">{s.icon}</div>
+              <div class="mt-1 text-[12px] font-medium text-t1">{s.label}</div>
+              <div class="text-[11px] text-t3">{s.sub}</div>
+            </div>
+          ))
+        }
+      </div>
+      <div>
+        <div class="mb-2.5 font-mono text-[9px] uppercase tracking-[0.14em] text-t3">Distribución del tiempo</div>
+        <div class="flex flex-col gap-3">
+          {
+            distribution.map((d) => (
+              <div>
+                <div class="mb-1.5 flex justify-between text-[11px] text-t2">
+                  <span>{d.label}</span>
+                  <span>{d.pct}%</span>
+                </div>
+                <div class="h-1.5 overflow-hidden rounded-full bg-bg5">
+                  <div class="h-full rounded-full bg-[linear-gradient(90deg,var(--color-a1),var(--color-a3))]" style={`width:${d.pct}%`} />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>

@@ -1,0 +1,42 @@
+---
+import { site } from "../data/site";
+import { routeGroups } from "../data/routes";
+---
+
+<footer class="border-t border-line1 bg-bg py-10">
+  <div class="mx-auto max-w-[1120px] px-5 md:px-10">
+    <div class="flex flex-col gap-8">
+      <div class="flex flex-wrap items-end justify-between gap-5">
+        <div class="flex flex-col gap-1">
+          <div class="text-[13px] font-semibold text-t1">Astrónomos por un día · {site.event}</div>
+          <div class="text-[11px] text-t3">{site.institution} · {site.location} · Argentina</div>
+        </div>
+        <a href="/" class="font-hand text-lg text-t2 transition-colors hover:text-t1">
+          ← volver al inicio
+        </a>
+      </div>
+
+      <div class="grid grid-cols-2 gap-6 sm:grid-cols-4">
+        {
+          routeGroups.map((g) => (
+            <div class="flex flex-col gap-2">
+              <div class="font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">
+                {g.icon} {g.label}
+              </div>
+              {g.routes.map((r) => (
+                <a href={r.href} class="text-[12px] text-t3 transition-colors hover:text-t1">
+                  {r.label}
+                </a>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line1 pt-5">
+        <div class="font-mono text-[10px] tracking-[0.06em] text-t3">© 2026 El Nacional · UPC</div>
+        <div class="font-hand text-lg text-t2">hecho a pulmón por los estudiantes 🚀</div>
+      </div>
+    </div>
+  </div>
+</footer>

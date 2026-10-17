@@ -1,0 +1,32 @@
+---
+interface Props {
+  eyebrow: string;
+  sub?: string;
+  center?: boolean;
+  class?: string;
+}
+
+const { eyebrow, sub, center = false, class: className = "" } = Astro.props;
+---
+
+<div class:list={["mb-14 flex flex-col reveal", center && "items-center text-center", className]}>
+  <div class="mb-3.5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-a1/75">
+    <span class="h-px w-5 bg-a1/50"></span>
+    {eyebrow}
+  </div>
+  <h2
+    class:list={[
+      "mb-3.5 text-[clamp(24px,3.5vw,40px)] font-bold leading-[1.15] tracking-[-0.025em] text-t1",
+      center && "text-center",
+    ]}
+  >
+    <slot />
+  </h2>
+  {
+    sub && (
+      <p class:list={["max-w-[580px] text-[clamp(14px,1.4vw,16px)] font-light leading-[1.75] text-t2", center && "mx-auto"]}>
+        {sub}
+      </p>
+    )
+  }
+</div>

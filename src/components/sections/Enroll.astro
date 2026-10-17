@@ -1,0 +1,75 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+
+const items = [
+  { label: "Qué estudiás", text: "Tecnicatura Universitaria en Programación Full Stack: desarrollo web, apps, bases de datos e IA." },
+  { label: "Cuánto dura", text: "3 años, presencial, en La Carlota, Córdoba. Con título oficial de la UPC." },
+  { label: "Dónde trabajás", text: "Empresas tech, startups, sector público, docencia o como freelancer." },
+];
+
+const info = [
+  { icon: "📍", text: "El Nacional · La Carlota, Córdoba" },
+  { icon: "🎓", text: "Título oficial de la UPC" },
+  { icon: "💼", text: "Práctica desde el primer año" },
+];
+---
+
+<Section id="inscripcion" bg="bg">
+  <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
+    <div>
+      <SectionHeader
+        eyebrow="Inscripciones abiertas · 2026"
+        sub="Formación universitaria presencial en La Carlota, con título oficial de la Universidad Provincial de Córdoba."
+      >
+        Conocé la <span class="text-gradient-2">carrera</span>
+      </SectionHeader>
+
+      <div class="flex flex-col gap-4">
+        {
+          items.map((it, i) => (
+            <div class:list={["reveal", `reveal-d${i + 1}`, "flex gap-4"]}>
+              <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-a1 shadow-[0_0_8px_var(--color-a1)]" />
+              <div>
+                <div class="mb-1 text-[13px] font-semibold text-t1">{it.label}</div>
+                <p class="text-[13px] font-light leading-relaxed text-t2">{it.text}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="reveal reveal-d2 self-start rounded-[20px] border border-ba bg-[linear-gradient(135deg,rgba(79,127,255,.1),transparent)] p-8">
+      <div class="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1">Programación Full Stack</div>
+      <div class="mb-3 text-[clamp(20px,2.4vw,26px)] font-bold leading-tight text-t1">
+        Estudiá programación<br />en La Carlota
+      </div>
+      <p class="mb-5 text-[13px] font-light leading-relaxed text-t2">
+        Docentes especializados, proyectos reales de impacto comunitario y titulación universitaria oficial.
+      </p>
+      <div class="mb-6 flex flex-col gap-2.5">
+        {
+          info.map((r) => (
+            <div class="flex items-start gap-2.5 text-[12px] text-t2">
+              <span>{r.icon}</span>
+              {r.text}
+            </div>
+          ))
+        }
+      </div>
+      <button
+        type="button"
+        class="mb-2.5 w-full rounded-[10px] bg-a1 px-6 py-3.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(79,127,255,.35)] transition hover:-translate-y-0.5"
+      >
+        Quiero inscribirme →
+      </button>
+      <button
+        type="button"
+        class="w-full rounded-[10px] border border-line2 px-6 py-3.5 text-sm font-medium text-t1 transition hover:bg-line1"
+      >
+        Más información
+      </button>
+    </div>
+  </div>
+</Section>

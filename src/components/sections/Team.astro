@@ -1,0 +1,65 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+import { games } from "../../data/games";
+---
+
+<Section id="equipo" bg="bg2">
+  <SectionHeader
+    eyebrow="Los desarrolladores"
+    sub="Ocho estudiantes, ocho juegos. Cada uno lo pensó, lo programó y lo presentó por su cuenta."
+  >
+    Los <span class="text-gradient-2">estudiantes</span> que lo hicieron
+  </SectionHeader>
+
+  <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    {
+      games.map((g, i) => (
+        <article class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex flex-col overflow-hidden rounded-xl border border-line1 bg-bg3"]}>
+          <div class="flex items-center gap-4 border-b border-line1 p-5">
+            <div
+              class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full font-mono text-base font-semibold text-white"
+              style={`background:${g.accent}`}
+            >
+              {g.initials}
+            </div>
+            <div class="min-w-0">
+              <div class="truncate text-[14px] font-semibold text-t1">{g.author}</div>
+              <div class="truncate text-[11px] text-a1/75">
+                {g.icon} {g.title}
+              </div>
+              <span class="mt-1 inline-block rounded border border-line1 bg-bg4 px-2 py-0.5 font-mono text-[9px] text-t3">
+                {g.role}
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-1 flex-col gap-3 p-5">
+            <p class="text-[12px] font-light leading-relaxed text-t2">{g.studentDescription}</p>
+            <div class="rounded-lg border-l-2 border-a1 bg-bg4 px-3.5 py-3 text-[12px] italic leading-relaxed text-t2">
+              "{g.quote}"
+            </div>
+            <div class="mt-auto flex flex-wrap gap-1.5">
+              {g.studentTech.map((t) => (
+                <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[9px] text-t3">{t}</span>
+              ))}
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-2.5 border-t border-line1 bg-bg4 px-5 py-3.5">
+            <span class="text-base">{g.icon}</span>
+            <button
+              type="button"
+              class="rounded-lg border border-ba bg-a1/10 px-3.5 py-1.5 text-[11px] font-medium text-a1 transition hover:bg-a1/20"
+              data-demo={g.demo}
+              data-title={g.title}
+              data-dev={g.author}
+            >
+              ▶ Ver demo
+            </button>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</Section>

@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS
+   ═══════════════════════════════════════════════════════ */
+@theme {
+  --color-a1: #4f7fff;
+  --color-a2: #7c4dff;
+  --color-a3: #00c8ff;
+  --color-green: #4fbb7c;
+  --color-orange: #ff9f43;
+  --color-red: #ff6b6b;
+
+  --color-bg: #07090f;
+  --color-bg2: #0c0f18;
+  --color-bg3: #111522;
+  --color-bg4: #161b28;
+  --color-bg5: #1b2133;
+
+  --color-t1: #f0f2f7;
+  --color-t2: #8b92a8;
+  --color-t3: #4a5168;
+
+  --color-line1: rgba(255, 255, 255, 0.055);
+  --color-line2: rgba(255, 255, 255, 0.1);
+  --color-ba: rgba(79, 127, 255, 0.25);
+  --color-ba2: rgba(79, 127, 255, 0.08);
+
+  --font-sans: "Sora", system-ui, sans-serif;
+  --font-mono: "DM Mono", monospace;
+  --font-hand: "Caveat", "Comic Sans MS", cursive;
+
+  --radius-DEFAULT: 12px;
+  --radius-xl2: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-bg text-t1 font-sans;
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   UTILITIES / COMPONENTS
+   ═══════════════════════════════════════════════════════ */
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(120deg, var(--color-a1) 0%, var(--color-a2) 45%, var(--color-a3) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-2 {
+    background: linear-gradient(120deg, var(--color-a1), var(--color-a2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-d1 { transition-delay: 0.1s; }
+  .reveal-d2 { transition-delay: 0.2s; }
+  .reveal-d3 { transition-delay: 0.3s; }
+  .reveal-d4 { transition-delay: 0.4s; }
+  .reveal-d5 { transition-delay: 0.5s; }
+  .reveal-d6 { transition-delay: 0.6s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}
+
+/* Hero / section backgrounds */
+.grid-bg {
+  background-image: linear-gradient(rgba(79, 127, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 127, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 30% 50%, black 20%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 90% at 30% 50%, black 20%, transparent 100%);
+}
+
+/* Hand-made touches */
+.paper-note {
+  position: relative;
+  background: linear-gradient(160deg, #ffeda0 0%, #ffe17a 100%);
+  color: #2b2410;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.paper-note::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 76px;
+  height: 22px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgba(240, 242, 247, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.hand-underline {
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: rgba(79, 127, 255, 0.6);
+  text-underline-offset: 6px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg4);
+  border-radius: 99px;
+  border: 2px solid var(--color-bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-a1);
+}

@@ -1,0 +1,66 @@
+---
+import "../styles/global.css";
+import Nav from "../components/react/Nav";
+import Particles from "../components/react/Particles";
+import VideoModal from "../components/react/VideoModal";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = site.title, description = site.description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Caveat:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="absolute left-4 top-[-50px] z-[9999] rounded-md bg-a1 px-4.5 py-2 text-[13px] text-white transition-[top] focus:top-2"
+      >Saltar al contenido</a
+    >
+
+    <Particles client:load />
+    <Nav client:load active={Astro.url.pathname} />
+
+    <main id="main" class="relative">
+      <slot />
+    </main>
+
+    <Footer />
+    <VideoModal client:load />
+
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+      );
+
+      document.querySelectorAll(".reveal, .tl-item, .metric-card").forEach((el) => {
+        if (!el.classList.contains("reveal")) el.classList.add("reveal");
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>
