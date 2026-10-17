@@ -23,7 +23,7 @@ export const groups: RouteGroup[] = [
 
 /** Ordered list of the site's routes (one per former section). */
 export const routes: RouteInfo[] = [
-  { href: "/institucion", label: "El Nacional", icon: "🏫", blurb: "La escuela y la tecnicatura.", group: "escuela" },
+  { href: "/institucion", label: "Escuela Superior El Nacional", icon: "🏫", blurb: "La escuela y la tecnicatura.", group: "escuela" },
   { href: "/carrera", label: "La carrera", icon: "🎓", blurb: "Plan, materias y duración.", group: "escuela" },
   { href: "/inscripcion", label: "Inscribite", icon: "✍️", blurb: "Cómo anotarte en la carrera.", group: "escuela" },
 
@@ -36,7 +36,6 @@ export const routes: RouteInfo[] = [
   { href: "/tecnologias", label: "Herramientas", icon: "🐍", blurb: "Python, Pygame y todo lo demás.", group: "produccion" },
 
   { href: "/impacto", label: "Impacto", icon: "📊", blurb: "Los números del proyecto.", group: "muestra" },
-  { href: "/galeria", label: "Galería", icon: "📸", blurb: "Fotos y videos de la jornada.", group: "muestra" },
   { href: "/testimonios", label: "Testimonios", icon: "💬", blurb: "Lo que dijeron los protagonistas.", group: "muestra" },
   { href: "/competencias", label: "Competencias", icon: "💪", blurb: "Lo que nos llevamos para el trabajo.", group: "muestra" },
 ];

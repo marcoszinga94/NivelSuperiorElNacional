@@ -2,6 +2,9 @@
 import Section from "../Section.astro";
 import SectionHeader from "../SectionHeader.astro";
 import { games } from "../../data/games";
+
+// Una ficha por estudiante, por si alguien firma más de un juego.
+const estudiantes = games.filter((g, i, todos) => todos.findIndex((x) => x.author === g.author) === i);
 ---
 
 <Section id="equipo" bg="bg2">
@@ -14,7 +17,7 @@ import { games } from "../../data/games";
 
   <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
     {
-      games.map((g, i) => (
+      estudiantes.map((g, i) => (
         <article class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex flex-col overflow-hidden rounded-xl border border-line1 bg-bg3"]}>
           <div class="flex items-center gap-4 border-b border-line1 p-5">
             <div
@@ -35,28 +38,19 @@ import { games } from "../../data/games";
           </div>
 
           <div class="flex flex-1 flex-col gap-3 p-5">
-            <p class="text-[12px] font-light leading-relaxed text-t2">{g.studentDescription}</p>
-            <div class="rounded-lg border-l-2 border-a1 bg-bg4 px-3.5 py-3 text-[12px] italic leading-relaxed text-t2">
-              "{g.quote}"
-            </div>
+            {g.studentDescription && (
+              <p class="text-[12px] font-light leading-relaxed text-t2">{g.studentDescription}</p>
+            )}
+            {g.quote && (
+              <div class="rounded-lg border-l-2 border-a1 bg-bg4 px-3.5 py-3 text-[12px] italic leading-relaxed text-t2">
+                "{g.quote}"
+              </div>
+            )}
             <div class="mt-auto flex flex-wrap gap-1.5">
               {g.studentTech.map((t) => (
                 <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[9px] text-t3">{t}</span>
               ))}
             </div>
-          </div>
-
-          <div class="flex items-center justify-between gap-2.5 border-t border-line1 bg-bg4 px-5 py-3.5">
-            <span class="text-base">{g.icon}</span>
-            <button
-              type="button"
-              class="rounded-lg border border-ba bg-a1/10 px-3.5 py-1.5 text-[11px] font-medium text-a1 transition hover:bg-a1/20"
-              data-demo={g.demo}
-              data-title={g.title}
-              data-dev={g.author}
-            >
-              ▶ Ver demo
-            </button>
           </div>
         </article>
       ))

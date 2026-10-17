@@ -2,7 +2,6 @@
 import "../styles/global.css";
 import Nav from "../components/react/Nav";
 import Particles from "../components/react/Particles";
-import VideoModal from "../components/react/VideoModal";
 import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 
@@ -43,7 +42,6 @@ const { title = site.title, description = site.description } = Astro.props;
     </main>
 
     <Footer />
-    <VideoModal client:load />
 
     <script>
       const observer = new IntersectionObserver(
