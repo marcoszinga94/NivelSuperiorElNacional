@@ -12,43 +12,35 @@ import { games } from "../../data/games";
     Los juegos que <span class="text-gradient-2">hicimos</span>
   </SectionHeader>
 
-  <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
     {
       games.map((g, i) => (
         <article
-          class:list={["game-card reveal", `reveal-d${(i % 6) + 1}`, "group flex flex-col overflow-hidden rounded-[20px] border border-line1 bg-bg2 transition hover:-translate-y-1 hover:border-a1/35 hover:shadow-[0_16px_48px_rgba(0,0,0,.5),0_0_32px_rgba(79,127,255,.1)]"]}
+          class:list={["reveal reveal-seq", "group flex flex-col overflow-hidden rounded-[20px] border border-line1 bg-bg2 transition hover:-translate-y-1 hover:border-a1/35 hover:shadow-[0_16px_48px_rgba(0,0,0,.5),0_0_32px_rgba(79,127,255,.1)]"]}
+          style={`--reveal-i:${i}`}
         >
-          <div
-            class="relative aspect-video cursor-pointer overflow-hidden"
-            data-demo={g.demo}
-            data-title={g.title}
-            data-dev={g.author}
-          >
-            <div class="absolute inset-0 flex items-center justify-center" style={`background:${g.gradient}`}>
-              {g.demo && (
-                <video
-                  class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-400 group-hover:opacity-100"
-                  src={g.demo}
-                  muted
-                  loop
-                  preload="none"
-                />
+          <div class="relative aspect-video overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center p-6" style={`background:${g.gradient}`}>
+              {g.logo ? (
+                <div class="flex h-24 w-full items-center justify-center md:h-32 lg:h-24">
+                  <img
+                    src={g.logo}
+                    alt={`Ícono del ejecutable de ${g.title}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="max-h-full max-w-full rounded-xl object-contain drop-shadow-[0_8px_28px_rgba(0,0,0,.55)] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
+                  />
+                </div>
+              ) : (
+                <div class="z-[1] flex flex-col items-center gap-2.5">
+                  <div class="text-[52px] [filter:drop-shadow(0_0_20px_rgba(79,127,255,.4))]">{g.icon}</div>
+                </div>
               )}
-              <div class="z-[1] flex flex-col items-center gap-2.5 transition-opacity duration-400 group-hover:opacity-0">
-                <div class="text-[52px] [filter:drop-shadow(0_0_20px_rgba(79,127,255,.4))]">{g.icon}</div>
-              </div>
-            </div>
-            <div
-              class="absolute inset-0 z-[2] flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <div class="flex h-14 w-14 items-center justify-center rounded-full bg-a1/90 text-xl shadow-[0_0_32px_rgba(79,127,255,.5)] transition-transform group-hover:scale-110">
-                ▶
-              </div>
             </div>
           </div>
 
           <div class="flex flex-1 flex-col gap-3 p-5.5">
-            <div class="flex flex-wrap gap-1.5">
+            <div class="flex flex-wrap gap-1.5 lg:min-h-10">
               <span class="inline-flex items-center rounded border border-a1/20 bg-a1/10 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-a1">
                 {g.category}
               </span>
@@ -60,17 +52,21 @@ import { games } from "../../data/games";
                   {g.featuredBadge}
                 </span>
               )}
-              <span class="inline-flex items-center rounded border border-line1 bg-bg4 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-t3">
-                {g.weeks}
-              </span>
+              {g.weeks && (
+                <span class="inline-flex items-center rounded border border-line1 bg-bg4 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-t3">
+                  {g.weeks}
+                </span>
+              )}
             </div>
 
-            <div class="text-lg font-bold leading-tight tracking-[-0.02em] text-t1">{g.title}</div>
-            <p class="text-[12px] text-t3">
-              por <span class="font-medium text-a1/75">{g.author}</span>
-            </p>
+            <div class="flex flex-col gap-0.5">
+              <div class="text-balance text-lg font-bold leading-tight tracking-[-0.02em] text-t1">{g.title}</div>
+              <p class="text-[12px] text-t3">
+                por <span class="font-medium text-a1/75">{g.author}</span>
+              </p>
+            </div>
             <div class="rounded-lg border border-line1 bg-bg3 px-3 py-2 text-[11px] leading-relaxed text-t2">
-              La idea: {g.objective}
+              {g.objective}
             </div>
 
             <div class="mt-auto flex flex-wrap items-center justify-between gap-2.5 border-t border-line1 pt-3.5">
@@ -79,15 +75,24 @@ import { games } from "../../data/games";
                   <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[9px] text-t3">{t}</span>
                 ))}
               </div>
-              <button
-                type="button"
-                class="rounded-lg border border-ba bg-a1/10 px-3.5 py-1.5 text-[11px] font-medium text-a1 transition hover:bg-a1/20"
-                data-demo={g.demo}
-                data-title={g.title}
-                data-dev={g.author}
-              >
-                ▶ Demo
-              </button>
+              {g.web ? (
+                <a
+                  href={`/jugar/${g.web}`}
+                  class="rounded-lg border border-a1/30 bg-a1/15 px-3.5 py-1.5 text-[11px] font-semibold text-a1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-a1/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+                >
+                  ▶ Jugar online
+                </a>
+              ) : (
+                g.exe && (
+                  <a
+                    href={`/Ejecutadores/${encodeURIComponent(g.exe)}`}
+                    download
+                    class="rounded-lg border border-line1 bg-bg4 px-3.5 py-1.5 text-[11px] font-medium text-t2 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:text-t1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+                  >
+                    ⬇ Sólo Windows
+                  </a>
+                )
+              )}
             </div>
           </div>
         </article>
@@ -95,15 +100,3 @@ import { games } from "../../data/games";
     }
   </div>
 </Section>
-
-<script>
-  document.querySelectorAll(".game-card").forEach((card) => {
-    const video = card.querySelector("video");
-    if (!video) return;
-    card.addEventListener("mouseenter", () => video.play().catch(() => {}));
-    card.addEventListener("mouseleave", () => {
-      video.pause();
-      video.currentTime = 0;
-    });
-  });
-</script>
