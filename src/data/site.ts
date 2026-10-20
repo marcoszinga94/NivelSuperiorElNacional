@@ -11,8 +11,17 @@ export const site = {
     "https://www.youtube.com/embed/aYXByxcr6zE?autoplay=1&mute=1&controls=0&loop=1&playlist=aYXByxcr6zE&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3",
 };
 
-export const heroStats = [
-  { target: 8, suffix: "", label: "Juegos" },
+/**
+ * Dónde se anota la gente. `instagram` es el destino del botón de inscripción;
+ * `phone` se muestra como "Más información" y queda oculto mientras sea null
+ * (el número va en formato internacional, sin espacios: "+5493584...").
+ */
+export const enrollment = {
+  instagram: "https://www.instagram.com/nivelsuperiorelnacional?mdxt=OGRzNmJjOGxsbXgy",
+  phone: null as string | null,
+};
+
+export const heroStats = [  { target: 8, suffix: "", label: "Juegos" },
   { target: 8, suffix: "", label: "Estudiantes" },
   { target: 150, suffix: "+", label: "Horas de código" },
 ];

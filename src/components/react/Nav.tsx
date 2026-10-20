@@ -14,8 +14,7 @@ export default function Nav({ active = "/" }: Props) {
   return (
     <nav className="sticky top-0 z-[500] border-b border-line1 bg-bg/85 backdrop-blur-2xl">
       <div className="mx-auto flex h-[60px] max-w-[1120px] items-center justify-between gap-4 px-5 md:px-10">
-        <a href="/" className="flex shrink-0 items-center gap-2.5">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-a1 shadow-[0_0_10px_var(--color-a1)]" />
+        <a href="/" className="flex shrink-0 items-center">
           <span className="whitespace-nowrap text-[13px] font-semibold">Astrónomos por un día</span>
         </a>
 
@@ -43,8 +42,7 @@ export default function Nav({ active = "/" }: Props) {
                     : "text-t2 hover:bg-line1 hover:text-t1",
                 ].join(" ")}
               >
-                <span>{g.icon}</span>
-                {g.label}
+                <span>{g.label}</span>
                 <svg
                   width="10"
                   height="10"
@@ -71,7 +69,6 @@ export default function Nav({ active = "/" }: Props) {
                           active === r.href ? "bg-bg3" : "hover:bg-bg3",
                         ].join(" ")}
                       >
-                        <span className="mt-0.5 text-base">{r.icon}</span>
                         <span>
                           <span className="block text-[13px] font-medium text-t1">{r.label}</span>
                           <span className="block text-[11px] leading-snug text-t3">{r.blurb}</span>
@@ -113,12 +110,11 @@ export default function Nav({ active = "/" }: Props) {
             onClick={() => setOpen(false)}
             className="mb-2 block rounded-lg px-3 py-2 text-[13px] font-medium text-t1 hover:bg-bg3"
           >
-            🏠 Inicio
+            Inicio
           </a>
           {routeGroups.map((g) => (
             <div key={g.id} className="mb-3">
               <div className="mb-1 flex items-center gap-2 px-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">
-                <span>{g.icon}</span>
                 {g.label}
               </div>
               <div className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
@@ -132,7 +128,6 @@ export default function Nav({ active = "/" }: Props) {
                       active === r.href ? "bg-bg3 text-t1" : "text-t2 hover:bg-bg3 hover:text-t1",
                     ].join(" ")}
                   >
-                    <span>{r.icon}</span>
                     {r.label}
                   </a>
                 ))}
