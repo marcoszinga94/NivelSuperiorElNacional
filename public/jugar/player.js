@@ -60,6 +60,22 @@
   };
   window.addEventListener("resize", fitCanvas);
 
+  /**
+   * Sample rate the device actually runs at. Phones usually use 48000 Hz; opening
+   * the mixer at a different rate makes SDL resample and can sound dirty.
+   */
+  const audioRate = () => {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const probe = new Ctx();
+      const rate = probe.sampleRate;
+      void probe.close();
+      return rate;
+    } catch {
+      return 44100;
+    }
+  };
+
   /* --- controles táctiles ------------------------------------------------
    * Los juegos son de teclado. En el celular agregamos un gamepad que manda
    * los mismos eventos que SDL escucha en el window del iframe. Se muestra
@@ -413,6 +429,50 @@ if hasattr(pygame.event, "wait"):
     pygame.event.wait = _event_wait
 
 
+# --- audio ------------------------------------------------------------------
+# En el celular los callbacks de audio comparten el hilo con el juego, asi que
+# un frame lento se escucha como estatica. Abrimos el mixer a la frecuencia del
+# dispositivo (si no, SDL remuestrea) con un buffer holgado.
+AUDIO_RATE = int(js_audio_rate) or 44100
+_pre_init = pygame.mixer.pre_init
+_init = pygame.mixer.init
+
+
+def _mixer_args():
+    return (AUDIO_RATE, -16, 2, 4096)
+
+
+pygame.mixer.pre_init = lambda *args, **kwargs: _pre_init(*_mixer_args())
+pygame.mixer.init = lambda *args, **kwargs: _init(*_mixer_args())
+
+_breathe_at = [0.0]
+
+
+def _breathe():
+    now = time.monotonic()
+    if now - _breathe_at[0] >= 0.016:
+        _breathe_at[0] = now
+        run_sync(js_breathe())
+
+
+def _wrap_breathe(owner, name):
+    original = getattr(owner, name, None)
+    if original is None:
+        return
+
+    def wrapper(*args, **kwargs):
+        result = original(*args, **kwargs)
+        _breathe()
+        return result
+
+    setattr(owner, name, wrapper)
+
+
+# Un frame con cientos de primitivas deja sordo al audio; esto lo corta en trozos.
+for _name in ("circle", "rect", "line", "lines", "polygon", "ellipse", "arc", "aaline", "aalines"):
+    _wrap_breathe(pygame.draw, _name)
+
+
 # --- display ----------------------------------------------------------------
 _CANNOT_FULLSCREEN = (
     getattr(pygame, "FULLSCREEN", 0)
@@ -527,6 +587,11 @@ async def _boot():
           ms > 0 ? setTimeout(resolve, ms) : requestAnimationFrame(() => resolve())
         )
       );
+      // Mid-frame pause: lets the Web Audio callbacks run without waiting for a
+      // paint, so long frames on a phone don't turn the sound into static.
+      pyodide.globals.set("js_breathe", () => new Promise((resolve) => setTimeout(resolve, 0)));
+      pyodide.globals.set("js_audio_rate", audioRate());
+      window.__playerPyodide = pyodide;
       pyodide.globals.set("js_game_started", () => window.jsGameStarted());
 
       status("Cargando pygame…");

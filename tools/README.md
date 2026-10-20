@@ -53,6 +53,18 @@ teclado). `player.js` envuelve `pygame.display.update` / `flip`, la espera de
 `Clock.tick` y `time.sleep` para ceder el control una vez por frame usando
 `run_sync` + asyncify. Con eso el juego corre a su ritmo y la página sigue viva.
 
+## Audio en el celular
+
+Los callbacks de Web Audio corren en el mismo hilo que el juego, así que un
+frame lento se escucha como **estática**. `player.js` lo mitiga de tres formas:
+
+1. Abre el mixer a la **frecuencia del dispositivo** (`AudioContext.sampleRate`,
+   casi siempre 48000) en vez de los 44100 que piden algunos juegos, así SDL no
+   tiene que remuestrear.
+2. Pide un **buffer grande** (4096 muestras) para tener margen.
+3. Deja **respirar el bucle a mitad de frame** (`js_breathe`): si `pygame.draw.*`
+   lleva más de 16 ms dibujando, cede el control para que el audio se rellene.
+
 ## Versión de Pyodide según el bytecode
 
 El bytecode solo carga en la misma versión de CPython, así que cada juego usa
