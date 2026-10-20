@@ -389,6 +389,9 @@ import asyncio, builtins, marshal, os, sys, time, zipfile
 from pyodide.ffi import run_sync
 import pygame
 
+# Tope de cuadros por segundo configurado por la página (30 en celulares).
+FPS_CAP = int(js_fps_cap) or 0
+
 
 # --- cooperative frame yield ------------------------------------------------
 def _yield():
@@ -433,13 +436,23 @@ if hasattr(pygame.event, "wait"):
 # En el celular los callbacks de audio comparten el hilo con el juego, asi que
 # un frame lento se escucha como estatica. Abrimos el mixer a la frecuencia del
 # dispositivo (si no, SDL remuestrea) con un buffer holgado.
-AUDIO_RATE = int(js_audio_rate) or 44100
+AUDIO_RATE = None  # se resuelve en el click, cuando ya hay gesto del usuario
+
+
+def _device_rate():
+    try:
+        rate = int(js_audio_rate)
+    except Exception:
+        rate = 0
+    return rate if rate > 0 else 44100
+
+
 _pre_init = pygame.mixer.pre_init
 _init = pygame.mixer.init
 
 
 def _mixer_args():
-    return (AUDIO_RATE, -16, 2, 4096)
+    return (_device_rate(), -16, 2, 4096)
 
 
 pygame.mixer.pre_init = lambda *args, **kwargs: _pre_init(*_mixer_args())
@@ -521,6 +534,9 @@ class _Clock:
         self._fps = 0.0
 
     def tick(self, framerate=0):
+        # En un celular no tiene sentido empujar 60 fps: gasta batería y corta el audio.
+        if FPS_CAP and framerate and framerate > FPS_CAP:
+            framerate = FPS_CAP
         now = time.monotonic()
         elapsed = now - self._start
         if framerate:
@@ -569,83 +585,110 @@ async def _boot():
     exec(code, globals_)
 `;
 
-  async function boot() {
-    try {
-      status("Descargando el motor de Python…");
-      const { loadPyodide } = await import(
-        `https://cdn.jsdelivr.net/pyodide/v${cfg.pyodide}/full/pyodide.mjs`
-      );
-      const pyodide = await loadPyodide({
-        indexURL: `https://cdn.jsdelivr.net/pyodide/v${cfg.pyodide}/full/`,
-      });
+  let prepared = null;
 
-      status("Preparando la pantalla…");
-      const canvas = document.getElementById("canvas");
-      pyodide.canvas.setCanvas2D(canvas);
-      pyodide.globals.set("js_sleep", (ms = 0) =>
-        new Promise((resolve) =>
-          ms > 0 ? setTimeout(resolve, ms) : requestAnimationFrame(() => resolve())
-        )
-      );
-      // Mid-frame pause: lets the Web Audio callbacks run without waiting for a
-      // paint, so long frames on a phone don't turn the sound into static.
-      pyodide.globals.set("js_breathe", () => new Promise((resolve) => setTimeout(resolve, 0)));
-      pyodide.globals.set("js_audio_rate", audioRate());
-      window.__playerPyodide = pyodide;
-      pyodide.globals.set("js_game_started", () => window.jsGameStarted());
+  /**
+   * Deja todo listo apenas se abre la página: si esperáramos al click, el
+   * celular tendría que bajar 11 MB de runtime con el juego ya "andando".
+   * El audio queda para el click, porque necesita un gesto del usuario.
+   */
+  async function prepare() {
+    const { loadPyodide } = await import(
+      `https://cdn.jsdelivr.net/pyodide/v${cfg.pyodide}/full/pyodide.mjs`
+    );
+    status("Descargando el motor de Python…");
+    const pyodide = await loadPyodide({
+      indexURL: `https://cdn.jsdelivr.net/pyodide/v${cfg.pyodide}/full/`,
+    });
 
-      status("Cargando pygame…");
-      await pyodide.loadPackage("pygame-ce");
+    status("Preparando la pantalla…");
+    const canvas = document.getElementById("canvas");
+    pyodide.canvas.setCanvas2D(canvas);
+    pyodide.globals.set("js_sleep", (ms = 0) =>
+      new Promise((resolve) =>
+        ms > 0 ? setTimeout(resolve, ms) : requestAnimationFrame(() => resolve())
+      )
+    );
+    // Mid-frame pause: lets the Web Audio callbacks run without waiting for a
+    // paint, so long frames on a phone don't turn the sound into static.
+    pyodide.globals.set("js_breathe", () => new Promise((resolve) => setTimeout(resolve, 0)));
+    // En pantallas táctiles conviene 30 fps: menos CPU, menos audio cortado.
+    pyodide.globals.set("js_fps_cap", window.matchMedia("(pointer: coarse)").matches ? 30 : 0);
+    window.__playerPyodide = pyodide;
+    pyodide.globals.set("js_game_started", () => window.jsGameStarted());
 
-      status("Desempacando el juego…");
-      await pyodide.runPythonAsync(`
+    status("Cargando pygame…");
+    await pyodide.loadPackage("pygame-ce");
+
+    status("Desempacando el juego…");
+    await pyodide.runPythonAsync(`
 import os, zipfile
 os.makedirs("/game", exist_ok=True)
 `);
-      const response = await fetch(cfg.archive);
-      const bytes = new Uint8Array(await response.arrayBuffer());
-      pyodide.FS.writeFile("/tmp/game.zip", bytes);
-      await pyodide.runPythonAsync(`
+    const response = await fetch(cfg.archive);
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    pyodide.FS.writeFile("/tmp/game.zip", bytes);
+    await pyodide.runPythonAsync(`
 with zipfile.ZipFile("/tmp/game.zip") as archive:
     archive.extractall("/game")
 `);
 
-      pyodide.globals.set("GAME_TITLE", cfg.title || "Juego");
-      pyodide.globals.set("GAME_ENTRY", cfg.entry || "main.pyc");
-      pyodide.globals.set("GAME_SCREEN", cfg.screen || null);
-      if (cfg.screen) {
-        const [w, h] = cfg.screen;
-        const c = document.getElementById("canvas");
-        if (c) {
-          c.width = w;
-          c.height = h;
-        }
+    pyodide.globals.set("GAME_TITLE", cfg.title || "Juego");
+    pyodide.globals.set("GAME_ENTRY", cfg.entry || "main.pyc");
+    pyodide.globals.set("GAME_SCREEN", cfg.screen || null);
+    if (cfg.screen) {
+      const [w, h] = cfg.screen;
+      if (canvas) {
+        canvas.width = w;
+        canvas.height = h;
       }
-      await pyodide.runPythonAsync(PYTHON);
+    }
+    await pyodide.runPythonAsync(PYTHON);
 
-      // The call below never resolves: the game keeps the interpreter busy.
-      pyodide.runPythonAsync(`
+    // Re-fit whenever the game changes the framebuffer size.
+    new MutationObserver(fitCanvas).observe(canvas, {
+      attributes: true,
+      attributeFilter: ["width", "height"],
+    });
+    fitCanvas();
+    return pyodide;
+  }
+
+  async function start() {
+    const pyodide = await prepared;
+    // La frecuencia del dispositivo se lee en el click: crear un AudioContext
+    // sin gesto del usuario da problemas en iOS.
+    pyodide.globals.set("js_audio_rate", audioRate());
+    // The call below never resolves: the game keeps the interpreter busy.
+    pyodide.runPythonAsync(`
 await _boot()
 `).catch(fail);
-
-      // Re-fit whenever the game changes the framebuffer size.
-      new MutationObserver(fitCanvas).observe(canvas, {
-        attributes: true,
-        attributeFilter: ["width", "height"],
-      });
-      fitCanvas();
-    } catch (err) {
-      fail(err);
-    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     installTouchControls();
-    document.getElementById("player-start")?.addEventListener(
+    const button = document.getElementById("player-start");
+    if (!button) return;
+    button.disabled = true;
+    button.textContent = "Preparando…";
+    prepared = prepare().then(
+      (pyodide) => {
+        button.disabled = false;
+        button.textContent = "▶ Jugar";
+        status("Todo listo. Tocá Jugar.");
+        return pyodide;
+      },
+      (err) => {
+        fail(err);
+        throw err;
+      }
+    );
+    button.addEventListener(
       "click",
       (event) => {
         event.currentTarget.setAttribute("hidden", "hidden");
-        void boot();
+        status("Iniciando…");
+        void start().catch(fail);
       },
       { once: true }
     );

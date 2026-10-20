@@ -65,6 +65,30 @@ frame lento se escucha como **estática**. `player.js` lo mitiga de tres formas:
 3. Deja **respirar el bucle a mitad de frame** (`js_breathe`): si `pygame.draw.*`
    lleva más de 16 ms dibujando, cede el control para que el audio se rellene.
 
+## Optimización de assets
+
+Los `.exe` traen arte enorme que en pantalla se ve a 200 px. El build lo achica
+sin cambiar nombres ni formatos (las rutas están dentro del bytecode):
+
+| Regla | Detalle |
+| ----- | ------- |
+| Imágenes | se reescalan si superan el máximo; cada juego puede fijar máximos por carpeta (`image_rules`), por ejemplo las cartas a 256 px y las pantallas completas a 1280 |
+| GIF | se quedan con el **primer cuadro**: se animaban con PIL, que no existe en el runtime, así que el juego ya los mostraba quietos |
+| Música | los `.ogg`/`.mp3` de más de 900 KB se recodifican a ~96 kbps |
+| Video | los `.mp4` no se incluyen (no hay decodificador) |
+| `ambient.wav` de Solar Defender | pasa a `.ogg` (16 MB → 1,5 MB; el source apunta a `ambient.ogg`) |
+
+Resultado: de **166 MB a 43 MB** de `game.zip` en total (Preguntados 80 → 8,3,
+Cartas 46 → 15,7, ArcSpace 29 → 13,2, Solar Defender 15 → 3,7).
+
+## Arranque en el celular
+
+`player.js` prepara el runtime apenas se abre la página (no al hacer click), así
+que el juego aparece en 1–2 s después de tocar Jugar en vez de 4–6. El audio sí
+espera al click, porque iOS exige un gesto. En pantallas táctiles además se
+limita el juego a **30 fps** (`js_fps_cap`), que gasta menos batería y deja aire
+para el audio.
+
 ## Versión de Pyodide según el bytecode
 
 El bytecode solo carga en la misma versión de CPython, así que cada juego usa

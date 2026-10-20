@@ -139,7 +139,8 @@ class SoundManager:
         self.enabled = True
         self.load_sounds()
     def load_sounds(self):
-        sound_files = {'shoot': 'sounds/shoot.wav', 'explosion': 'sounds/explosion.wav', 'powerup': 'sounds/powerup.wav', 'menu_select': 'sounds/menu_select.wav', 'hit': 'sounds/hit.wav', 'victory': 'sounds/victory.wav', 'gameover': 'sounds/gameover.wav', 'ambient': 'sounds/ambient.wav'}
+        # 'ambient' se ship en OGG para no arrastrar 16 MB de WAV.
+        sound_files = {'shoot': 'sounds/shoot.wav', 'explosion': 'sounds/explosion.wav', 'powerup': 'sounds/powerup.wav', 'menu_select': 'sounds/menu_select.wav', 'hit': 'sounds/hit.wav', 'victory': 'sounds/victory.wav', 'gameover': 'sounds/gameover.wav', 'ambient': 'sounds/ambient.ogg'}
         for name, path in sound_files.items():
             try:
                 if os.path.exists(path):
