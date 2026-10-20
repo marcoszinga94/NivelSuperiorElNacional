@@ -13,12 +13,13 @@ export const site = {
 
 /**
  * Dónde se anota la gente. `instagram` es el destino del botón de inscripción;
- * `phone` se muestra como "Más información" y queda oculto mientras sea null
- * (el número va en formato internacional, sin espacios: "+5493584...").
+ * `phone` es el número para "Más información" (formato internacional para
+ * `tel:`) y `phoneLabel` es cómo se muestra en pantalla.
  */
 export const enrollment = {
   instagram: "https://www.instagram.com/nivelsuperiorelnacional?mdxt=OGRzNmJjOGxsbXgy",
-  phone: null as string | null,
+  phone: "+543584423142" as string | null,
+  phoneLabel: "358 442-3142",
 };
 
 export const heroStats = [  { target: 8, suffix: "", label: "Juegos" },
