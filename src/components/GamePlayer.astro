@@ -17,9 +17,22 @@ const frameSrc = `/jugar/${slug}/juego/index.html`;
 ---
 
 <div class="game-player reveal" data-player>
+  <div class="mb-2 flex items-center justify-between gap-3 rounded-lg border border-a1/25 bg-a1/10 px-3 py-2 lg:hidden">
+    <span class="text-[11px] leading-snug text-t2">📱 Mejor a pantalla completa</span>
+    <button
+      type="button"
+      data-player-fullscreen
+      aria-pressed="false"
+      class="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-a1/35 bg-a1/15 px-2.5 py-1.5 text-[11px] font-semibold text-a1 transition hover:bg-a1/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+    >
+      <span aria-hidden="true">⛶</span> Pantalla completa
+    </button>
+  </div>
+
   <div
-    class="relative aspect-video w-full overflow-hidden rounded-xl bg-bg4"
+    class="game-stage relative aspect-video w-full overflow-hidden rounded-xl bg-bg4"
     style={gradient ? `background:${gradient}` : undefined}
+    data-player-stage
   >
     <iframe
       src={frameSrc}
@@ -29,15 +42,27 @@ const frameSrc = `/jugar/${slug}/juego/index.html`;
       allow="autoplay; fullscreen; gamepad"
       data-player-frame
     ></iframe>
+
+    <button
+      type="button"
+      data-player-fullscreen
+      class="absolute right-2.5 top-2.5 z-[2] inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 bg-black/55 text-lg text-white/90 backdrop-blur transition hover:bg-black/75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+      aria-label="Pantalla completa"
+      title="Pantalla completa"
+    >
+      <span aria-hidden="true">⛶</span>
+    </button>
   </div>
 
   <div class="mt-3 flex flex-wrap items-center gap-2">
     <button
       type="button"
       data-player-fullscreen
+      aria-pressed="false"
       class="inline-flex items-center gap-2 rounded-lg border border-line1 bg-bg3 px-3.5 py-2 text-sm font-semibold text-t1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:bg-bg4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
     >
-      <span aria-hidden="true">⛶</span> Pantalla completa
+      <span aria-hidden="true">⛶</span>
+      <span data-player-fullscreen-label>Pantalla completa</span>
     </button>
     <button
       type="button"
@@ -46,21 +71,89 @@ const frameSrc = `/jugar/${slug}/juego/index.html`;
     >
       <span aria-hidden="true">⟲</span> Reiniciar
     </button>
-    <p class="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-t3">
+    <a
+      href={frameSrc}
+      target="_blank"
+      rel="noopener"
+      class="inline-flex items-center gap-2 rounded-lg border border-line1 bg-bg3 px-3.5 py-2 text-sm font-semibold text-t1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:bg-bg4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+    >
+      <span aria-hidden="true">↗</span> Abrir aparte
+    </a>
+    <p class="ml-auto hidden font-mono text-[10px] uppercase tracking-[0.14em] text-t3 lg:block">
       Esc para salir de pantalla completa
     </p>
   </div>
+
+  <p class="mt-2 text-[11px] leading-relaxed text-t3 lg:hidden">
+    📱 En el celular: girá el teléfono, tocá <span class="font-medium text-t2">Pantalla completa</span>,
+    abrí el gamepad con <span class="font-medium text-t2">🎮</span> y usá <span class="font-medium text-t2">⌨</span>
+    si el juego te pide tu nombre.
+  </p>
 </div>
 
 <script>
   document.querySelectorAll<HTMLElement>("[data-player]").forEach((player) => {
     const frame = player.querySelector<HTMLIFrameElement>("[data-player-frame]");
-    const stage = player.querySelector<HTMLElement>(".aspect-video");
-    player.querySelector("[data-player-fullscreen]")?.addEventListener("click", () => {
-      const target = stage ?? player;
-      if (document.fullscreenElement) void document.exitFullscreen();
-      else void target.requestFullscreen?.();
+    const stage = player.querySelector<HTMLElement>("[data-player-stage]");
+    const fullscreenButtons = player.querySelectorAll<HTMLButtonElement>("[data-player-fullscreen]");
+    const fullscreenLabels = player.querySelectorAll<HTMLElement>("[data-player-fullscreen-label]");
+
+    const isFullscreen = () => Boolean(stage && document.fullscreenElement === stage);
+
+    const syncFullscreen = () => {
+      const on = isFullscreen();
+      fullscreenButtons.forEach((button) => button.setAttribute("aria-pressed", String(on)));
+      fullscreenLabels.forEach((label) => {
+        label.textContent = on ? "Salir de pantalla completa" : "Pantalla completa";
+      });
+      if (!on) {
+        try {
+          void screen.orientation?.unlock?.();
+        } catch {
+          /* El navegador no permite bloquear la orientación. */
+        }
+      }
+    };
+
+    fullscreenButtons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        if (!stage) return;
+
+        if (isFullscreen()) {
+          try {
+            await document.exitFullscreen();
+          } catch {
+            /* Nada que hacer. */
+          }
+          return;
+        }
+
+        // iOS Safari no permite fullscreen sobre un div: abrimos el build solo.
+        if (!stage.requestFullscreen) {
+          window.open(frame?.src ?? "", "_blank", "noopener");
+          return;
+        }
+
+        try {
+          await stage.requestFullscreen({ navigationUI: "hide" });
+          // Solo en pantallas táctiles: en un monitor de escritorio no queremos
+          // rotar la pantalla del usuario.
+          if (window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0) {
+            try {
+              await screen.orientation?.lock?.("landscape");
+            } catch {
+              /* En retrato el juego sigue andando, solo avisamos con el texto. */
+            }
+          }
+        } catch {
+          /* El navegador puede rechazar fullscreen; queda el botón "Abrir aparte". */
+        }
+      });
     });
+
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    syncFullscreen();
+
     player.querySelector("[data-player-reload]")?.addEventListener("click", () => {
       if (!frame) return;
       // Re-assigning src restarts the emulator without touching the host page.

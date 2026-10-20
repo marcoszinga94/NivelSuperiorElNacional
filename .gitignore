@@ -10,6 +10,8 @@ node_modules/
 # 100 MB y cartas espaciales.exe pesa 145 MB). Se reparten aparte.
 # Los game.zip de public/jugar/ si van: son los que corren los juegos online.
 public/Ejecutadores/
+# Carpeta local con los .exe originales (mismo contenido, otro nombre).
+public/Ejecutables/
 
 # python
 __pycache__/

@@ -22,47 +22,52 @@ const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : nul
   title={`Jugar a ${game.title} · Muestra Institucional 2026`}
   description={`${game.description} Juego hecho en Python y Pygame por ${game.author}. Se juega online, sin instalar nada.`}
 >
-  <Section id="jugar">
-    <nav class="reveal mb-8 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-t3">
-      <a href="/juegos" class="transition hover:text-a1">Los juegos</a>
-      <span aria-hidden="true">/</span>
-      <span class="text-t2">{game.title}</span>
-    </nav>
+  <Section id="jugar" class="game-section">
+    <div class="flex flex-col">
+      <nav class="reveal order-1 mb-8 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-t3">
+        <a href="/juegos" class="transition hover:text-a1">Los juegos</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-t2">{game.title}</span>
+      </nav>
 
-    <header class="reveal mb-8 flex flex-col gap-4">
-      <div class="flex flex-wrap items-center gap-1.5">
-        <span class="inline-flex items-center rounded border border-a1/20 bg-a1/10 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-a1">
-          {game.category}
-        </span>
-        <span class="inline-flex items-center rounded border border-green/20 bg-green/8 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-green">
-          1° Grado
-        </span>
-        {
-          game.weeks && (
-            <span class="inline-flex items-center rounded border border-line1 bg-bg4 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-t3">
-              {game.weeks}
-            </span>
-          )
-        }
+      <header class="reveal order-3 mb-8 flex flex-col gap-4 lg:order-2">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="inline-flex items-center rounded border border-a1/20 bg-a1/10 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-a1">
+            {game.category}
+          </span>
+          <span class="inline-flex items-center rounded border border-green/20 bg-green/8 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-green">
+            1° Grado
+          </span>
+          {
+            game.weeks && (
+              <span class="inline-flex items-center rounded border border-line1 bg-bg4 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-t3">
+                {game.weeks}
+              </span>
+            )
+          }
+        </div>
+
+        <h1 class="max-w-[680px] text-4xl font-bold leading-[1.1] tracking-[-0.03em] text-gradient">
+          {game.title}
+        </h1>
+
+        <p class="max-w-[680px] text-base font-light leading-relaxed text-t2">
+          Por <span class="font-medium text-t1">{game.author}</span>. Corre en el navegador con el
+          motor de Python compilado a WebAssembly: no hay que bajar ni instalar nada.
+        </p>
+      </header>
+
+      <div class="order-2 mb-8 lg:order-3 lg:mb-0">
+        <GamePlayer slug={game.web as string} title={game.title} gradient={game.gradient} />
+
+        <p class="reveal mt-4 max-w-[680px] text-sm leading-relaxed text-t3">
+          La primera carga descarga el motor del juego (unos 10 MB) y después el navegador lo guarda
+          en caché, así que los demás juegos abren mucho más rápido. Si algo queda raro, probá con
+          Reiniciar. Los juegos se manejan con teclado y mouse: en el celular, girá el teléfono,
+          entrá en pantalla completa, abrí el gamepad con 🎮 y usá ⌨ si te pide tu nombre.
+        </p>
       </div>
-
-      <h1 class="max-w-[680px] text-4xl font-bold leading-[1.1] tracking-[-0.03em] text-gradient">
-        {game.title}
-      </h1>
-
-      <p class="max-w-[680px] text-base font-light leading-relaxed text-t2">
-        Por <span class="font-medium text-t1">{game.author}</span>. Corre en el navegador con el
-        motor de Python compilado a WebAssembly: no hay que bajar ni instalar nada.
-      </p>
-    </header>
-
-    <GamePlayer slug={game.web as string} title={game.title} gradient={game.gradient} />
-
-    <p class="reveal mt-4 max-w-[680px] text-sm leading-relaxed text-t3">
-      La primera carga descarga el motor del juego (unos 10 MB) y después el navegador lo guarda
-      en caché, así que los demás juegos abren mucho más rápido. Si algo queda raro, probá con
-      Reiniciar. Los juegos se manejan con teclado: en el celular conviene abrir el teclado en pantalla.
-    </p>
+    </div>
   </Section>
 
   <Section bg="bg2">
