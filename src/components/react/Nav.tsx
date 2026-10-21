@@ -142,7 +142,7 @@ export default function Nav({ active = "/" }: Props) {
             href="/#inscripcion"
             className="hidden rounded-full bg-a1 px-4.5 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition  hover:opacity-85 min-[880px]:inline-block"
           >
-            Inscribite →
+            Contactate →
           </a>
           <button
             type="button"
