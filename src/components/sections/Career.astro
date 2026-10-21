@@ -1,54 +1,6 @@
 ---
 import Section from "../Section.astro";
 import SectionHeader from "../SectionHeader.astro";
-
-const years = [
-  {
-    num: "Primer año",
-    title: "Fundamentos",
-    subjects: [
-      { text: "Introducción a la Programación", strong: true },
-      { text: "Matemática para la Computación" },
-      { text: "Redes e Infraestructura" },
-      { text: "Inglés Técnico" },
-      { text: "Sistemas Operativos" },
-      { text: "Diseño Digital" },
-    ],
-  },
-  {
-    num: "Segundo año",
-    title: "Desarrollo profesional",
-    subjects: [
-      { text: "Programación II", strong: true, note: "← Este proyecto" },
-      { text: "Desarrollo Web Frontend" },
-      { text: "Bases de Datos Relacionales" },
-      { text: "Diseño de Interfaces (UX/UI)" },
-      { text: "Práctica Profesionalizante I", strong: true, note: "← Este proyecto" },
-      { text: "Metodologías Ágiles" },
-    ],
-  },
-  {
-    num: "Tercer año",
-    title: "Especialización",
-    subjects: [
-      { text: "Inteligencia Artificial aplicada" },
-      { text: "Desarrollo Backend y APIs" },
-      { text: "Seguridad Informática" },
-      { text: "Práctica Profesionalizante II" },
-      { text: "Gestión de Proyectos" },
-      { text: "Proyecto Final Integrador", strong: true },
-    ],
-  },
-];
-
-const areas = [
-  { icon: "💻", title: "Programación", color: "#4f7fff", text: "Lógica, algoritmos y estructuras de datos. El corazón de la carrera.", tags: ["Python", "Lógica"] },
-  { icon: "🌐", title: "Desarrollo Web", color: "#00c8ff", text: "Sitios y aplicaciones con HTML, CSS, JavaScript y React.", tags: ["HTML", "React"] },
-  { icon: "🗄️", title: "Bases de Datos", color: "#7c4dff", text: "Modelar y consultar datos con SQL y NoSQL.", tags: ["SQL", "PostgreSQL"] },
-  { icon: "🧠", title: "Inteligencia Artificial", color: "#ff9f43", text: "Nociones de IA y machine learning aplicadas a proyectos.", tags: ["Python", "ML"] },
-  { icon: "⚙️", title: "Automatización", color: "#4fbb7c", text: "Testing, integración continua y despliegue.", tags: ["CI/CD", "Testing"] },
-  { icon: "🎮", title: "Videojuegos", color: "#ff6b6b", text: "Mecánicas, motores 2D y experiencias interactivas.", tags: ["Pygame", "Unity"] },
-];
 ---
 
 <Section id="carrera" bg="bg">
@@ -59,7 +11,7 @@ const areas = [
     La carrera de <span class="text-gradient-2">Desarrollo de Software</span>
   </SectionHeader>
 
-  <div class="reveal mb-10 grid gap-8 rounded-[20px] border border-ba bg-bg3 p-8 md:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
+  <div class="reveal grid gap-8 rounded-[20px] border border-ba bg-bg3 p-8 md:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
     <div>
       <div class="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">
         Título oficial · Escuela Superior El Nacional
@@ -93,49 +45,5 @@ const areas = [
         <div class="mt-1 text-[10px] uppercase tracking-[0.08em] text-t3">Presencial</div>
       </div>
     </div>
-  </div>
-
-  <div class="reveal mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-a1/75">Plan de estudios</div>
-  <div class="grid gap-4 lg:grid-cols-3">
-    {
-      years.map((y, i) => (
-        <div class:list={["reveal", `reveal-d${i + 1}`, "rounded-xl border border-line1 bg-bg3 p-6"]}>
-          <div class="mb-4 border-b border-line1 pb-3">
-            <div class="font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">{y.num}</div>
-            <div class="text-[15px] font-semibold text-t1">{y.title}</div>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            {y.subjects.map((s) => (
-              <div class="flex flex-wrap items-baseline gap-2 text-[13px] text-t2">
-                {s.strong ? <strong class="font-medium text-t1">{s.text}</strong> : <span>{s.text}</span>}
-                {s.note && <span class="text-[10px] text-a1">{s.note}</span>}
-              </div>
-            ))}
-          </div>
-        </div>
-      ))
-    }
-  </div>
-
-  <div class="reveal mb-5 mt-10 font-mono text-[10px] uppercase tracking-[0.2em] text-a1/75">Áreas de formación</div>
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {
-      areas.map((a, i) => (
-        <div
-          class:list={["reveal", `reveal-d${(i % 6) + 1}`, "group relative overflow-hidden rounded-xl border border-line1 bg-bg3 p-6 transition hover:-translate-y-0.5 hover:border-a1/30 hover:shadow-[0_8px_32px_rgba(0,0,0,.4)]"]}
-        >
-          <div class="mb-3.5 flex h-12 w-12 items-center justify-center rounded-[10px] border border-line1 bg-bg4 text-[22px]">
-            {a.icon}
-          </div>
-          <div class="mb-2 text-[15px] font-semibold text-t1">{a.title}</div>
-          <p class="mb-3.5 text-[13px] font-light leading-relaxed text-t2">{a.text}</p>
-          <div class="flex flex-wrap gap-1.5">
-            {a.tags.map((t) => (
-              <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[9px] text-t3">{t}</span>
-            ))}
-          </div>
-        </div>
-      ))
-    }
   </div>
 </Section>
