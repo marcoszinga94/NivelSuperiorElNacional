@@ -8,16 +8,17 @@ Astro 7 + Tailwind v4 + React 19 port of `/astronomos.html` (see the repo-root `
   `astro dev --background`, then `astro dev logs` / `astro dev status` / `astro dev stop`.
 - `npm run build` — static output to `dist/`. This is the only verification step (no tests/linters).
 
-## Layout — multi-page (one route per section)
+## Layout — dos páginas largas + páginas cortas
 
-The site used to be one long scroll page; it is now split into routes so each section is short. `src/pages/*.astro` are thin: each imports `Base`, one section component, and `PageNav`.
+La home es la página de la escuela (institución + carrera + inscripción) y "Astrónomos por un día" junta todo su proyecto en una sola página. El resto de las secciones sigue en rutas cortas. `src/pages/*.astro` son finas: cada una importa `Base`, una o más secciones, y `PageNav`.
 
-- `src/pages/index.astro` — home: `Hero` + `ExploreGrid` (cards linking to every route) + a closing CTA band.
+- `src/pages/index.astro` — home **de la escuela**: `Hero` + `Institution` + `Career` + `Enroll` + `ExploreGrid` (mapa del sitio) + banda CTA. Las anclas son `#institucion`, `#carrera`, `#inscripcion`; las viejas rutas `/institucion`, `/carrera` e `/inscripcion` redirigen a su ancla (ver `astro.config.mjs`).
+- `src/pages/proyecto.astro` — "Astrónomos por un día" completo: `Project` + `Process` + `Chronology` + `Impact` + `Testimonials` + `Skills`, con anclas `#proceso`, `#cronologia`, `#impacto`, `#testimonios`, `#competencias`. Las viejas rutas de esas secciones redirigen acá.
 - `src/pages/jugar/[slug].astro` — one page per playable game (`/jugar/arcspace`), generated from the games that have `web` set in `games.ts`. Embeds the game with `GamePlayer.astro`, which iframes `public/jugar/<slug>/juego/`.
 - `public/jugar/player.js` — runs the recovered games in the browser (Pyodide + pygame-ce). See `tools/README.md` for how the games are recovered and rebuilt.
 - `src/pages/<slug>.astro` — one page per section (e.g. `juegos.astro` renders `sections/Games.astro`). Add a new section by creating the section component, the page, and an entry in `routes.ts`.
-- `src/data/routes.ts` — **source of truth** for the route order, the `groups` (the four nav sections: Escuela, Proyecto, Juegos, Aplicaciones — also used by the home grid and footer), the dropdown `blurb`s, the `projects` list (the two entries of the "Proyecto" dropdown) and prev/next (`neighbours()`). Update `groups` + `routes` when adding/renaming a page — `routeGroups` is derived from them.
-- `src/components/react/Nav.tsx` — navigation: school logo (`/logo_el_nacional.png`, on a white chip because the artwork is dark) + Escuela / Proyecto / Juegos dropdowns + Aplicaciones as a direct link + the "Inscribite" CTA; mobile hamburger shows the same sections expanded. It highlights the active route via the `active` prop (`Astro.url.pathname`). No icons in the header.
+- `src/data/routes.ts` — **source of truth** for the route order, the nav `groups` (Proyecto, Juegos, Aplicaciones — la home es Escuela y no va en `routes`), the dropdown `blurb`s, the `projects` list (the two entries of the "Proyecto" dropdown) and prev/next (`neighbours()`). Update `groups` + `routes` when adding/renaming a page — `routeGroups` is derived from them.
+- `src/components/react/Nav.tsx` — navigation: school logo (`/logo_el_nacional.png`, on a white chip because the artwork is dark) + Escuela (link a `/`) / Proyecto / Juegos dropdowns + Aplicaciones as a direct link + the "Inscribite" CTA; mobile hamburger shows the same sections expanded. It highlights the active route via the `active` prop (`Astro.url.pathname`, con la barra final normalizada). No icons in the header.
 - `src/pages/aplicaciones.astro` + `src/pages/administrativas.astro` — the second project: catalog of administrative apps (`src/data/apps.ts`, empty until the first one ships) and the project page.
 - `src/layouts/Base.astro` — head, Google Fonts, `<Particles>`/`<Nav>` islands, `<Footer>`, and the scroll-reveal `IntersectionObserver` script. Passes `Astro.url.pathname` to `Nav` for the active state.
 - `src/components/ExploreGrid.astro` / `PageNav.astro` — home grid and prev/next footer nav (both driven by `routes.ts`).
@@ -26,7 +27,7 @@ The site used to be one long scroll page; it is now split into routes so each se
 - `src/data/games.ts` — single source of truth for the 8 games **and** the "Estudiantes" cards (author, initials, accent gradient, quote). Edit copy there, not in the section files. `web` is the slug of the browser build under `public/jugar/<web>/` (`null` = not playable online yet); `exe` is the Windows file in `public/Ejecutadores/`; `logo` is the icon pulled out of that `.exe` (`public/juegos/icono/<slug>.png`, see `tools/README.md`), `null` = the executable has no usable icon and the card falls back to the emoji.
 - `src/data/site.ts` — event name/description, hero stats, impact metrics.
 
-All internal navigation uses real route paths (`/juegos`, `/equipo`, ...), not `#anchors`. Don't reintroduce in-page anchor links.
+Las rutas cortas usan rutas reales (`/juegos`, `/equipo`, ...). La escuela y "Astrónomos por un día" son páginas largas con anclas (`/#carrera`, `/proyecto#impacto`): al linkear dentro de ellas usá el ancla, y mantené la redirección en `astro.config.mjs` si movés una sección.
 
 ## Conventions
 

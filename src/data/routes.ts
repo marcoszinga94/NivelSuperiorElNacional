@@ -20,9 +20,14 @@ export interface ProjectInfo {
   blurb: string;
 }
 
+/**
+ * La home es la página de la escuela: institución, carrera e inscripción viven
+ * todas en `/` con anclas (`#institucion`, `#carrera`, `#inscripcion`).
+ */
+export const home = { href: "/", label: "Escuela" };
+
 /** Navigation sections — every page belongs to one of these. */
 export const groups: RouteGroup[] = [
-  { id: "escuela", label: "Escuela", icon: "🏫" },
   { id: "proyecto", label: "Proyecto", icon: "🔭" },
   { id: "juegos", label: "Juegos", icon: "🎮" },
   { id: "aplicaciones", label: "Aplicaciones", icon: "📱" },
@@ -44,16 +49,7 @@ export const projects: ProjectInfo[] = [
 
 /** Ordered list of the site's routes (one per former section). */
 export const routes: RouteInfo[] = [
-  { href: "/institucion", label: "La escuela", icon: "🏫", blurb: "Quiénes somos y qué enseñamos.", group: "escuela" },
-  { href: "/carrera", label: "La carrera", icon: "🎓", blurb: "Plan, materias y duración.", group: "escuela" },
-  { href: "/inscripcion", label: "Inscribite", icon: "✍️", blurb: "Cómo anotarte en la carrera.", group: "escuela" },
-
-  { href: "/proyecto", label: "Astrónomos por un día", icon: "🔭", blurb: "Un día como astrónomos, en 5 estaciones.", group: "proyecto" },
-  { href: "/proceso", label: "Cómo lo hicimos", icon: "🛠️", blurb: "Del boceto al juego, en 4 pasos.", group: "proyecto" },
-  { href: "/cronologia", label: "Cronología", icon: "🗓️", blurb: "La línea de tiempo del cuatrimestre.", group: "proyecto" },
-  { href: "/impacto", label: "Impacto", icon: "📊", blurb: "Los números del proyecto.", group: "proyecto" },
-  { href: "/testimonios", label: "Testimonios", icon: "💬", blurb: "Lo que dijeron los protagonistas.", group: "proyecto" },
-  { href: "/competencias", label: "Competencias", icon: "💪", blurb: "Lo que nos llevamos para el trabajo.", group: "proyecto" },
+  { href: "/proyecto", label: "Astrónomos por un día", icon: "🔭", blurb: "La muestra, el proceso, el impacto y los testimonios.", group: "proyecto" },
   { href: "/administrativas", label: "Aplicaciones administrativas", icon: "🗂️", blurb: "El proyecto de sistemas de gestión.", group: "proyecto" },
 
   { href: "/juegos", label: "Los juegos", icon: "🎮", blurb: "Los ocho videojuegos que hicimos.", group: "juegos" },

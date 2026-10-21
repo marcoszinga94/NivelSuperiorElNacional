@@ -1,11 +1,20 @@
 ---
 import Base from "../layouts/Base.astro";
 import Hero from "../components/sections/Hero.astro";
+import Institution from "../components/sections/Institution.astro";
+import Career from "../components/sections/Career.astro";
+import Enroll from "../components/sections/Enroll.astro";
 import ExploreGrid from "../components/ExploreGrid.astro";
+import Divider from "../components/Divider.astro";
 ---
 
 <Base>
   <Hero />
+  <Institution />
+  <Divider />
+  <Career />
+  <Divider />
+  <Enroll />
   <ExploreGrid />
 
   <section class="relative overflow-hidden bg-bg2 py-20">
@@ -23,7 +32,7 @@ import ExploreGrid from "../components/ExploreGrid.astro";
       </p>
       <div class="reveal reveal-d2 flex flex-wrap justify-center gap-3">
         <a
-          href="/inscripcion"
+          href="/#inscripcion"
           class="inline-flex items-center gap-2 rounded-[10px] bg-a1 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(79,127,255,.35)] transition hover:-translate-y-0.5"
           >Quiero saber de la carrera →</a
         >

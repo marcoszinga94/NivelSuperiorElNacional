@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { projects, routeGroups, routes } from "../../data/routes";
+import { home, projects, routeGroups, routes } from "../../data/routes";
 
 interface Props {
   active?: string;
@@ -35,7 +35,7 @@ export default function Nav({ active = "/" }: Props) {
     }));
 
   const entries: NavEntry[] = [
-    { id: "escuela", label: "Escuela", links: groupLinks("escuela") },
+    { id: "escuela", label: home.label, href: home.href },
     {
       id: "proyecto",
       label: "Proyecto",
@@ -139,7 +139,7 @@ export default function Nav({ active = "/" }: Props) {
 
         <div className="flex shrink-0 items-center gap-2">
           <a
-            href="/inscripcion"
+            href="/#inscripcion"
             className="hidden rounded-full bg-a1 px-4.5 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition hover:-translate-y-px hover:opacity-85 min-[880px]:inline-block"
           >
             Inscribite →
