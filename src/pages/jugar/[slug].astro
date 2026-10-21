@@ -111,11 +111,20 @@ const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : nul
 
       <aside class="reveal flex flex-col gap-4">
         <div class="flex items-center gap-3 rounded-2xl border border-line1 bg-bg3 p-5">
-          <span
-            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-mono text-[13px] font-semibold text-white"
-            style={`background:${game.accent}`}
-            aria-hidden="true">{game.initials}</span
-          >
+          <span class="flex shrink-0 -space-x-2">
+            <span
+              class="flex h-11 w-11 items-center justify-center rounded-xl font-mono text-[13px] font-semibold text-white"
+              style={`background:${game.accent}`}
+              aria-hidden="true">{game.initials}</span
+            >
+            {game.coInitials && (
+              <span
+                class="flex h-11 w-11 items-center justify-center rounded-xl font-mono text-[13px] font-semibold text-white ring-2 ring-bg3"
+                style={`background:${game.coAccent ?? game.accent}`}
+                aria-hidden="true">{game.coInitials}</span
+              >
+            )}
+          </span>
           <span class="flex flex-col">
             <span class="text-sm font-semibold text-t1">{game.author}</span>
             <span class="font-mono text-[10px] uppercase tracking-[0.12em] text-t3">{game.role}</span>

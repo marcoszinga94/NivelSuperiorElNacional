@@ -36,9 +36,13 @@ export interface Game {
   /** Student / author */
   author: string;
   initials: string;
+  /** Segundo autor, si el juego lo hicieron entre dos. */
+  coInitials?: string;
   role: string;
   /** Avatar + card accent gradient */
   accent: string;
+  /** Color del avatar del segundo autor */
+  coAccent?: string;
   /** The student explaining their game, first person. Missing when we have no words from them. */
   studentDescription?: string;
   quote?: string;
@@ -176,12 +180,14 @@ export const games: Game[] = [
     description:
       "El clásico juego de memoria, pero en el espacio. Encontrá todos los pares de planetas y astros antes de quedarte sin intentos. Y ojo, porque aparecen peligros sorpresa.",
     tech: ["Python", "Pygame"],
-    author: "Ezequiel Strombe",
+    author: "Ezequiel Stromberg y Celia Cassagne",
     initials: "ES",
+    coInitials: "CC",
     role: "Desarrollador · Memoria",
     accent: "linear-gradient(135deg,#ff9f43,#ff6b6b)",
+    coAccent: "linear-gradient(135deg,#00c8ff,#4fbb7c)",
     studentDescription:
-      "Hice el clásico juego de memoria en el espacio. Pensar cuántas cartas poner costó más de lo que parecía.",
+      "Hicimos el clásico juego de memoria en el espacio. Pensar cuántas cartas poner costó más de lo que parecía.",
     quote:
       "El juego de memoria parece simple pero requirió pensar mucho la dificultad: demasiadas cartas abruman a un chico de seis años, muy pocas lo aburren.",
     studentTech: ["Python", "Pygame", "Lógica de pares", "Eventos aleatorios"],

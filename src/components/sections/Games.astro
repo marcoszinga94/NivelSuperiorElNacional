@@ -84,14 +84,24 @@ const stats = [
             <div class="text-balance text-lg font-bold leading-tight tracking-[-0.02em] text-t1">{g.title}</div>
 
             <div class="flex items-center gap-3">
-              <div
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold text-white"
-                style={`background:${g.accent}`}
-              >
-                {g.initials}
+              <div class="flex shrink-0 -space-x-2">
+                <div
+                  class="flex h-10 w-10 items-center justify-center rounded-full font-mono text-[11px] font-semibold text-white"
+                  style={`background:${g.accent}`}
+                >
+                  {g.initials}
+                </div>
+                {g.coInitials && (
+                  <div
+                    class="flex h-10 w-10 items-center justify-center rounded-full font-mono text-[11px] font-semibold text-white ring-2 ring-bg2"
+                    style={`background:${g.coAccent ?? g.accent}`}
+                  >
+                    {g.coInitials}
+                  </div>
+                )}
               </div>
               <div class="min-w-0">
-                <div class="truncate text-[13px] font-semibold text-t1">{g.author}</div>
+                <div class="text-[13px] font-semibold leading-snug text-t1">{g.author}</div>
                 <div class="truncate text-[11px] text-t3">{g.role}</div>
               </div>
             </div>
