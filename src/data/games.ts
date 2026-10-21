@@ -15,6 +15,18 @@ export interface Game {
   /** Windows executable in `public/Ejecutadores/`. `null` = nobody handed it in. */
   exe: string | null;
   /**
+   * Build de una sola página (HTML + JS + canvas) dentro de `public/jugar/<web>/`.
+   * Cuando está, la página del juego embebe ese archivo en lugar del build de
+   * pygbag en `juego/index.html`.
+   */
+  html?: string;
+  /**
+   * Video con el juego andando, en `public/jugar/<web>/`. Cuando está, la
+   * página del juego muestra el video en lugar del juego embebido y la tarjeta
+   * dice "Ver juego" en vez de "Jugar online".
+   */
+  video?: string;
+  /**
    * Logo de la tarjeta. Por defecto sale de ese mismo `.exe`
    * (`public/juegos/icono/<slug>.png`), tal como lo muestra Windows; si el arte
    * original que entregó el estudiante está mejor, apunta a ese archivo.
@@ -59,6 +71,7 @@ export const games: Game[] = [
     gradient: "linear-gradient(135deg,#0d1230 0%,#1a0840 50%,#060820 100%)",
     web: "boom-cosmico",
     exe: "Boom Cosmico.exe",
+    html: "/jugar/boom-cosmico/boom_cosmico.html",
     // El arte que entregó el estudiante está en mejor resolución que el ícono
     // que quedó dentro del .exe, así que la tarjeta usa ese archivo.
     logo: "/juegos/boom-cosmico.png",
@@ -116,6 +129,7 @@ export const games: Game[] = [
     gradient: "linear-gradient(135deg,#1a0a0a 0%,#300d20 50%,#0f0810 100%)",
     web: "solar-defender",
     exe: "Solar Defender.exe",
+    video: "/jugar/solar-defender/solar_defender.mp4",
     // Este .exe tiene el recurso de icono vacío (0 bytes), así que el logo sale
     // del arte que el juego trae adentro (`assets/splash.png`), recortado en
     // círculo y sin el fondo blanco.
@@ -146,6 +160,7 @@ export const games: Game[] = [
     gradient: "linear-gradient(135deg,#0a1020 0%,#101828 50%,#080c18 100%)",
     web: "cielo-cordobes",
     exe: "el cielo cordobez.exe",
+    html: "/jugar/cielo-cordobes/el_cielo_cordobes.html",
     logo: "/juegos/icono/cielo-cordobes.png",
     controls:
       "Escribí tu nombre y elegí con el mouse o las flechas entre JUGAR, RANKING y SALIR. Después conectás las estrellas en orden para armar cada constelación.",
@@ -254,6 +269,7 @@ export const games: Game[] = [
     gradient: "linear-gradient(135deg,#04121f 0%,#0a2038 50%,#040c18 100%)",
     web: "stellar-scrap",
     exe: "Stellar Scrap.exe",
+    video: "/jugar/stellar-scrap/stellar_scrap.mp4",
     logo: "/juegos/icono/stellar-scrap.png",
     controls:
       "Escribí tu nombre y elegí JUGAR. Manejás la nave con el mouse o las flechas, juntás chatarra espacial y esquivás asteroides. Con INSTRUCCIONES ves el detalle y RESET RANKING borra la tabla.",

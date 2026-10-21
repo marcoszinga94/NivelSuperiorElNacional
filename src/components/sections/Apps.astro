@@ -2,6 +2,12 @@
 import Section from "../Section.astro";
 import SectionHeader from "../SectionHeader.astro";
 import { apps } from "../../data/apps";
+
+// La primera captura hace de portada; el resto va a la galería.
+const items = apps.map((app) => {
+  const [cover, ...gallery] = app.screenshots ?? [];
+  return { ...app, cover, gallery };
+});
 ---
 
 <Section id="aplicaciones" bg="bg">
@@ -13,28 +19,120 @@ import { apps } from "../../data/apps";
   </SectionHeader>
 
   {
-    apps.length > 0 ? (
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {apps.map((app, i) => (
-          <a
-            href={app.href ?? "/aplicaciones"}
+    items.length > 0 ? (
+      <div class="flex flex-col gap-8">
+        {items.map((app, i) => (
+          <article
             class:list={[
-              "reveal",
-              `reveal-d${(i % 6) + 1}`,
-              "group flex items-start gap-4 rounded-xl border border-line1 bg-bg3 p-5 transition  hover:border-a1/40 hover:bg-bg4",
+              "reveal reveal-seq",
+              "overflow-hidden rounded-2xl border border-line1 bg-bg2",
             ]}
+            style={`--reveal-i:${i}`}
           >
-            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-line1 bg-bg4 text-xl">
-              {app.icon}
-            </span>
-            <span class="min-w-0">
-              <span class="block text-[14px] font-semibold text-t1">{app.name}</span>
-              <span class="block text-[12px] leading-snug text-t3">{app.description}</span>
-              <span class="mt-1.5 inline-block font-mono text-[9px] uppercase tracking-[0.14em] text-a1/80">
-                {app.status}
-              </span>
-            </span>
-          </a>
+              <div class="grid lg:grid-cols-[1.2fr_0.8fr]">
+                {app.cover ? (
+                  <a
+                    href={app.cover.src}
+                    target="_blank"
+                    rel="noopener"
+                    class="group relative flex aspect-[16/10] items-center justify-center overflow-hidden border-b border-line1 bg-bg3 lg:border-b-0 lg:border-r"
+                    aria-label={`Ampliar captura: ${app.cover.caption}`}
+                  >
+                    <img
+                      src={app.cover.src}
+                      alt={app.cover.alt}
+                      loading="eager"
+                      decoding="async"
+                      class="h-full w-full object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02]"
+                    />
+                    <span class="pointer-events-none absolute right-3 bottom-3 rounded-full border border-line1 bg-bg/85 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-t2 opacity-0 backdrop-blur transition group-hover:opacity-100">
+                      Ampliar ↗
+                    </span>
+                  </a>
+                ) : (
+                  <div class="flex aspect-[16/10] items-center justify-center border-b border-line1 bg-bg3 text-6xl lg:border-b-0 lg:border-r">
+                    {app.icon}
+                  </div>
+                )}
+
+                <div class="flex flex-col gap-4 p-6 sm:p-7">
+                  <div class="flex items-center gap-3">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-line1 bg-bg4 text-xl">
+                      {app.icon}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 rounded-full border border-a1/25 bg-a1/10 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-a1">
+                      <span class="h-1.5 w-1.5 rounded-full bg-a1"></span>
+                      {app.status}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 class="text-[clamp(22px,2.4vw,28px)] font-bold leading-tight tracking-[-0.025em] text-t1">
+                      {app.name}
+                    </h3>
+                    <p class="mt-2.5 text-[13.5px] font-light leading-[1.75] text-t2">{app.description}</p>
+                  </div>
+
+                  {app.authors && app.authors.length > 0 && (
+                    <div>
+                      <div class="font-mono text-[9px] uppercase tracking-[0.16em] text-t3">Desarrollada por</div>
+                      <div class="mt-1 text-[13px] font-medium text-t1">{app.authors.join(" · ")}</div>
+                    </div>
+                  )}
+
+                  {app.tech && app.tech.length > 0 && (
+                    <div class="flex flex-wrap gap-1.5">
+                      {app.tech.map((t) => (
+                        <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[9px] text-t3">{t}</span>
+                      ))}
+                    </div>
+                  )}
+
+                  {app.href && (
+                    <a
+                      href={app.href}
+                      target="_blank"
+                      rel="noopener"
+                      class="mt-auto inline-flex w-fit items-center gap-1.5 rounded-[10px] border border-a1/30 bg-a1/15 px-4 py-2 text-[12px] font-semibold text-a1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-a1/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+                    >
+                      Abrir la aplicación →
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {app.gallery.length > 0 && (
+                <div class="border-t border-line1 bg-bg p-4 sm:p-5">
+                  <div class:list={["grid gap-3.5", app.gallery.length > 1 ? "sm:grid-cols-2 lg:grid-cols-3" : ""]}>
+                    {app.gallery.map((shot) => (
+                      <a
+                        href={shot.src}
+                        target="_blank"
+                        rel="noopener"
+                        class="group block"
+                        aria-label={`Ampliar captura: ${shot.caption}`}
+                      >
+                        <div class="flex aspect-[16/10] items-center justify-center overflow-hidden rounded-lg border border-line1 bg-bg3 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:border-a1/35">
+                          <img
+                            src={shot.src}
+                            alt={shot.alt}
+                            loading="lazy"
+                            decoding="async"
+                            class="h-full w-full object-contain transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02]"
+                          />
+                        </div>
+                        <div class="mt-2 flex items-center justify-between gap-2">
+                          <span class="text-[11px] font-medium text-t2">{shot.caption}</span>
+                          <span class="font-mono text-[9px] uppercase tracking-[0.12em] text-t3 transition group-hover:text-a1">
+                            Ampliar ↗
+                          </span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+          </article>
         ))}
       </div>
     ) : (

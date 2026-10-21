@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>El Cielo Cordobés — Aventura Celeste</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #05051A;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  canvas {
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+    outline: none;        /* sin borde de foco */
+    -webkit-tap-highlight-color: transparent; /* sin flash azul en iOS/Android */
+  }
+  #ui-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  /* Touch buttons overlay (mobile only) */
+  #touch-controls {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    display: none;
+  }
+  .touch-btn {
+    pointer-events: all;
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid rgba(100,180,255,0.8);
+    background: rgba(10,20,80,0.85);
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.1;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .touch-btn:active { background: rgba(60,120,220,0.9); transform: scale(0.94); }
+  #touch-menu  { border-color: rgba(100,200,255,0.8); }
+  #touch-salir { border-color: rgba(255,100,100,0.8); }
+</style>
+</head>
+<body>
+<canvas id="game-canvas" tabindex="-1"></canvas>
+<div id="touch-controls">
+  <div class="touch-btn" id="touch-menu">MENU</div>
+  <div class="touch-btn" id="touch-salir">SALIR</div>
+  <div class="touch-btn" id="touch-next" style="display:none">CONT.</div>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════
+// DETECCIÓN AUTOMÁTICA DE DISPOSITIVO
+// ═══════════════════════════════════════════════════════
+const IS_MOBILE = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  || (navigator.maxTouchPoints > 1 && window.screen.width < 1024);
+
+// ═══════════════════════════════════════════════════════
+// CONSTANTES
+// ═══════════════════════════════════════════════════════
+const BASE_W = 1280, BASE_H = 720;
+const FPS = 60;
+const STATES = { MENU:0, PLAYING:1, COMPLETE_ANIM:2, LEVEL_DONE:3, FINAL:4, RANKING:5 };
+const C = {
+  BG: '#05051A', GOLD: '#FFD700', WHITE: '#FFFFFF', RED: '#FF5050',
+  BTN: '#3C6EF0', BTN_HOVER: '#5090FF', LUMINA: '#FFE664',
+  TEXT: '#DCE6FF', TITLE: '#FFFFFF', PANEL: '#0A0A2D', ACCENT: '#64C8FF',
+  STAR_OFF: '#464064', LINE: '#78B4FF', LINE_GLOW: '#B4DCFF',
+};
+const POINTS_PER_STAR = 10;
+const COMPLETE_ANIM_DURATION = 4500; // ms
+
+// ═══════════════════════════════════════════════════════
+// DATOS DE CONSTELACIONES
+// ═══════════════════════════════════════════════════════
+const DATOS_ASTRONOMICOS = [
+  {
+    nombre: "Cruz del Sur", color: [0,200,255],
+    estrellas: [
+      {n:"Centro",    rx:0.4940, ry:0.4495, mag:1.59},
+      {n:"Mimosa",    rx:0.7289, ry:0.4479, mag:1.25},
+      {n:"Acrux",     rx:0.4957, ry:0.7200, mag:0.77},
+      {n:"Gacrux",    rx:0.4940, ry:0.2500, mag:1.59},
+      {n:"Imai",      rx:0.2711, ry:0.4545, mag:2.80},
+    ],
+    lines: [[3,0],[0,2],[4,0],[0,1]],
+    ficha: {
+      historia: "La Cruz del Sur sirve para encontrar el sur, como una brujula en el cielo. Los pueblos de America del Sur la usaban para saber las estaciones del año.",
+      datos: "La Cruz del Sur se puede ver desde Cordoba durante todo el año. Es una de las constelaciones mas faciles de reconocer.",
+    }
+  },
+  {
+    nombre: "Orion", color: [0,180,255],
+    estrellas: [
+      {n:"Rigel",      rx:0.6412, ry:0.7200, mag:0.13},
+      {n:"Saiph",      rx:0.3662, ry:0.7142, mag:2.06},
+      {n:"Alnilam",    rx:0.4978, ry:0.4828, mag:1.69},
+      {n:"Mintaka",    rx:0.3940, ry:0.4541, mag:2.23},
+      {n:"Bellatrix",  rx:0.6923, ry:0.2658, mag:1.64},
+      {n:"Betelgeuse", rx:0.3077, ry:0.2500, mag:0.42},
+      {n:"Alnitak",    rx:0.5973, ry:0.4914, mag:1.74},
+    ],
+    lines: [[5,4],[5,3],[4,6],[3,2],[2,6],[3,1],[6,0],[1,0]],
+    ficha: {
+      historia: "Orion es un gran cazador de los cuentos griegos. Tiene un cinturon de tres estrellas muy brillantes que es muy facil de encontrar en el cielo.",
+      datos: "Orion se ve muy bien en verano desde Cordoba. Su cinturon de tres estrellas es como una firma que lo hace facil de reconocer.",
+    }
+  },
+  {
+    nombre: "Escorpio", color: [220,50,120],
+    estrellas: [
+      {n:"Antares",  rx:0.5592, ry:0.3217, mag:0.96},
+      {n:"Shaula",   rx:0.4486, ry:0.5753, mag:1.62},
+      {n:"Lesath",   rx:0.3278, ry:0.6444, mag:2.70},
+      {n:"Girtab",   rx:0.4691, ry:0.4895, mag:2.41},
+      {n:"Agui A",   rx:0.4704, ry:0.7200, mag:2.70},
+      {n:"Agui B",   rx:0.3650, ry:0.7123, mag:3.00},
+      {n:"Graffias", rx:0.6671, ry:0.2500, mag:2.56},
+      {n:"Sargas",   rx:0.4884, ry:0.3985, mag:1.86},
+      {n:"Acrab",    rx:0.6722, ry:0.3179, mag:2.90},
+    ],
+    lines: [[6,8],[8,0],[0,7],[7,3],[3,1],[1,2],[1,4],[4,5]],
+    ficha: {
+      historia: "Escorpio es un escorpion gigante del cielo. Una leyenda cuenta que Escorpio y Orion el cazador nunca se ven juntos en el cielo, porque son rivales.",
+      datos: "Desde Cordoba se ve muy bien en invierno, en junio, julio y agosto. Tiene una forma muy parecida a un escorpion real.",
+    }
+  },
+  {
+    nombre: "Centauro", color: [255,100,150],
+    estrellas: [
+      {n:"Epsilon",  rx:0.5480, ry:0.4935, mag:2.30},
+      {n:"Menkent",  rx:0.5160, ry:0.2500, mag:2.06},
+      {n:"Zeta Cen", rx:0.4535, ry:0.3587, mag:2.55},
+      {n:"Rigil K.", rx:0.4032, ry:0.7185, mag:0.01},
+      {n:"Hadar",    rx:0.7447, ry:0.7200, mag:0.61},
+      {n:"Theta C.", rx:0.7203, ry:0.3358, mag:2.06},
+      {n:"Gamma C.", rx:0.2553, ry:0.4276, mag:2.17},
+      {n:"Eta Cen",  rx:0.6654, ry:0.5577, mag:2.31},
+    ],
+    lines: [[1,2],[2,6],[1,5],[5,7],[7,4],[2,0],[0,3],[0,7]],
+    ficha: {
+      historia: "Centauro es un ser mitad hombre y mitad caballo. En los cuentos griegos era muy sabio y enseñaba a los heroes. Las dos estrellas brillantes apuntan a la Cruz del Sur.",
+      datos: "Es una de las constelaciones mas grandes del cielo. Se puede ver muy bien desde Cordoba en otoño e invierno.",
+    }
+  },
+  {
+    nombre: "Carina", color: [255,180,50],
+    estrellas: [
+      {n:"Canopus",  rx:0.3718, ry:0.2500, mag:-0.72},
+      {n:"Avior",    rx:0.6657, ry:0.6406, mag:1.86},
+      {n:"Upsilon",  rx:0.4573, ry:0.6025, mag:2.96},
+      {n:"Aspidiske",rx:0.5337, ry:0.7169, mag:2.21},
+      {n:"Iota Car", rx:0.3343, ry:0.4179, mag:2.21},
+      {n:"Theta Car",rx:0.4378, ry:0.4865, mag:2.74},
+      {n:"Chi Car",  rx:0.6267, ry:0.5537, mag:3.40},
+      {n:"Beta Car", rx:0.6057, ry:0.7200, mag:1.68},
+      {n:"q Car",    rx:0.5532, ry:0.6208, mag:3.40},
+    ],
+    lines: [[0,4],[4,5],[5,2],[2,8],[8,3],[3,7],[7,1],[8,6],[6,1]],
+    ficha: {
+      historia: "La Quilla es la parte de abajo de un barco. Antes formaba parte de una constelacion gigante llamada el Barco Argo, el barco magico del heroe Jason.",
+      datos: "Se puede ver desde Cordoba en verano. La estrella Canopus la usaban los marineros para navegar por el mar en las noches.",
+    }
+  },
+  {
+    nombre: "Sagitario", color: [0,200,180],
+    estrellas: [
+      {n:"Base Izq",  rx:0.3344, ry:0.6798, mag:3.20},
+      {n:"Alnasl",    rx:0.2565, ry:0.4355, mag:2.98},
+      {n:"Kaus Bor",  rx:0.3149, ry:0.2500, mag:2.82},
+      {n:"Kaus Aus",  rx:0.6101, ry:0.5639, mag:1.79},
+      {n:"Albaldah",  rx:0.4168, ry:0.3814, mag:2.88},
+      {n:"Ascella",   rx:0.7435, ry:0.4695, mag:2.60},
+      {n:"Phi Sgr",   rx:0.4243, ry:0.4665, mag:3.17},
+      {n:"Kaus Med",  rx:0.6236, ry:0.4495, mag:2.70},
+      {n:"Base Fondo",rx:0.4453, ry:0.7200, mag:3.20},
+      {n:"Nunki",     rx:0.5726, ry:0.3273, mag:2.05},
+      {n:"Kaus Der",  rx:0.6371, ry:0.6226, mag:3.00},
+    ],
+    lines: [[2,9],[9,7],[7,5],[2,4],[4,1],[4,6],[6,1],[6,3],[3,10],[10,7],[0,8],[8,3]],
+    ficha: {
+      historia: "Sagitario es un arquero mitad hombre mitad caballo. Sus estrellas forman una figura que parece una tetera. Apunta su flecha hacia el corazon de Escorpio.",
+      datos: "En las noches de verano desde Cordoba, se puede ver la Via Lactea muy brillante justo encima de Sagitario.",
+    }
+  },
+  {
+    // Las Tres Marías: 3 estrellas en diagonal ~12° de NW a SE, equidistantes.
+    // Mintaka (NW, ligeramente más tenue), Alnilam (centro, brillante),
+    // Alnitak (SE, igual de brillante que Alnilam). Separación uniforme.
+    nombre: "Las Tres Marias", color: [200,180,255],
+    estrellas: [
+      {n:"Mintaka",  rx:0.3138, ry:0.4756, mag:2.23},
+      {n:"Alnilam",  rx:0.5000, ry:0.5132, mag:1.69},
+      {n:"Alnitak",  rx:0.6813, ry:0.5508, mag:1.74},
+    ],
+    lines: [[0,1],[1,2]],
+    ficha: {
+      historia: "Las Tres Marias forman el cinturon de Orion. Son tres estrellas muy brillantes casi en linea recta que todo el mundo puede reconocer facilmente en el cielo.",
+      datos: "Muchas personas usan las Tres Marias para encontrar otras estrellas del cielo. Desde Cordoba se ven muy bien en verano.",
+    }
+  },
+  {
+    // Can Mayor: 7 estrellas formando un perro, coordenadas digitalizadas
+    // directamente de la ilustración de referencia (imagen "CONSTELACIONES").
+    // Sirio (0): pecho, la estrella más brillante, arriba-izquierda.
+    // Mirzan (1): nodo del triángulo central, a la derecha de Sirio.
+    // Wezen (2) y Aludra (3): cadena que sigue hacia la derecha (cabeza/cola).
+    // Adhara (4): nodo inferior del triángulo (debajo de Mirzan).
+    // Furud (5) y Omicron1 (6): pata inferior que baja desde Adhara.
+    // El triángulo central lo forman Sirio-Mirzan-Adhara.
+    nombre: "Can Mayor", color: [255,220,80],
+    estrellas: [
+      {n:"Sirio",    rx:0.3590, ry:0.2700, mag:-1.46},
+      {n:"Mirzan",   rx:0.4836, ry:0.3425, mag:1.98},
+      {n:"Wezen",    rx:0.5545, ry:0.3218, mag:1.83},
+      {n:"Aludra",   rx:0.6411, ry:0.4113, mag:2.45},
+      {n:"Adhara",   rx:0.4543, ry:0.4678, mag:1.50},
+      {n:"Furud",    rx:0.5100, ry:0.6385, mag:3.02},
+      {n:"Omicron1", rx:0.5922, ry:0.7000, mag:3.87},
+    ],
+    lines: [[0,1],[0,4],[1,4],[1,2],[2,3],[4,5],[5,6]],
+    ficha: {
+      historia: "Can Mayor representa un gran perro que acompania al cazador Orion. Se dice que Orion lo lleva con el para cazar en el cielo.",
+      datos: "Aqui se encuentra Sirio, la estrella mas brillante de todo el cielo nocturno. Se puede ver facilmente desde Cordoba en verano.",
+    }
+  },
+  {
+    // Tauro: 9 estrellas, coordenadas digitalizadas de la ilustración de
+    // referencia. Forma real: una V marcada (dos ramas cortas que convergen
+    // en Aldebaran, la estrella naranja más brillante) seguida de una
+    // diagonal larga que se extiende hasta Elnath.
+    // Rama 1 (arriba-izq): E1(0)-E2(1) hasta Aldebaran.
+    // Rama 2 (izq): Alcione(2)-E3(3) hasta Aldebaran.
+    // Aldebaran (4): vértice de la V, la estrella más brillante (naranja).
+    // Diagonal larga de salida: Ain(5)-E5(6)-E6(7)-Elnath(8).
+    nombre: "Tauro", color: [255,140,60],
+    estrellas: [
+      {n:"E1",        rx:0.2801, ry:0.2763, mag:2.50},
+      {n:"E2",        rx:0.3943, ry:0.3267, mag:2.80},
+      {n:"Alcione",   rx:0.3391, ry:0.4454, mag:2.87},
+      {n:"E3",        rx:0.4568, ry:0.5099, mag:3.20},
+      {n:"Aldebaran", rx:0.4970, ry:0.4785, mag:0.85},
+      {n:"Ain",       rx:0.5125, ry:0.5401, mag:3.53},
+      {n:"E5",        rx:0.5470, ry:0.5896, mag:2.80},
+      {n:"E6",        rx:0.6255, ry:0.6564, mag:3.00},
+      {n:"Elnath",    rx:0.6609, ry:0.6999, mag:1.65},
+    ],
+    lines: [[0,1],[1,4],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8]],
+    ficha: {
+      historia: "Tauro es el toro del cielo. Sus estrellas forman una larga cadena diagonal con un brazo corto que apunta a las Pleyades.",
+      datos: "En Tauro vive el famoso grupo de estrellas llamado las Pleyades, que muchas culturas del mundo usaron para marcar las estaciones del anio.",
+    }
+  },
+  {
+    // Eridanus: 8 estrellas, coordenadas digitalizadas de la ilustración de
+    // referencia. Río sinuoso: baja desde Cursa, forma un primer valle
+    // (Zaurak-E2), sube a un pico (Rana), desciende y termina en un zigzag
+    // final (Angetenar-Theemin-Acamar) antes de llegar a Achernar.
+    nombre: "Eridanus", color: [80,200,220],
+    estrellas: [
+      {n:"Cursa",     rx:0.2801, ry:0.2763, mag:2.79},
+      {n:"Zaurak",    rx:0.4205, ry:0.5014, mag:2.95},
+      {n:"E2",        rx:0.4775, ry:0.5097, mag:3.20},
+      {n:"Rana",      rx:0.6148, ry:0.3256, mag:3.54},
+      {n:"Angetenar", rx:0.6446, ry:0.4006, mag:3.56},
+      {n:"Theemin",   rx:0.6740, ry:0.5761, mag:3.55},
+      {n:"Acamar",    rx:0.7200, ry:0.5629, mag:2.88},
+      {n:"Achernar",  rx:0.7187, ry:0.6938, mag:0.46},
+    ],
+    lines: [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]],
+    ficha: {
+      historia: "Eridanus parece un rio largo y sinuoso que recorre el cielo desde arriba hasta muy abajo en el sur. Segun los cuentos griegos, es el rio donde cayo Faeton del carro del sol.",
+      datos: "Es una de las constelaciones mas largas de todo el cielo. Su estrella mas brillante, Achernar, se ve muy bien desde el sur de America.",
+    }
+  },
+  {
+    // Grus: 8 estrellas, coordenadas digitalizadas de la ilustración de
+    // referencia. Estructura de grulla volando:
+    // Zeta Gru (0): punta del ala izquierda.
+    // Al Dhanab (1): nodo central (une ala izquierda, cuerpo y cuello).
+    // Alnair (2): cuerpo/pecho, la estrella más brillante (naranja).
+    // Delta Gru (3): cuello, nodo central que reparte hacia el ala derecha y la cadera.
+    // Mu Gru (4): punta del ala derecha.
+    // Iota Gru (5): cadera, de donde bajan las dos patas.
+    // Pata (6) y Pi Gru (7): las dos patas, bifurcadas desde la cadera.
+    nombre: "Grus", color: [150,255,180],
+    estrellas: [
+      {n:"Zeta Gru",  rx:0.3630, ry:0.2700, mag:4.12},
+      {n:"Al Dhanab", rx:0.4492, ry:0.3714, mag:2.07},
+      {n:"Alnair",    rx:0.4637, ry:0.4318, mag:1.74},
+      {n:"Delta Gru", rx:0.5235, ry:0.4438, mag:3.01},
+      {n:"Mu Gru",    rx:0.6371, ry:0.3043, mag:3.97},
+      {n:"Iota Gru",  rx:0.5655, ry:0.5233, mag:3.90},
+      {n:"Pata",      rx:0.5947, ry:0.7000, mag:4.50},
+      {n:"Pi Gru",    rx:0.6168, ry:0.6389, mag:3.80},
+    ],
+    lines: [[0,1],[1,2],[1,3],[3,4],[3,5],[5,6],[5,7]],
+    ficha: {
+      historia: "Grus representa una elegante grulla volando por el cielo del sur. Esta ave es conocida por su vuelo largo y gracioso.",
+      datos: "Su nombre significa grulla en latin. Se puede ver muy bien desde Cordoba en otoño e invierno, cerca de la constelacion del Pez Austral.",
+    }
+  },
+  {
+    // Triangulum Australe: triángulo con base HORIZONTAL.
+    // Atria (0): brillante, izquierda-abajo.
+    // Beta TrA (1): derecha-abajo, mismo nivel que Atria (base horizontal).
+    // Gamma TrA (2): arriba-centro, ligeramente desplazada hacia la derecha.
+    // Resultado: triángulo con base plana y vértice superior descentrado.
+    nombre: "Triangulum Australe", color: [255,100,100],
+    estrellas: [
+      // Referencia: triángulo con:
+      // Atria (0): vértice izquierdo-abajo, estrella más brillante
+      // Beta TrA (1): vértice derecho-abajo
+      // Gamma TrA (2): vértice superior, desplazado hacia la derecha del centro
+      // La base NO es horizontal: Atria está más abajo que Beta TrA
+      // El triángulo está inclinado: la base va de abajo-izq a centro-der
+      // El vértice superior está arriba-derecha-centro
+      {n:"Atria",     rx:0.2800, ry:0.6400, mag:1.91},
+      {n:"Beta TrA",  rx:0.6000, ry:0.5400, mag:2.85},
+      {n:"Gamma TrA", rx:0.5200, ry:0.2800, mag:2.89},
+    ],
+    lines: [[0,1],[0,2],[1,2]],
+    ficha: {
+      historia: "El Triangulo Austral es una de las constelaciones mas faciles de reconocer porque tiene solo tres estrellas que forman un triangulo en el cielo del sur.",
+      datos: "Sus tres estrellas son muy brillantes y estan muy cerca de la Cruz del Sur. Se puede ver desde Cordoba durante casi todo el anio.",
+    }
+  },
+];
+
+// ═══════════════════════════════════════════════════════
+// AUDIO (Web Audio API — procedural)
+// ═══════════════════════════════════════════════════════
+class AudioManager {
+  constructor() {
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.value = 0.6;
+      this.masterGain.connect(this.ctx.destination);
+      this.enabled = true;
+    } catch(e) { this.enabled = false; }
+  }
+  _tone(freq, dur, type='sine', vol=0.3, attack=0.01, release=0.1) {
+    if (!this.enabled) return;
+    try {
+      const o = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      o.connect(g); g.connect(this.masterGain);
+      o.type = type; o.frequency.value = freq;
+      const t = this.ctx.currentTime;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol, t + attack);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.start(t); o.stop(t + dur + 0.05);
+    } catch(e) {}
+  }
+  click()  { this._tone(880, 0.08, 'sine', 0.2, 0.005, 0.07); }
+  correct(){ this._tone(523, 0.05); setTimeout(()=>this._tone(659, 0.05), 60); setTimeout(()=>this._tone(784, 0.12, 'sine', 0.35), 120); }
+  wrong()  { this._tone(200, 0.12, 'sawtooth', 0.25); }
+  complete(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this._tone(f,0.18,'sine',0.3),i*100)); }
+  sparkle(){ this._tone(1200+Math.random()*400, 0.08, 'sine', 0.08); }
+  resume() { if (this.enabled && this.ctx.state === 'suspended') this.ctx.resume(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// EFECTOS — Partículas, Estrellas Fugaces
+// ═══════════════════════════════════════════════════════
+class Particle {
+  constructor(x, y, color, vx, vy, size=4, glow=false) {
+    this.x=x; this.y=y; this.color=color;
+    this.vx=vx; this.vy=vy; this.size=size; this.glow=glow;
+    this.life=1; this.maxLife=0.8+Math.random()*0.7;
+  }
+  update(dt) {
+    this.x += this.vx * dt * 60;
+    this.y += this.vy * dt * 60;
+    this.vy += 0.04 * dt * 60;
+    this.life -= dt / this.maxLife;
+    return this.life > 0;
+  }
+  draw(ctx) {
+    const a = Math.max(0, this.life);
+    const [r,g,b] = this.color;
+    ctx.save();
+    ctx.globalAlpha = a;
+    if (this.glow) {
+      const gr = ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.size*2.5);
+      gr.addColorStop(0,`rgba(${r},${g},${b},0.8)`);
+      gr.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle = gr;
+      ctx.beginPath(); ctx.arc(this.x,this.y,this.size*2.5,0,Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+class ShootingStar {
+  constructor(W, H) {
+    this.x = Math.random()*W; this.y = Math.random()*H*0.5;
+    const a = Math.PI/6 + Math.random()*Math.PI/6;
+    const spd = 300+Math.random()*400;
+    this.vx=Math.cos(a)*spd; this.vy=Math.sin(a)*spd;
+    this.len=40+Math.random()*80; this.life=1; this.alive=true;
+    this.W=W; this.H=H;
+  }
+  update(dt) {
+    this.x += this.vx*dt; this.y += this.vy*dt;
+    this.life -= dt*1.5;
+    this.alive = this.life>0 && this.x<this.W+100 && this.y<this.H+100;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.life)*0.7;
+    const dx=-this.vx/Math.hypot(this.vx,this.vy)*this.len;
+    const dy=-this.vy/Math.hypot(this.vx,this.vy)*this.len;
+    const gr=ctx.createLinearGradient(this.x,this.y,this.x+dx,this.y+dy);
+    gr.addColorStop(0,'rgba(255,255,255,0.9)');
+    gr.addColorStop(1,'rgba(200,220,255,0)');
+    ctx.strokeStyle=gr; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(this.x,this.y); ctx.lineTo(this.x+dx,this.y+dy); ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ALMACENAMIENTO LOCAL (reemplaza CSV del original)
+// ═══════════════════════════════════════════════════════
+class SaveManager {
+  constructor() {
+    try {
+      const raw = localStorage.getItem('cielo_ranking');
+      this.entries = raw ? JSON.parse(raw) : [];
+    } catch(e) { this.entries = []; }
+  }
+  save(nombre, puntaje, nivel, status) {
+    if (!nombre) return;
+    this.entries.push({ nombre, puntaje, nivel, status, ts: Date.now() });
+    try { localStorage.setItem('cielo_ranking', JSON.stringify(this.entries.slice(-100))); } catch(e){}
+  }
+  getRanking() {
+    const best = {};
+    for (const e of this.entries) {
+      if (!best[e.nombre] || e.puntaje > best[e.nombre].puntaje) best[e.nombre] = e;
+    }
+    return Object.values(best).sort((a,b)=>b.puntaje-a.puntaje).slice(0,8);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// MOTOR DE JUEGO
+// ═══════════════════════════════════════════════════════
+class Game {
+  constructor() {
+    this.canvas = document.getElementById('game-canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.audio = new AudioManager();
+    this.save  = new SaveManager();
+    this.isMobile = IS_MOBILE;
+
+    // Estado
+    this.state = STATES.MENU;
+    this.playerName = '';
+    this.nameInput  = '';
+    this.nameWarnT  = 0;
+    this.levelIndex = 0;
+    this.starsEarned = 0;
+    this.connected = [];
+    this.currentTarget = 0;
+    this.completeT = 0;
+    this.idleTimer = 0;
+    this.showHelp  = false;
+    this.firstStarShown = false; // controla el mensaje inicial de Lumina
+    this._bubbleFadeT   = 1.0;   // 1=opaco, 0=invisible; animación tras primer toque
+
+    // Tiempo
+    this.t = 0; this.luminaT = 0;
+    this.lastFrame = performance.now();
+
+    // Efectos
+    this.particles = [];
+    this.shootingStars = [];
+    this.bgStars = [];
+    this.sparkleTimer = 0;
+    this.shootTimer = 0;
+
+    // Layout
+    this.scale = 1; this.offX = 0; this.offY = 0;
+    this.scaledW = 0; this.scaledH = 0;
+    this.W = 0; this.H = 0;
+
+    // Hover / input
+    this.hoverBtn = null;
+    this.mouseX = 0; this.mouseY = 0;
+
+    // Constelaciones calculadas
+    this.CONST = this._calcConstellations();
+
+    // Fuente teclado virtual móvil
+    this.virtualKeyboard = null;
+
+    // Inicializar factores de escala con defaults antes del primer _resize()
+    // para evitar undefined si algún método se llama antes de que _resize termine.
+    this._starSizeMult  = this.isMobile ? 3.5 : 2.4;
+    this._minStarR      = this.isMobile ? 12  : 9;
+    this._lineGlowMult  = 1.4;
+    this._lineMainMult  = 1.4;
+    this._hitR_screen   = this.isMobile ? 44 : 30;
+
+    this._resize();
+    this._generateBgStars();
+    this._bindEvents();
+    this._setupTouchControls();
+    this._loop();
+  }
+
+  // ── Layout ──────────────────────────────────────────
+  _resize() {
+    const dpr = window.devicePixelRatio || 1;
+    this.W = window.innerWidth;
+    this.H = window.innerHeight;
+    this.canvas.style.width  = this.W + 'px';
+    this.canvas.style.height = this.H + 'px';
+    this.canvas.width  = this.W * dpr;
+    this.canvas.height = this.H * dpr;
+    this.ctx.scale(dpr, dpr);
+
+    // ── FIX tamaño constelaciones en móvil ────────────────────────────────
+    // Estrategia: en lugar de escalar todo BASE_W×BASE_H al viewport completo
+    // (que en portrait deja la constelación aplastada en muy poco espacio),
+    // calculamos el área útil de juego descontando HUD y márgenes,
+    // y usamos esa área como referencia para escalar.
+    //
+    // En portrait móvil: el eje limitante es el ancho → la escala antigua era
+    //   scale = W / 1280 ≈ 0.30 para un teléfono de 390px
+    // Con el nuevo cálculo usamos el 90% del alto disponible como referencia
+    // y centramos las constelaciones en esa zona → escala ≈ 0.52–0.62, casi
+    // el doble de grande visualmente.
+
+    if (this.isMobile) {
+      // ── ALGORITMO DE ESCALADO MÓVIL v3 ──────────────────────────────────
+      // Bounding-box global de todas las constelaciones (coords relativas 0-1):
+      //   X: [0.255, 0.745] span=0.490  (628px en base)  Y: [0.250, 0.720] span=0.470
+      // En portrait el eje X siempre limita. Escalamos el BB al gameW disponible
+      // (area entre HUD y franja inferior reservada para Lumina) en lugar de
+      // escalar el espacio BASE completo. Esto maximiza el uso de pantalla.
+      const SMINX = 0.255 * BASE_W;  // 326 px base
+      const SMAXX = 0.745 * BASE_W;  // 954 px base
+      const SMINY = 0.250 * BASE_H;  // 180 px base
+      const SMAXY = 0.720 * BASE_H;  // 518 px base
+      const SPANX = SMAXX - SMINX;   // 628 px base
+      const SPANY = SMAXY - SMINY;   // 338 px base
+
+      const hudH   = this._hudHEarly();
+      const PAD_X  = 8;
+      const PAD_TOP = 6;
+
+      // ── Radio de Lumina (estimado antes de conocer luminaStrip) ──────────
+      // lumR depende de min(W, luminaStrip)*0.26, pero necesitamos
+      // luminaStrip para calcularlo. Usamos H*0.15 como estimación inicial
+      // y luego derivamos la franja real que garantice safe-area.
+      const lumR_est = Math.max(22, Math.min(this.W, this.H * 0.15) * 0.26);
+
+      // ── Safe-bottom margin ────────────────────────────────────────────────
+      // Margen mínimo entre el borde inferior de Lumina y el borde de pantalla.
+      // Cubre barras de navegación de Android (48px) e iOS safe-area (34px),
+      // más un margen de confort visual. Se expresa como fracción de H para
+      // que sea relativo al viewport y nunca un valor fijo.
+      //
+      // max(50, H*0.13):
+      //   H=667 → 87px   H=720 → 94px   H=844 → 110px   H=1024 → 133px
+      const safeBottomMargin = Math.max(50, this.H * 0.13);
+
+      // ── luminaStrip: franja reservada debajo de las estrellas ────────────
+      // Debe ser suficientemente grande para contener a Lumina con su safe-area.
+      // min requerido = 2*lumR + safeBottomMargin + 8px de holgura
+      // También se mantiene al menos el 22% de H para que la franja sea visible.
+      const minStrip    = 2 * lumR_est + safeBottomMargin + 8;
+      const luminaStrip = Math.max(minStrip, this.H * 0.22);
+
+      const gameTop    = hudH + PAD_TOP;
+      const gameBottom = this.H - luminaStrip;
+      const gameLeft   = PAD_X;
+      const gameRight  = this.W - PAD_X;
+      const gameW      = gameRight - gameLeft;
+      const gameH      = gameBottom - gameTop;
+
+      // Escala: TARGET_X=0.94 → estrellas ocupan 94% del ancho disponible
+      // (no cambia respecto a la versión anterior: el eje limitante sigue
+      // siendo X en portrait, por lo que ampliar luminaStrip en Y no afecta
+      // el tamaño de las estrellas)
+      const TARGET_X = 0.94;
+      this.scale = (gameW * TARGET_X) / SPANX;
+
+      // offX: centrar horizontalmente el BB en gameW
+      const starW  = SPANX * this.scale;
+      this.offX    = gameLeft + (gameW - starW) / 2 - SMINX * this.scale;
+
+      // offY: centrar con sesgo superior (0.38 < 0.5) → más aire abajo para Lumina
+      const starH  = SPANY * this.scale;
+      this.offY    = gameTop + (gameH - starH) * 0.38 - SMINY * this.scale;
+
+      this.scaledW = BASE_W * this.scale;
+      this.scaledH = BASE_H * this.scale;
+
+      // ── Posicionamiento de Lumina en la franja inferior ──────────────────
+      //
+      // CAMBIO CLAVE: antes Lumina se anclaba al gameBottom y bajaba desde
+      // allí. Eso la dejaba a solo 29–37px del borde → invisible bajo las
+      // barras de navegación en muchos Android.
+      //
+      // AHORA: usamos safe-area desde el borde INFERIOR como referencia.
+      // lumY = H - lumR - safeBottomMargin
+      //
+      // Esto garantiza que el borde inferior de Lumina siempre quede al
+      // menos safeBottomMargin px por encima del borde de pantalla.
+      // El bloque (Lumina + burbuja) sube 58–77px respecto a la versión
+      // anterior en todos los dispositivos probados.
+      this._mobileGameTop    = gameTop;
+      this._mobileGameBottom = gameBottom;
+
+      const lumR = Math.max(22, Math.min(this.W, luminaStrip) * 0.26);
+      const lumX = Math.max(lumR + 4, this.W * 0.14);
+
+      // lumY: center de Lumina. Se calcula desde el borde inferior con
+      // safeBottomMargin, y se clampea para no invadir la zona de juego.
+      const lumY_fromBottom = this.H - lumR - safeBottomMargin;
+      const lumY = Math.max(gameBottom + lumR + 4, lumY_fromBottom);
+
+      this._mobileLuminaR    = lumR;
+      this._mobileLuminaX    = lumX;
+      this._mobileLuminaY    = lumY;
+      this._mobileSafeBottom = safeBottomMargin; // guardado para uso en burbuja
+    } else {
+      // Desktop: comportamiento original sin cambios
+      this.scale   = Math.min(this.W / BASE_W, this.H / BASE_H);
+      this.scaledW = BASE_W * this.scale;
+      this.scaledH = BASE_H * this.scale;
+      this.offX    = (this.W - this.scaledW) / 2;
+      this.offY    = (this.H - this.scaledH) / 2;
+    }
+
+    // ── Precalcular factores de escala visual de estrellas ────────────────
+    // Se llama en cada resize (no en cada frame) para evitar cálculos innecesarios.
+    // En móvil los factores ya estaban fijos (3.5/12); aquí hacemos lo mismo
+    // para desktop de forma adaptativa según el viewport.
+    this._computeStarScale();
+
+    this._generateBgStars();
+    this._updateTouchControlsLayout();
+  }
+
+  // Calcula y almacena los factores visuales de estrellas según el viewport.
+  // Llamado exclusivamente desde _resize() → O(1) por frame durante el juego.
+  _computeStarScale() {
+    if (this.isMobile) {
+      // Móvil: valores fijos ya probados
+      this._starSizeMult = 3.5;
+      this._minStarR     = 12;
+      this._lineGlowMult = 1.0;  // aplicado sobre el cálculo base de _drawConstellation
+      this._lineMainMult = 1.0;
+      // hitbox radio en px de pantalla (convertido a base coords en _playClick)
+      this._hitR_screen  = Math.max(44, Math.min(this.W, this.H) * 0.08);
+    } else {
+      // Desktop: escala progresiva según ancho de viewport.
+      // Interpolación suave entre 1024px (multiplicador base) y 2560px (máximo).
+      // Evita saltos bruscos entre breakpoints.
+      const W = this.W;
+      const t = Math.min(1, Math.max(0, (W - 1024) / (2560 - 1024)));
+
+      // starSizeMult: 1280px → ~2.4, 1920px → ~3.3, 2560px → ~4.2
+      this._starSizeMult = 2.0 + t * 2.2;
+
+      // minStarR: radio mínimo garantizado en px de pantalla
+      // Laptop 1280-1366: 9px  |  HD 1440-1920: 12px  |  2K+: 16px
+      this._minStarR = W <= 1366 ? 9 : W <= 1920 ? 12 : 16;
+
+      // Líneas: multiplicador extra sobre scale para que crezcan con la pantalla
+      // 1280px → ×1.4  |  1920px → ×1.9  |  2560px → ×2.5
+      this._lineGlowMult = 1.2 + t * 1.3;
+      this._lineMainMult = 1.2 + t * 1.3;
+
+      // hitbox radio en px de pantalla
+      // Desktop usa 30px base + bonus proporcional al viewport
+      const hitBonus = W <= 1366 ? 10 : W <= 1920 ? 18 : 26;
+      this._hitR_screen = 30 + hitBonus;
+    }
+  }
+
+  // Estimación temprana de altura HUD (antes de que existan fuentes Canvas).
+  // MÓVIL: HUD más compacto (0.070 en lugar de 0.085) para maximizar zona de juego.
+  // DESKTOP: sin cambio (0.085).
+  _hudHEarly() {
+    const pct = this.isMobile ? 0.070 : 0.085;
+    return Math.max(40, Math.round(Math.min(this.W, this.H) * pct));
+  }
+
+  _b2s(bx, by) { // base → screen
+    return [this.offX + bx * this.scale, this.offY + by * this.scale];
+  }
+  _s2b(sx, sy) { // screen → base
+    return [(sx - this.offX) / this.scale, (sy - this.offY) / this.scale];
+  }
+
+  // Escala de texto relativa al menor de W/H.
+  // MÓVIL: mínimo absoluto de 18px en cualquier porcentaje, para garantizar
+  // legibilidad en Android de gama baja (360px de ancho).
+  // El piso móvil solo aplica a textos "importantes" (pct >= 0.026).
+  // DESKTOP: mínimo 10px (sin cambios).
+  _fs(pct) {
+    const raw = Math.round(Math.min(this.W, this.H) * pct);
+    if (this.isMobile) {
+      // Jerarquía de pisos según tamaño relativo del texto:
+      //   pct < 0.030 → 14px  (créditos, etiquetas muy secundarias)
+      //   pct < 0.040 → 18px  (cuerpo, HUD, burbujas)
+      //   pct >= 0.040 → 20px  (títulos, botones)
+      const floor = pct < 0.030 ? 14 : pct < 0.040 ? 18 : 20;
+      return Math.max(floor, raw);
+    }
+    return Math.max(10, raw);
+  }
+
+  // ── Constelaciones ──────────────────────────────────
+  _calcConstellations() {
+    return DATOS_ASTRONOMICOS.map(d => ({
+      nombre: d.nombre,
+      color:  d.color,
+      stars:  d.estrellas.map(e => ({ x: e.rx * BASE_W, y: e.ry * BASE_H, mag: e.mag, n: e.n })),
+      lines:  d.lines,
+      ficha:  d.ficha,
+    }));
+  }
+
+  // ── Estrellas de fondo ──────────────────────────────
+  _generateBgStars() {
+    this.bgStars = [];
+    const n = Math.round(this.W * this.H / 1800);
+    for (let i = 0; i < n; i++) {
+      this.bgStars.push({
+        x: Math.random() * this.W,
+        y: Math.random() * this.H,
+        r: Math.random() * 1.6 + 0.2,
+        brightness: Math.random(),
+        twinkleSpeed: 0.5 + Math.random() * 2,
+        twinkleOffset: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  // ── Eventos ─────────────────────────────────────────
+  _bindEvents() {
+    window.addEventListener('resize', () => this._resize());
+
+    // Mouse
+    this.canvas.addEventListener('mousemove', e => {
+      this.mouseX = e.clientX; this.mouseY = e.clientY;
+    });
+    this.canvas.addEventListener('click', e => {
+      this.audio.resume();
+      this._handleClick(e.clientX, e.clientY);
+    });
+
+    // Touch (tap as click)
+    this.canvas.addEventListener('touchend', e => {
+      e.preventDefault();
+      this.audio.resume();
+      const t = e.changedTouches[0];
+      this._handleClick(t.clientX, t.clientY);
+    }, { passive: false });
+
+    this.canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      // Si hay algún elemento activo con foco (ej. el input de nombre), cerrarlo
+      // para que el teclado no aparezca al tocar estrellas durante la partida.
+      if (document.activeElement && document.activeElement.tagName !== 'BODY') {
+        try { document.activeElement.blur(); } catch(err) {}
+      }
+    }, { passive: false });
+
+    // Teclado
+    window.addEventListener('keydown', e => {
+      this.audio.resume();
+      if (this.state === STATES.MENU) this._menuKey(e);
+      if (e.key === 'Escape') this._handleEsc();
+    });
+  }
+
+  _setupTouchControls() {
+    const tc = document.getElementById('touch-controls');
+    if (this.isMobile) tc.style.display = 'block';
+
+    document.getElementById('touch-menu').addEventListener('touchend', e => {
+      e.preventDefault(); this._goToMenu();
+    }, { passive: false });
+    document.getElementById('touch-salir').addEventListener('touchend', e => {
+      e.preventDefault(); this._exitGame();
+    }, { passive: false });
+    document.getElementById('touch-next').addEventListener('touchend', e => {
+      e.preventDefault(); this._nextLevel();
+    }, { passive: false });
+  }
+
+  _updateTouchControlsLayout() {
+    if (!this.isMobile) return;
+    const tc = document.getElementById('touch-controls');
+    const btnSize = Math.max(56, Math.round(Math.min(this.W, this.H) * 0.14));
+    const margin  = Math.round(Math.min(this.W, this.H) * 0.025);
+    const hud     = this._hudH();
+    const fontSize = Math.max(11, Math.round(btnSize * 0.22));
+
+    const menuBtn  = document.getElementById('touch-menu');
+    const salirBtn = document.getElementById('touch-salir');
+    const nextBtn  = document.getElementById('touch-next');
+
+    [menuBtn, salirBtn, nextBtn].forEach(b => {
+      b.style.width  = btnSize + 'px';
+      b.style.height = btnSize + 'px';
+      b.style.fontSize = fontSize + 'px';
+    });
+
+    // MENU: esquina sup derecha bajo HUD
+    menuBtn.style.right  = margin + 'px';
+    menuBtn.style.top    = (hud + margin) + 'px';
+
+    // SALIR: junto a MENU
+    salirBtn.style.right = (margin + btnSize + margin * 0.8) + 'px';
+    salirBtn.style.top   = (hud + margin) + 'px';
+
+    // NEXT: centro inferior
+    nextBtn.style.left   = (this.W / 2 - btnSize / 2) + 'px';
+    nextBtn.style.bottom = (margin * 2) + 'px';
+  }
+
+  _showTouchBtn(id, visible) {
+    document.getElementById(id).style.display = visible ? 'flex' : 'none';
+  }
+
+  // ── Loop ─────────────────────────────────────────────
+  _loop() {
+    const now = performance.now();
+    const dt  = Math.min((now - this.lastFrame) / 1000, 0.05);
+    this.lastFrame = now;
+    this._update(dt);
+    this._draw();
+    requestAnimationFrame(() => this._loop());
+  }
+
+  // ── Update ───────────────────────────────────────────
+  _update(dt) {
+    this.t      += dt;
+    this.luminaT += dt;
+
+    // Estrellas fugaces
+    this.shootTimer -= dt;
+    if (this.shootTimer <= 0) {
+      this.shootingStars.push(new ShootingStar(this.W, this.H));
+      this.shootTimer = 2 + Math.random() * 8;
+    }
+    this.shootingStars = this.shootingStars.filter(s => { s.update(dt); return s.alive; });
+
+    // Partículas
+    this.particles = this.particles.filter(p => p.update(dt));
+
+    // Advertencia nombre
+    if (this.nameWarnT > 0) this.nameWarnT = Math.max(0, this.nameWarnT - dt);
+
+    if (this.state === STATES.PLAYING) {
+      this.idleTimer += dt;
+      const idleThreshold = this.isMobile ? 2.0 : 4.0;
+      if (this.idleTimer > idleThreshold) this.showHelp = true;
+      // Fade-out de la burbuja tras el primer toque correcto (solo móvil).
+      // La burbuja se desvanece en 1.2s para liberar espacio de forma suave.
+      if (this.isMobile && this.firstStarShown && this._bubbleFadeT > 0) {
+        this._bubbleFadeT = Math.max(0, this._bubbleFadeT - dt / 1.2);
+      }
+      this.sparkleTimer -= dt;
+      if (this.sparkleTimer <= 0) {
+        this.audio.sparkle();
+        this.sparkleTimer = 4 + Math.random() * 6;
+      }
+    }
+    if (this.state === STATES.COMPLETE_ANIM) {
+      this.completeT += dt;
+      if (Math.random() < 0.4) {
+        const c = this.CONST[this.levelIndex];
+        const s = c.stars[Math.floor(Math.random()*c.stars.length)];
+        const [px,py] = this._b2s(s.x, s.y);
+        this.particles.push(new Particle(
+          px+rnd(-60,60), py+rnd(-60,60), c.color,
+          rnd(-1,1), rnd(-1.5,-0.3), rnd(3,7), true
+        ));
+      }
+      if (this.completeT * 1000 >= COMPLETE_ANIM_DURATION) this.state = STATES.LEVEL_DONE;
+    }
+
+    // Touch buttons visibility
+    if (this.isMobile) {
+      const inGame = [STATES.PLAYING, STATES.COMPLETE_ANIM].includes(this.state);
+      const inLevelDone = this.state === STATES.LEVEL_DONE;
+      this._showTouchBtn('touch-menu',  inGame);
+      this._showTouchBtn('touch-salir', inGame);
+      this._showTouchBtn('touch-next',  inLevelDone);
+    }
+  }
+
+  // ── Eventos de juego ─────────────────────────────────
+  _handleEsc() {
+    if ([STATES.MENU, STATES.FINAL].includes(this.state)) this._exitGame();
+    else if (this.state === STATES.RANKING) this.state = STATES.MENU;
+    else this._goToMenu();
+  }
+  _goToMenu() {
+    this.save.save(this.playerName, this.starsEarned, this.levelIndex+1, 'menu');
+    this.particles = [];
+    this.state = STATES.MENU;
+    // Restaurar el input oculto para que pueda recibir foco en el menú de nuevo
+    const inp = document.getElementById('_mobile_name_input');
+    if (inp) inp.readOnly = false;
+  }
+  _exitGame() {
+    this.save.save(this.playerName, this.starsEarned, this.levelIndex+1, 'salio');
+    window.close();
+  }
+
+  _menuKey(e) {
+    if (e.key === 'Enter') {
+      if (this.nameInput.trim()) { this.audio.click(); this._startGame(); }
+      else this.nameWarnT = 3;
+    } else if (e.key === 'Backspace') {
+      this.nameInput = this.nameInput.slice(0,-1);
+    } else if (e.key.length === 1 && this.nameInput.length < 22) {
+      this.nameInput += e.key;
+    }
+  }
+
+  _handleClick(sx, sy) {
+    if (this.state === STATES.MENU)      return this._menuClick(sx, sy);
+    if (this.state === STATES.RANKING)   return this._rankingClick(sx, sy);
+    if (this.state === STATES.PLAYING || this.state === STATES.COMPLETE_ANIM)
+                                         return this._playClick(sx, sy);
+    if (this.state === STATES.LEVEL_DONE) return this._levelDoneClick(sx, sy);
+    if (this.state === STATES.FINAL)     return this._finalClick(sx, sy);
+  }
+
+  _menuClick(sx, sy) {
+    // Campo nombre — en móvil abre teclado virtual
+    if (rectHit(sx, sy, this._menuInputRect)) {
+      if (this.isMobile) this._openMobileKeyboard();
+      return;
+    }
+    const b = this._menuBtnRects;
+    if (b.play    && rectHit(sx, sy, b.play))    { if(this.nameInput.trim()){this.audio.click();this._startGame();}else this.nameWarnT=3; }
+    if (b.ranking && rectHit(sx, sy, b.ranking)) { this.audio.click(); this.state = STATES.RANKING; }
+    if (b.salir   && rectHit(sx, sy, b.salir))   { this._exitGame(); }
+  }
+
+  _openMobileKeyboard() {
+    // Crea un input invisible y lo foca para abrir el teclado nativo.
+    // Solo se activa cuando el usuario toca el campo de nombre en el MENÚ.
+    let inp = document.getElementById('_mobile_name_input');
+    if (!inp) {
+      inp = document.createElement('input');
+      inp.id = '_mobile_name_input';
+      inp.type = 'text';
+      inp.autocomplete = 'off';
+      inp.autocorrect = 'off';
+      inp.autocapitalize = 'words';
+      inp.spellcheck = false;
+      inp.maxLength = 22;
+      // inputMode='text' + enterkeyhint='go' → iOS/Android muestran botón "Ir/Go"
+      inp.setAttribute('inputmode', 'text');
+      inp.setAttribute('enterkeyhint', 'go');
+      // Estilo: invisible, fuera del viewport visual pero dentro del DOM
+      inp.style.cssText = [
+        'position:fixed',
+        'opacity:0',
+        'pointer-events:none',  // nunca recibe eventos táctiles directos
+        'top:0', 'left:0',
+        'width:1px', 'height:1px',
+        'border:none', 'outline:none',
+        'background:transparent',
+        'color:transparent',
+        'font-size:16px',       // ≥16px evita el zoom automático en iOS Safari
+        'transform:translateY(-200px)', // fuera del área visible
+      ].join(';');
+      document.body.appendChild(inp);
+      inp.addEventListener('input', () => { this.nameInput = inp.value; });
+      // Al perder foco desde blur() manual, sincroniza pero NO llama startGame
+      inp.addEventListener('blur', () => { inp.value = this.nameInput; });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (this.nameInput.trim()) { this.audio.click(); this._startGame(); }
+        }
+      });
+    }
+    // Reactivar escritura (puede estar readOnly=true desde _dismissMobileKeyboard)
+    inp.readOnly = false;
+    inp.value = this.nameInput;
+    // Un pequeño delay es necesario en iOS para que el foco funcione tras un tap
+    setTimeout(() => { inp.focus(); }, 50);
+  }
+
+  _rankingClick(sx, sy) {
+    if (this._rankingBackRect && rectHit(sx, sy, this._rankingBackRect)) {
+      this.audio.click(); this.state = STATES.MENU;
+    }
+  }
+
+  _playClick(sx, sy) {
+    // HUD buttons (desktop) — en móvil están en touch-controls
+    if (!this.isMobile) {
+      if (this._hudMenuRect  && rectHit(sx, sy, this._hudMenuRect))  { this._goToMenu(); return; }
+      if (this._hudSalirRect && rectHit(sx, sy, this._hudSalirRect)) { this._exitGame(); return; }
+    }
+    if (this.state !== STATES.PLAYING) return;
+
+    // ── FIX anti-doble-toque ─────────────────────────────────────────────
+    // Ignora toques que llegan antes de 220 ms del último toque válido.
+    // Evita que un dedo torpe registre dos clics en la misma estrella.
+    const now = performance.now();
+    if (this._lastStarTap && now - this._lastStarTap < 220) return;
+
+    // ── Área táctil — usa valor precalculado en _computeStarScale() ────────
+    // MÓVIL:   44–67px en pantalla (estándar Apple/Google HIG ≥44pt)
+    // DESKTOP: 30–56px creciendo con el viewport para que sea cómodo en monitores grandes
+    // La selección nearest-star evita errores cuando dos estrellas están en el radio.
+    const hitR_screen = this._hitR_screen ?? (this.isMobile
+      ? Math.max(44, Math.min(this.W, this.H) * 0.08) : 30);
+    const hitR = hitR_screen / this.scale;  // a coords base
+
+    const [bx, by] = this._s2b(sx, sy);
+    const c = this.CONST[this.levelIndex];
+    // Encontrar la estrella más cercana dentro del radio (mejor UX que first-hit)
+    let bestIdx = -1, bestDist = Infinity;
+    for (let i = 0; i < c.stars.length; i++) {
+      const s = c.stars[i];
+      const dist2 = (bx-s.x)**2 + (by-s.y)**2;
+      if (dist2 <= hitR**2 && dist2 < bestDist) {
+        bestDist = dist2; bestIdx = i;
+      }
+    }
+    if (bestIdx >= 0) {
+      this._lastStarTap = now;
+      this._starClicked(bestIdx);
+    }
+  }
+
+  _levelDoneClick(sx, sy) {
+    if (!this.isMobile && this._levelDoneBtn && rectHit(sx, sy, this._levelDoneBtn)) this._nextLevel();
+    // En móvil el botón táctil llama _nextLevel directamente
+  }
+
+  _finalClick(sx, sy) {
+    if (this._finalBtn1 && rectHit(sx, sy, this._finalBtn1)) { this.audio.click(); this._resetGame(); this.state = STATES.MENU; }
+    if (this._finalBtn2 && rectHit(sx, sy, this._finalBtn2)) this._exitGame();
+  }
+
+  // ── Lógica de juego ──────────────────────────────────
+  _startGame() {
+    this.playerName  = this.nameInput.trim();
+    this.starsEarned = 0;
+    this.levelIndex  = 0;
+    this.save.save(this.playerName, 0, 1, 'inicio');
+    // ── FIX teclado virtual: cerrar el teclado nativo ANTES de entrar al juego.
+    // blur() sobre el input oculto lo descarta del focus y el sistema operativo
+    // cierra el teclado sin que el usuario tenga que hacerlo manualmente.
+    this._dismissMobileKeyboard();
+    this._startLevel();
+  }
+
+  // Cierra el teclado nativo haciendo blur sobre cualquier elemento activo.
+  _dismissMobileKeyboard() {
+    const inp = document.getElementById('_mobile_name_input');
+    if (inp) { inp.blur(); inp.readOnly = true; }
+    // Asegura que el canvas tampoco roba el focus
+    if (document.activeElement && document.activeElement !== document.body) {
+      try { document.activeElement.blur(); } catch(e) {}
+    }
+  }
+
+  _startLevel() {
+    const c = this.CONST[this.levelIndex];
+    this.currentTarget = 0;
+    this.connected = Array(c.stars.length).fill(false);
+    this.particles = [];
+    this.showHelp  = false;
+    this.idleTimer = 0;
+    this.sparkleTimer = 0;
+    this.completeT = 0;
+    this._lastStarTap = 0;
+    this.firstStarShown = false; // resetear al iniciar cada nivel
+    this._bubbleFadeT   = 1.0;   // burbuja visible al inicio de cada nivel
+    this._dismissMobileKeyboard();
+    this.state = STATES.PLAYING;
+  }
+
+  _starClicked(i) {
+    if (this.connected[i]) return;
+    if (i !== this.currentTarget) {
+      this.audio.wrong();
+      const [px,py] = this._b2s(this.CONST[this.levelIndex].stars[i].x, this.CONST[this.levelIndex].stars[i].y);
+      for (let k=0;k<6;k++) this.particles.push(new Particle(px,py,[255,80,80],rnd(-1.5,1.5),rnd(-2,-0.3)));
+      return;
+    }
+    this.audio.correct();
+    this.connected[i] = true;
+    this.starsEarned += POINTS_PER_STAR;
+    this.currentTarget++;
+    this.idleTimer = 0; this.showHelp = false;
+    this.firstStarShown = true; // ya tocó la primera estrella, cambiar mensaje
+    const c = this.CONST[this.levelIndex];
+    const [px,py] = this._b2s(c.stars[i].x, c.stars[i].y);
+    for (let k=0;k<20;k++) {
+      const a=Math.random()*Math.PI*2, spd=rnd(1.5,4);
+      this.particles.push(new Particle(px,py,c.color,spd*Math.cos(a),spd*Math.sin(a)-1,rnd(3,8),true));
+    }
+    for (let k=0;k<8;k++) this.particles.push(new Particle(px,py,[255,215,0],rnd(-1.5,1.5),rnd(-3.5,-0.8),rnd(2,5),true));
+    if (this.currentTarget >= c.stars.length) this._levelComplete();
+  }
+
+  _levelComplete() {
+    this.audio.complete();
+    this.state = STATES.COMPLETE_ANIM;
+    this.completeT = 0;
+    const c = this.CONST[this.levelIndex];
+    for (let k=0;k<60;k++) {
+      const s=c.stars[Math.floor(Math.random()*c.stars.length)];
+      const [px,py]=this._b2s(s.x,s.y);
+      const colors=[c.color,[255,215,0],[255,200,80],[255,255,180]];
+      this.particles.push(new Particle(px,py,colors[Math.floor(Math.random()*colors.length)],rnd(-3,3),rnd(-4,-0.5),rnd(3,8),true));
+    }
+  }
+
+  _nextLevel() {
+    this.audio.click();
+    if (this.levelIndex < this.CONST.length - 1) {
+      this.levelIndex++;
+      this.save.save(this.playerName, this.starsEarned, this.levelIndex+1, 'progreso');
+      this.particles = [];
+      this._startLevel();
+    } else {
+      this.save.save(this.playerName, this.starsEarned, this.CONST.length, 'completo');
+      this.state = STATES.FINAL;
+    }
+  }
+
+  _resetGame() {
+    this.levelIndex=0; this.starsEarned=0; this.currentTarget=0;
+    this.connected=[]; this.particles=[]; this.nameInput='';
+  }
+
+  // ── Draw principal ───────────────────────────────────
+  _draw() {
+    const ctx = this.ctx;
+    ctx.clearRect(0,0,this.W,this.H);
+
+    // Fondo espacial
+    this._drawBg(ctx);
+    for (const ss of this.shootingStars) ss.draw(ctx);
+
+    if (this.state === STATES.MENU)    this._drawMenu(ctx);
+    else if (this.state === STATES.RANKING)  this._drawRanking(ctx);
+    else if ([STATES.PLAYING, STATES.COMPLETE_ANIM, STATES.LEVEL_DONE].includes(this.state))
+      this._drawGame(ctx);
+    else if (this.state === STATES.FINAL) this._drawFinal(ctx);
+
+    // Partículas (encima de todo)
+    for (const p of this.particles) p.draw(ctx);
+  }
+
+  // ── Fondo ────────────────────────────────────────────
+  _drawBg(ctx) {
+    ctx.fillStyle = '#05051A';
+    ctx.fillRect(0,0,this.W,this.H);
+    // Nebulosa sutil
+    const gr = ctx.createRadialGradient(this.W*0.5,this.H*0.4,0,this.W*0.5,this.H*0.4,this.W*0.55);
+    gr.addColorStop(0,'rgba(20,10,60,0.4)');
+    gr.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle = gr; ctx.fillRect(0,0,this.W,this.H);
+
+    for (const s of this.bgStars) {
+      const tw = s.brightness * (0.5 + 0.5*Math.sin(this.t*s.twinkleSpeed+s.twinkleOffset));
+      ctx.globalAlpha = 0.3 + tw*0.7;
+      ctx.fillStyle = `rgba(200,220,255,${0.5+tw*0.5})`;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Menú ─────────────────────────────────────────────
+  _draw_lumina(ctx, x, y, size) {
+    const lt = this.luminaT;
+    const bounce = Math.sin(lt * 2.5) * size * 0.07;
+    const cy = y + bounce;
+    // Cuerpo
+    const gr = ctx.createRadialGradient(x,cy-size*0.1,size*0.1,x,cy,size);
+    gr.addColorStop(0,'rgba(255,255,180,0.95)');
+    gr.addColorStop(0.5,'rgba(255,220,80,0.85)');
+    gr.addColorStop(1,'rgba(200,140,0,0)');
+    ctx.save();
+    ctx.fillStyle = gr;
+    ctx.beginPath(); ctx.arc(x,cy,size,0,Math.PI*2); ctx.fill();
+    // Ojos
+    ctx.fillStyle = '#1A0A00';
+    ctx.beginPath(); ctx.arc(x-size*0.22,cy-size*0.05,size*0.1,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+size*0.22,cy-size*0.05,size*0.1,0,Math.PI*2); ctx.fill();
+    // Sonrisa
+    ctx.strokeStyle='#1A0A00'; ctx.lineWidth=size*0.06; ctx.lineCap='round';
+    ctx.beginPath(); ctx.arc(x,cy+size*0.1,size*0.2,0.2,Math.PI-0.2); ctx.stroke();
+    // Destellos
+    for (let i=0;i<5;i++) {
+      const a = lt*1.5 + i*Math.PI*2/5;
+      const d = size*1.3 + Math.sin(lt*3+i)*size*0.15;
+      const sx2 = x + Math.cos(a)*d, sy2 = cy + Math.sin(a)*d;
+      const sr = size*0.06*(0.7+0.3*Math.sin(lt*4+i));
+      ctx.globalAlpha = 0.6+0.4*Math.sin(lt*3+i);
+      ctx.fillStyle = '#FFE664';
+      ctx.beginPath(); ctx.arc(sx2,sy2,sr,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  _drawMenu(ctx) {
+    const W=this.W, H=this.H, t=this.t;
+    const cx = W/2;
+    const fs = (p) => this._fs(p);
+
+    // Título
+    const pulse = 0.82 + 0.18*Math.sin(t*1.5);
+    const tc = `rgb(${Math.round(200+55*pulse)},${Math.round(220+35*pulse)},255)`;
+    ctx.textAlign='center';
+
+    const titleSize = fs(0.10);
+    ctx.font = `bold ${titleSize}px 'Segoe UI',Arial,sans-serif`;
+    ctx.shadowColor='rgba(60,120,255,0.7)'; ctx.shadowBlur=16;
+    ctx.fillStyle=tc;
+    const titleY = H * 0.12 + titleSize;
+    ctx.fillText('EL CIELO CORDOBES', cx, titleY);
+    ctx.shadowBlur=0;
+
+    const subSize = fs(0.048);
+    ctx.font = `${subSize}px 'Segoe UI',Arial,sans-serif`;
+    const subC = `rgb(${Math.round(140+40*Math.sin(t*1.8))},${Math.round(170+30*Math.sin(t*1.8))},255)`;
+    ctx.fillStyle = subC;
+    ctx.fillText('AVENTURA CELESTE', cx, titleY + titleSize*0.9);
+
+    // Separador
+    const sepY = titleY + titleSize * 1.5;
+    ctx.strokeStyle='rgba(50,80,180,0.7)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx-W*0.19,sepY); ctx.lineTo(cx+W*0.19,sepY); ctx.stroke();
+    ctx.fillStyle=C.GOLD;
+    ctx.beginPath(); ctx.arc(cx,sepY,4,0,Math.PI*2); ctx.fill();
+
+    // Campo de nombre
+    const inputY  = sepY + H*0.04;
+    const labelSz = fs(0.036);
+    ctx.font = `${labelSz}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillStyle = 'rgba(160,195,255,0.9)';
+    ctx.fillText('INGRESA TU NOMBRE:', cx, inputY);
+
+    const iw = Math.min(W*0.80, 460), ih = Math.max(44, H*0.072);
+    const ix = cx-iw/2, iy = inputY + H*0.035;
+    const br2 = ih*0.22;
+
+    // Fondo input
+    roundRect(ctx, ix,iy,iw,ih,br2);
+    ctx.fillStyle='rgba(10,18,55,0.88)'; ctx.fill();
+    // Borde glow
+    const glowC = `rgb(${Math.round(80+80*(0.7+0.3*Math.sin(t*3)))},${Math.round(140+60*(0.7+0.3*Math.sin(t*3)))},255)`;
+    ctx.strokeStyle=glowC; ctx.lineWidth=2.5;
+    roundRect(ctx,ix,iy,iw,ih,br2); ctx.stroke();
+
+    const padL = Math.max(14, iw*0.05);
+    const txtSz = fs(0.048);
+    ctx.font = `${txtSz}px 'Segoe UI',Arial,sans-serif`;
+    if (this.nameInput) {
+      ctx.fillStyle=C.WHITE; ctx.textAlign='left';
+      ctx.save(); ctx.rect(ix+padL, iy, iw-padL*2, ih); ctx.clip();
+      ctx.fillText(this.nameInput, ix+padL, iy+ih*0.62);
+      ctx.restore();
+      // Cursor
+      if (Math.floor(t*2)%2===0) {
+        const tw = Math.min(ctx.measureText(this.nameInput).width, iw-padL*2);
+        ctx.fillStyle='rgba(150,200,255,0.9)';
+        ctx.fillRect(ix+padL+tw+2, iy+ih*0.2, 2, ih*0.6);
+      }
+    } else {
+      ctx.fillStyle='rgba(70,90,140,0.8)'; ctx.textAlign='left';
+      ctx.fillText('Escribir tu nombre...', ix+padL, iy+ih*0.62);
+      if (Math.floor(t*2)%2===0) {
+        ctx.fillStyle='rgba(100,150,220,0.9)';
+        ctx.fillRect(ix+padL-2, iy+ih*0.2, 2, ih*0.6);
+      }
+    }
+    ctx.textAlign='center';
+    this._menuInputRect = {x:ix,y:iy,w:iw,h:ih};
+
+    // Advertencia
+    if (this.nameWarnT>0 && !this.nameInput.trim()) {
+      ctx.globalAlpha = Math.min(1, this.nameWarnT/0.5);
+      ctx.fillStyle='rgba(255,100,100,0.95)';
+      ctx.font = `${fs(0.034)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText('Ingres\u00e1 tu nombre para comenzar!', cx, iy+ih+H*0.03);
+      ctx.globalAlpha=1;
+    }
+
+    // Botones
+    const btnsTopY = iy + ih + H * 0.04;
+    const bw = Math.min(W*0.72, 360), bh = Math.max(48, H*0.078), gap = H*0.022;
+    const btnFontSz = fs(0.048);
+    this._menuBtnRects = {};
+    const buttons = [
+      {k:'play',    lbl:'JUGAR',   bg:'rgba(45,90,200,0.9)',  border:'rgba(100,170,255,0.9)'},
+      {k:'ranking', lbl:'RANKING', bg:'rgba(20,100,90,0.9)',  border:'rgba(60,200,170,0.9)'},
+      {k:'salir',   lbl:'SALIR',   bg:'rgba(140,40,30,0.9)',  border:'rgba(255,100,80,0.9)'},
+    ];
+    buttons.forEach((b,i) => {
+      const by = btnsTopY + i*(bh+gap);
+      const bx = cx-bw/2;
+      const hov = !this.isMobile && this.hoverBtn===b.k;
+      const pulse2 = 0.88+0.12*Math.sin(t*2.2);
+      roundRect(ctx,bx,by,bw,bh,bh*0.28);
+      ctx.fillStyle = hov ? b.border : b.bg;
+      ctx.fill();
+      ctx.strokeStyle=b.border; ctx.lineWidth=hov?3:2;
+      roundRect(ctx,bx,by,bw,bh,bh*0.28); ctx.stroke();
+      ctx.fillStyle=C.WHITE; ctx.font=`bold ${btnFontSz}px 'Segoe UI',Arial,sans-serif`;
+      ctx.textAlign='center'; ctx.fillText(b.lbl,cx,by+bh*0.63);
+      this._menuBtnRects[b.k] = {x:bx,y:by,w:bw,h:bh};
+    });
+    ctx.textAlign='center';
+
+    // Lumina (esquina inferior izquierda) — safe-area clamping
+    const lumR = Math.max(28, Math.min(W,H)*0.06);
+    // MÓVIL: usa coordenadas pre-calculadas en _resize() con safe-area garantizada.
+    // DESKTOP: posición original.
+    const lumX = this.isMobile
+      ? Math.max(lumR + 4, W * 0.10)
+      : Math.max(W*0.08, 70);
+    const lumY = this.isMobile
+      ? Math.min(H - lumR - 4, H * 0.88)
+      : H - H*0.12;
+    this._draw_lumina(ctx, lumX, lumY, lumR);
+    // Burbuja Lumina
+    this._drawLuminaBubble(ctx, lumX, lumY, lumR, ['Hola! Soy Lumina!','Ingres\u00e1 tu nombre','y exploremos las','constelaciones.']);
+
+    // Panel controles (desktop)
+    if (!this.isMobile) this._drawControlsPanel(ctx);
+
+    // Crédito
+    ctx.font = `${fs(0.026)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillStyle='rgba(255,215,0,0.85)'; ctx.textAlign='center';
+    ctx.fillText('Desarrolladora: Aleida Appendino', cx, H*0.975);
+
+    // Hover detection
+    if (!this.isMobile) {
+      this.hoverBtn = null;
+      for (const [k,r] of Object.entries(this._menuBtnRects)) {
+        if (rectHit(this.mouseX,this.mouseY,r)) { this.hoverBtn=k; break; }
+      }
+    }
+  }
+
+  _drawLuminaBubble(ctx, lx, ly, ls, lines) {
+    const fSz = this._fs(0.033);
+    ctx.font = `${fSz}px 'Segoe UI',Arial,sans-serif`;
+    const lineH = fSz * 1.4;
+    const maxLW = Math.max(...lines.map(l => ctx.measureText(l).width));
+    const padX = Math.max(12, maxLW * 0.08);
+    const padY = Math.max(8, lineH * 0.35);
+    let bw = maxLW + padX*2;
+    let bh = lines.length*lineH + padY*2;
+    bw = Math.max(bw, this.W*0.18); bh = Math.max(bh, this.H*0.11);
+
+    // Safe-area: la burbuja nunca sale del viewport.
+    // Primero intentamos colocarla a la derecha de Lumina; si no cabe, a la izquierda.
+    let bx = lx + ls + this.W*0.015;
+    if (bx + bw > this.W - 4) bx = Math.max(4, lx - ls - bw - this.W*0.015);
+    bx = Math.max(4, Math.min(bx, this.W - bw - 4));
+    const by = Math.max(4, Math.min(ly - bh + ls*0.65, this.H - bh - 4));
+    const br2 = Math.min(bw,bh)*0.14;
+
+    const t = 0.55+0.45*Math.sin(this.t*1.8);
+    ctx.save();
+    // Glow
+    for (let gi=3;gi>0;gi--) {
+      ctx.globalAlpha = 0.15*t*(1-gi/4);
+      roundRect(ctx,bx-gi*4,by-gi*4,bw+gi*8,bh+gi*8,br2+gi*3);
+      ctx.fillStyle='rgba(60,120,255,0.6)'; ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    // Fondo
+    roundRect(ctx,bx,by,bw,bh,br2);
+    ctx.fillStyle='rgba(8,14,55,0.92)'; ctx.fill();
+    const bc = `rgb(${Math.round(80+120*t)},${Math.round(140+80*t)},255)`;
+    ctx.strokeStyle=bc; ctx.lineWidth=2;
+    roundRect(ctx,bx,by,bw,bh,br2); ctx.stroke();
+    // Cola
+    const tipX=lx+ls*0.7, tipY=ly-ls*0.15, baseY=by+bh/2;
+    ctx.fillStyle='rgba(8,14,55,0.92)';
+    ctx.beginPath(); ctx.moveTo(bx,baseY-8); ctx.lineTo(tipX,tipY); ctx.lineTo(bx,baseY+8); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle=bc; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(bx,baseY-8); ctx.lineTo(tipX,tipY); ctx.lineTo(bx,baseY+8); ctx.stroke();
+    // Texto
+    ctx.textAlign='center';
+    const startY = by + padY + lineH*0.8;
+    lines.forEach((ln,i) => {
+      ctx.font = `${fSz}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillStyle = i===0 ? '#FFE650' : 'rgba(210,225,255,0.95)';
+      ctx.fillText(ln, bx+bw/2, startY+i*lineH);
+    });
+    ctx.restore();
+  }
+
+  _drawControlsPanel(ctx) {
+    const margin = this.W*0.015;
+    const pw = this.W*0.17, ph = this.H*0.10;
+    const px = this.W - pw - margin, py = this.H - ph - this.H*0.025;
+    const br2 = Math.min(pw,ph)*0.12;
+    ctx.save();
+    roundRect(ctx,px,py,pw,ph,br2);
+    ctx.fillStyle='rgba(5,10,40,0.82)'; ctx.fill();
+    ctx.strokeStyle='rgba(50,80,160,0.7)'; ctx.lineWidth=1;
+    roundRect(ctx,px,py,pw,ph,br2); ctx.stroke();
+    const fSz = this._fs(0.025);
+    ctx.textAlign='center'; ctx.font=`bold ${fSz}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillStyle='rgba(80,130,220,0.9)';
+    ctx.fillText('CONTROLES', px+pw/2, py+ph*0.28);
+    ctx.font=`${fSz*0.88}px 'Segoe UI',Arial,sans-serif`;
+    ctx.textAlign='left';
+    ctx.fillStyle='rgba(80,150,255,0.9)'; ctx.fillText('ESC', px+pw*0.08, py+ph*0.58);
+    ctx.fillStyle='rgba(140,165,210,0.9)'; ctx.fillText('  Salir', px+pw*0.08+ctx.measureText('ESC').width, py+ph*0.58);
+    ctx.restore();
+  }
+
+  // ── Ranking ──────────────────────────────────────────
+  _drawRanking(ctx) {
+    const W=this.W, H=this.H, cx=W/2;
+    const pw=Math.min(W*0.86,560), ph=Math.min(H*0.88,600);
+    const px=cx-pw/2, py=(H-ph)/2;
+    const br2=Math.min(pw,ph)*0.04;
+    // Panel
+    roundRect(ctx,px,py,pw,ph,br2);
+    ctx.fillStyle='rgba(5,10,45,0.96)'; ctx.fill();
+    ctx.strokeStyle='rgba(60,100,200,0.8)'; ctx.lineWidth=2;
+    roundRect(ctx,px,py,pw,ph,br2); ctx.stroke();
+    // Título
+    const p=0.85+0.15*Math.sin(this.t*1.5);
+    ctx.font=`bold ${this._fs(0.062)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.textAlign='center'; ctx.fillStyle=`rgb(${Math.round(255*p)},${Math.round(215*p)},0)`;
+    ctx.shadowColor='rgba(180,120,0,0.6)'; ctx.shadowBlur=10;
+    ctx.fillText('RANKING', cx, py+ph*0.11);
+    ctx.shadowBlur=0;
+    ctx.font=`${this._fs(0.032)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillStyle='rgba(150,200,255,0.8)';
+    ctx.fillText('Los mejores exploradores', cx, py+ph*0.17);
+    // Separador
+    const sepY=py+ph*0.21;
+    ctx.strokeStyle='rgba(255,215,0,0.6)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px+pw*0.06,sepY); ctx.lineTo(px+pw*0.94,sepY); ctx.stroke();
+
+    const ranking = this.save.getRanking();
+    const rowH = (ph*0.62) / 8;
+    const medals = ['#FFD700','#C0C0C0','#CD7F32','#8CB4FF','#78A0E6'];
+    if (!ranking.length) {
+      ctx.fillStyle='rgba(120,150,220,0.9)'; ctx.font=`${this._fs(0.033)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText('Todav\u00eda no hay puntajes guardados.', cx, py+ph*0.45);
+    } else {
+      ranking.slice(0,8).forEach((e,i) => {
+        const ry = sepY + H*0.015 + i*rowH;
+        const col = medals[i] || '#78A0E6';
+        ctx.font=`bold ${this._fs(0.044)}px 'Segoe UI',Arial,sans-serif`;
+        ctx.textAlign='left'; ctx.fillStyle=col;
+        ctx.fillText(`${i+1}\u00b0`, px+pw*0.05, ry+rowH*0.65);
+        ctx.fillStyle='rgba(240,248,255,0.95)'; ctx.font=`${this._fs(0.040)}px 'Segoe UI',Arial,sans-serif`;
+        ctx.fillText(e.nombre.slice(0,16), px+pw*0.18, ry+rowH*0.65);
+        ctx.textAlign='right'; ctx.fillStyle='rgba(255,235,60,0.95)';
+        ctx.fillText(`${e.puntaje} pts`, px+pw*0.95, ry+rowH*0.65);
+      });
+    }
+    // Botón volver
+    const bw=Math.min(pw*0.55,240), bh=Math.max(44,H*0.065);
+    const bx=cx-bw/2, by=py+ph-bh-ph*0.04;
+    roundRect(ctx,bx,by,bw,bh,bh*0.28);
+    ctx.fillStyle='rgba(45,90,200,0.9)'; ctx.fill();
+    ctx.strokeStyle='rgba(100,170,255,0.9)'; ctx.lineWidth=2;
+    roundRect(ctx,bx,by,bw,bh,bh*0.28); ctx.stroke();
+    ctx.textAlign='center'; ctx.fillStyle=C.WHITE; ctx.font=`bold ${this._fs(0.036)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillText('< VOLVER', cx, by+bh*0.63);
+    this._rankingBackRect = {x:bx,y:by,w:bw,h:bh};
+
+    ctx.font=`${this._fs(0.026)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillStyle='rgba(255,215,0,0.85)'; ctx.textAlign='center';
+    ctx.fillText('Desarrolladora: Aleida Appendino', cx, H*0.975);
+  }
+
+  // ── Juego ────────────────────────────────────────────
+  _hudH() {
+    return this._hudHEarly();
+  }
+
+  _drawGame(ctx) {
+    const state = this.state;
+    // HUD
+    if ([STATES.PLAYING, STATES.COMPLETE_ANIM].includes(state)) this._drawHUD(ctx);
+    // Constelación
+    this._drawConstellation(ctx);
+    // Lumina
+    if (state === STATES.PLAYING) {
+      let lumX, lumY, lumR;
+      if (this.isMobile) {
+        // MÓVIL: Lumina en la franja inferior, fuera del área de juego.
+        // Las coordenadas se calculan en _resize() y se guardan en this._mobile*.
+        // Esto libera TODO el centro de pantalla para las constelaciones.
+        lumX = this._mobileLuminaX || this.W * 0.14;
+        lumY = this._mobileLuminaY || this.H * 0.92;
+        lumR = this._mobileLuminaR || 22;
+      } else {
+        // DESKTOP: posición original dentro del área de juego
+        lumR = Math.max(20, Math.min(this.W, this.H) * 0.05);
+        lumX = this.offX + 70 * this.scale;
+        lumY = this.offY + (BASE_H - 100) * this.scale;
+      }
+      this._draw_lumina(ctx, lumX, lumY, lumR);
+      this._drawLuminaGameBubble(ctx, lumX, lumY, lumR);
+    }
+    // Pantalla nivel completo
+    if (state === STATES.LEVEL_DONE) this._drawLevelDone(ctx);
+  }
+
+  _drawHUD(ctx) {
+    const W=this.W, hp=this._hudH();
+    // Fondo HUD
+    ctx.fillStyle='rgba(5,5,35,0.92)';
+    ctx.fillRect(0,0,W,hp);
+    ctx.strokeStyle='rgba(40,60,120,0.7)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,hp); ctx.lineTo(W,hp); ctx.stroke();
+
+    const fSz = this._fs(0.034);
+    const btnH = Math.max(28, hp-10);
+    const marg = Math.max(8, W*0.018);
+
+    // DESKTOP: botones MENU y SALIR (en móvil están en touch-controls)
+    if (!this.isMobile) {
+      const menuLbl='MENU', salirLbl='SALIR';
+      ctx.font=`bold ${fSz}px 'Segoe UI',Arial,sans-serif`;
+      const mw=ctx.measureText(menuLbl).width+Math.max(12,W*0.02);
+      const sw=ctx.measureText(salirLbl).width+Math.max(12,W*0.02);
+      const br2=btnH*0.35;
+      // MENU
+      const mb={x:W-marg-mw, y:(hp-btnH)/2, w:mw, h:btnH};
+      roundRect(ctx,mb.x,mb.y,mb.w,mb.h,br2); ctx.fillStyle='rgba(15,40,80,0.85)'; ctx.fill();
+      ctx.strokeStyle=C.ACCENT; ctx.lineWidth=2; roundRect(ctx,mb.x,mb.y,mb.w,mb.h,br2); ctx.stroke();
+      ctx.fillStyle=C.ACCENT; ctx.textAlign='center'; ctx.fillText(menuLbl,mb.x+mw/2,mb.y+mb.h*0.65);
+      this._hudMenuRect = mb;
+      // SALIR
+      const gap=Math.max(5,W*0.008);
+      const sb={x:mb.x-gap-sw, y:(hp-btnH)/2, w:sw, h:btnH};
+      roundRect(ctx,sb.x,sb.y,sb.w,sb.h,br2); ctx.fillStyle='rgba(60,12,12,0.85)'; ctx.fill();
+      ctx.strokeStyle='rgba(255,100,100,0.9)'; ctx.lineWidth=2; roundRect(ctx,sb.x,sb.y,sb.w,sb.h,br2); ctx.stroke();
+      ctx.fillStyle='rgba(255,100,100,0.95)'; ctx.fillText(salirLbl,sb.x+sw/2,sb.y+sb.h*0.65);
+      this._hudSalirRect = sb;
+    }
+
+    const c = this.CONST[this.levelIndex];
+    const done=this.connected.filter(Boolean).length;
+    const total=c.stars.length;
+    let nc;
+    if ([STATES.COMPLETE_ANIM, STATES.LEVEL_DONE].includes(this.state)) {
+      const p2=0.7+0.3*Math.sin(this.t*3);
+      nc=`rgb(${Math.round(c.color[0]*p2)},${Math.round(c.color[1]*p2)},${Math.round(c.color[2]*p2)})`;
+    } else nc='rgba(180,200,255,0.95)';
+
+    if (this.isMobile) {
+      // ── MÓVIL: HUD compacto de una sola línea ─────────────────────────
+      // Izquierda: Nivel N/6 · Puntos  |  Centro: Nombre constelación  |  Der: N/total
+      const fM = this._fs(0.036);
+      // Nivel + puntaje (izquierda)
+      ctx.font=`${fM*0.82}px 'Segoe UI',Arial,sans-serif`;
+      ctx.textAlign='left'; ctx.fillStyle='rgba(160,190,255,0.9)';
+      ctx.fillText(`Niv.${this.levelIndex+1}/${this.CONST.length}`, marg, hp*0.64);
+      ctx.fillStyle='rgba(255,235,60,0.92)';
+      ctx.fillText(`${this.starsEarned}pts`, marg + W*0.14, hp*0.64);
+      // Nombre de constelación (centro)
+      ctx.textAlign='center'; ctx.fillStyle=nc;
+      ctx.font=`bold ${fM}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText(c.nombre, W/2, hp*0.65);
+      // Progreso (derecha): barra compacta
+      const barW=Math.min(W*0.18, 80), barH=Math.max(4, hp*0.18);
+      const barX=W-marg-barW, barY=(hp-barH)/2;
+      ctx.fillStyle='rgba(40,40,80,0.8)';
+      roundRect(ctx,barX,barY,barW,barH,barH/2); ctx.fill();
+      if (done>0) {
+        const fw=Math.max(barH, barW*done/total);
+        ctx.fillStyle=C.GOLD;
+        roundRect(ctx,barX,barY,fw,barH,barH/2); ctx.fill();
+      }
+      ctx.fillStyle='rgba(200,215,255,0.85)'; ctx.textAlign='center';
+      ctx.font=`${fM*0.70}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText(`${done}/${total}`, barX+barW/2, barY+barH+fM*0.62);
+    } else {
+      // ── DESKTOP: HUD original sin cambios ───────────────────────────────
+      ctx.textAlign='left'; ctx.fillStyle='rgba(160,190,255,0.9)';
+      ctx.font=`${fSz*0.88}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText(`Nivel ${this.levelIndex+1}/${this.CONST.length}`, marg, hp*0.38);
+      ctx.fillStyle='rgba(255,235,60,0.95)';
+      ctx.fillText(`Puntaje: ${this.starsEarned}`, marg, hp*0.78);
+      ctx.textAlign='center'; ctx.fillStyle=nc;
+      ctx.font=`bold ${fSz*1.1}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText(c.nombre, W/2, hp*0.62);
+      const barW=Math.min(W*0.28,200), barH=Math.max(4,hp*0.14);
+      const barX=W/2-barW/2, barY=hp-barH-hp*0.08;
+      ctx.fillStyle='rgba(40,40,80,0.8)';
+      roundRect(ctx,barX,barY,barW,barH,barH/2); ctx.fill();
+      if (done>0) {
+        const fw=Math.max(barH,barW*done/total);
+        ctx.fillStyle=C.GOLD;
+        roundRect(ctx,barX,barY,fw,barH,barH/2); ctx.fill();
+      }
+      ctx.fillStyle='rgba(200,215,255,0.8)'; ctx.textAlign='left';
+      ctx.font=`${fSz*0.75}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText(`${done}/${total}`, barX+barW+4, barY+barH*0.85);
+    }
+  }
+
+  _drawConstellation(ctx) {
+    const c = this.CONST[this.levelIndex];
+    const t = this.t;
+    // ── Grosor de líneas — adaptativo para móvil y desktop ─────────────
+    // En móvil: mínimos absolutos para visibilidad táctil.
+    // En desktop: crece proporcionalmente al viewport gracias a _lineGlowMult/_lineMainMult
+    // precalculados en _resize() → sin costo extra por frame.
+    const lineGlowW = this.isMobile
+      ? Math.max(14, 10 * this.scale)
+      : Math.max(8,  10 * this.scale * (this._lineGlowMult || 1.4));
+    const lineMainW = this.isMobile
+      ? Math.max(4,   3 * this.scale)
+      : Math.max(2.5, 3 * this.scale * (this._lineMainMult || 1.4));
+    ctx.save();
+    // Líneas
+    for (let li=0; li<c.lines.length; li++) {
+      const [i1,i2] = c.lines[li];
+      if (this.connected[i1] && this.connected[i2]) {
+        const [x1,y1]=this._b2s(c.stars[i1].x, c.stars[i1].y);
+        const [x2,y2]=this._b2s(c.stars[i2].x, c.stars[i2].y);
+        const pulse = (this.state===STATES.COMPLETE_ANIM)
+          ? 0.6+0.4*Math.sin(t*4+li) : 0.85+0.15*Math.sin(t*1.5+li);
+        const [r,g,b]=c.color;
+        // Glow
+        ctx.strokeStyle=`rgba(${r},${g},${b},0.22)`;
+        ctx.lineWidth=lineGlowW; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        // Línea principal
+        ctx.strokeStyle=`rgba(${Math.round(r*pulse)},${Math.round(g*pulse)},${Math.round(b*pulse)},0.9)`;
+        ctx.lineWidth=lineMainW;
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      }
+    }
+    // ── Estrellas — tamaño adaptativo según viewport ─────────────────────
+    // Los factores se precalculan en _resize()/_computeStarScale() y se leen
+    // aquí sin costo: O(1) lectura de propiedad vs. O(1) en el frame.
+    //
+    // MÓVIL:   mult=3.5, minR=12px  (probados en campo con usuarios reales)
+    // DESKTOP: mult crece de 2.4 (1280px) a 4.2 (2560px)  — ver _computeStarScale
+    //          minR crece de 9px (1366) a 12px (1920) a 16px (2K+)
+    const starSizeMult = this._starSizeMult ?? (this.isMobile ? 3.5 : 2.4);
+    const minStarR     = this._minStarR     ?? (this.isMobile ? 12  : 9);
+
+    for (let i=0; i<c.stars.length; i++) {
+      const s=c.stars[i];
+      const [sx,sy]=this._b2s(s.x, s.y);
+      // Radio visual: depende de magnitud estelar (mag 0=brillante, mag 3=tenue)
+      const baseR = Math.max(minStarR, (5 - s.mag * 0.8) * this.scale * starSizeMult);
+      const isTarget = i===this.currentTarget && this.state===STATES.PLAYING;
+      const isConn   = this.connected[i];
+
+      if (isConn) {
+        const pulse=(this.state===STATES.COMPLETE_ANIM)?(0.6+0.4*Math.sin(t*5+i)):1;
+        const [r,g,b]=c.color;
+        const gr=ctx.createRadialGradient(sx,sy,0,sx,sy,baseR*3*pulse);
+        gr.addColorStop(0,`rgba(${r},${g},${b},0.5)`);
+        gr.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=gr;
+        ctx.beginPath(); ctx.arc(sx,sy,baseR*3*pulse,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle=`rgb(${Math.round(r*(0.8+0.4*pulse))},${Math.round(g*(0.8+0.4*pulse))},${Math.round(b*(0.8+0.4*pulse))})`;
+        ctx.beginPath(); ctx.arc(sx,sy,baseR*pulse,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.8)';
+        ctx.beginPath(); ctx.arc(sx,sy,baseR*0.35*pulse,0,Math.PI*2); ctx.fill();
+      } else if (isTarget) {
+        // ── ESTRELLA OBJETIVO: guía visual multinivel ─────────────────────
+        // Capas de feedback visual de afuera hacia adentro:
+        //   1. Halo exterior suave (siempre presente desde el inicio)
+        //   2. Anillo pulsante (señal de "toca aquí")
+        //   3. Núcleo brillante blanco
+        //   4. Número de orden superpuesto (en móvil)
+        const pulse = 0.65 + 0.35 * Math.sin(t * 5.5);
+        const pulseFast = 0.5 + 0.5 * Math.sin(t * 8);
+
+        // ── Guía visual multinivel de la estrella objetivo ─────────────────
+        // CAPA 1: Halo exterior difuso — visible desde lejos, siempre activo.
+        // El radio del halo se escala por tamaño de pantalla: en teléfonos
+        // pequeños (360px) baseR=12px, halo=12*4.5*0.85=46px → muy visible.
+        // En pantallas grandes el radio natural ya es suficiente.
+        const haloMult = this.isMobile
+          ? Math.max(4.0, 52 / Math.max(12, baseR))  // garantiza ≥48px de halo
+          : 3.2;
+        const haloR = baseR * haloMult * (0.85 + 0.15 * pulse);
+        const haloGr = ctx.createRadialGradient(sx,sy,baseR*0.5,sx,sy,haloR);
+        haloGr.addColorStop(0, `rgba(255,255,100,${0.45*pulseFast})`);
+        haloGr.addColorStop(0.4, `rgba(255,220,0,${0.25*pulse})`);
+        haloGr.addColorStop(1, 'rgba(255,180,0,0)');
+        ctx.fillStyle = haloGr;
+        ctx.beginPath(); ctx.arc(sx, sy, haloR, 0, Math.PI*2); ctx.fill();
+
+        // CAPA 2: Anillo animado pulsante — señal inequívoca de "toca aquí".
+        // Grosor mínimo 4px en móvil para que sea visible en pantallas densas.
+        const ringR = baseR * (this.isMobile ? 2.2 : 1.6) * pulse;
+        const ringW = this.isMobile ? Math.max(4, baseR * 0.38) : 2 * this.scale;
+        ctx.strokeStyle = `rgba(255,255,120,${0.90 + 0.10*pulseFast})`;
+        ctx.lineWidth = ringW;
+        ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(sx, sy, ringR, 0, Math.PI*2); ctx.stroke();
+
+        // Segundo anillo más exterior, más sutil
+        ctx.strokeStyle = `rgba(255,255,255,${0.30*pulse})`;
+        ctx.lineWidth = ringW * 0.55;
+        ctx.beginPath(); ctx.arc(sx, sy, ringR * 1.5, 0, Math.PI*2); ctx.stroke();
+
+        // CAPA 3: Núcleo brillante — diferencia visualmente de las estrellas inactivas.
+        const coreGr = ctx.createRadialGradient(sx,sy,0,sx,sy,baseR);
+        coreGr.addColorStop(0, 'rgba(255,255,255,0.99)');
+        coreGr.addColorStop(0.4, 'rgba(255,255,230,0.88)');
+        coreGr.addColorStop(1, 'rgba(255,255,180,0.35)');
+        ctx.fillStyle = coreGr;
+        ctx.beginPath(); ctx.arc(sx, sy, baseR, 0, Math.PI*2); ctx.fill();
+
+      } else {
+        // Estrella inactiva — radio con mínimo garantizado por plataforma
+        const inactR = Math.max(minStarR, baseR * 0.9);
+        ctx.fillStyle='rgba(110,120,160,0.7)';
+        ctx.beginPath(); ctx.arc(sx,sy,inactR,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='rgba(160,170,200,0.4)';
+        ctx.beginPath(); ctx.arc(sx,sy,inactR*0.45,0,Math.PI*2); ctx.fill();
+      }
+
+      // ── Números de orden en móvil ─────────────────────────────────────────
+      // Se muestran SIEMPRE durante el juego (no solo al estar idle).
+      // Diseño: badge circular con fondo semitransparente para máxima legibilidad
+      // sobre cualquier fondo (cielo oscuro, partículas, glow de estrellas).
+      //
+      // Jerarquía visual por color + tamaño:
+      //   OBJETIVO  → badge amarillo brillante, texto negro, tamaño grande
+      //   CONECTADA → badge del color de la constelación, texto blanco, mediano
+      //   PENDIENTE → badge gris tenue, texto gris, pequeño (no distrae)
+      if (this.isMobile && this.state === STATES.PLAYING) {
+        const numStr = String(i + 1);
+        // numSz mínimo 14px para legibilidad en pantallas de 360px
+        // El objetivo recibe +3px adicionales para mayor prominencia
+        const numSzBase = Math.max(14, Math.round(baseR * 1.05));
+        const numSz = isTarget ? numSzBase + 3 : numSzBase;
+        const badgeR = numSz * 0.72;  // radio del badge circular
+        // Posición: centrado encima de la estrella con margen
+        const numCX = sx;
+        const numCY = sy - baseR - badgeR - 3;
+
+        ctx.textAlign = 'center';
+        ctx.font = `bold ${numSz}px 'Segoe UI',Arial,sans-serif`;
+
+        if (isTarget) {
+          // Badge objetivo: fondo amarillo pulsante
+          const pN = 0.7 + 0.3 * Math.sin(t * 5.5);
+          // Glow exterior del badge
+          ctx.beginPath(); ctx.arc(numCX, numCY, badgeR + 3, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(255,200,0,${0.25*pN})`; ctx.fill();
+          // Fondo badge
+          ctx.beginPath(); ctx.arc(numCX, numCY, badgeR, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(255,230,0,${0.92 + 0.08*pN})`; ctx.fill();
+          // Número en negro para máximo contraste
+          ctx.fillStyle = 'rgba(20,10,0,0.95)';
+          ctx.fillText(numStr, numCX, numCY + numSz * 0.36);
+        } else if (isConn) {
+          // Badge completado: fondo del color de la constelación
+          const [r,g,b] = c.color;
+          ctx.beginPath(); ctx.arc(numCX, numCY, badgeR, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(${r},${g},${b},0.78)`; ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.95)';
+          ctx.fillText(numStr, numCX, numCY + numSz * 0.36);
+        } else {
+          // Badge pendiente: fondo muy tenue (no distrae del objetivo)
+          ctx.beginPath(); ctx.arc(numCX, numCY, badgeR, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(80,90,140,0.40)'; ctx.fill();
+          ctx.fillStyle = 'rgba(160,175,220,0.70)';
+          ctx.fillText(numStr, numCX, numCY + numSz * 0.36);
+        }
+        ctx.textAlign = 'center';
+      }
+    }
+
+    // ── Flecha de ayuda (idle >4s) ────────────────────────────────────────
+    // En MÓVIL la flecha es más grande y apunta directamente a la estrella.
+    // En DESKTOP se mantiene la flecha triangular giratoria original.
+    if (this.state===STATES.PLAYING && this.showHelp && this.currentTarget<c.stars.length) {
+      const tx=c.stars[this.currentTarget].x, ty=c.stars[this.currentTarget].y;
+      const [tsx,tsy]=this._b2s(tx,ty);
+      if (this.isMobile) {
+        // MÓVIL: flecha directa apuntando desde arriba hacia la estrella objetivo.
+        // BUG FIX: baseR aquí era el valor de la ÚLTIMA estrella iterada en el loop
+        // anterior, no el de la estrella objetivo. Recalculamos el baseR correcto.
+        const tgtStar = c.stars[this.currentTarget];
+        // Usa los mismos factores precalculados en _computeStarScale para consistencia
+        const tgtBaseR = Math.max(
+          this._minStarR     ?? (this.isMobile ? 12 : 9),
+          (5 - tgtStar.mag * 0.8) * this.scale * (this._starSizeMult ?? (this.isMobile ? 3.5 : 2.4))
+        );
+        const pulse2 = 0.5 + 0.5 * Math.sin(this.t * 4);
+        // badgeR del número de orden que está encima de la estrella
+        const numSzBase = Math.max(14, Math.round(tgtBaseR * 1.05));
+        const numSzTarget = numSzBase + 3;
+        const badgeRTarget = numSzTarget * 0.72;
+        // La flecha arranca encima del badge y apunta al tope del halo de la estrella
+        const arrLen = Math.max(24, tgtBaseR * 2.0);
+        const arrowTip  = tsy - tgtBaseR * 2.0;      // tope del halo objetivo
+        const arrowBase = tsy - tgtBaseR * 3.5 - badgeRTarget * 2 - arrLen;
+        // Línea de la flecha
+        ctx.strokeStyle = `rgba(255,215,0,${0.8 + 0.2*pulse2})`;
+        ctx.lineWidth = Math.max(4, tgtBaseR * 0.38);
+        ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(tsx, arrowBase); ctx.lineTo(tsx, arrowTip); ctx.stroke();
+        // Punta de flecha (triángulo hacia abajo)
+        const hw = Math.max(10, tgtBaseR * 0.85);
+        ctx.fillStyle = `rgba(255,215,0,${0.95 + 0.05*pulse2})`;
+        ctx.beginPath();
+        ctx.moveTo(tsx - hw, arrowTip - hw * 0.7);
+        ctx.lineTo(tsx + hw, arrowTip - hw * 0.7);
+        ctx.lineTo(tsx, arrowTip + hw * 0.4);
+        ctx.closePath(); ctx.fill();
+      } else {
+        // DESKTOP: flecha giratoria original
+        const angle=this.t*1.8;
+        const dist=(52+10*Math.sin(this.t*3.5))*this.scale;
+        const ax=tsx+dist*Math.cos(angle), ay=tsy+dist*Math.sin(angle);
+        const pulse2=0.5+0.5*Math.sin(this.t*5);
+        const gc=`rgba(255,215,0,${pulse2})`;
+        ctx.fillStyle=gc;
+        ctx.beginPath();
+        for (let k=0;k<3;k++) {
+          const a2=angle+Math.PI+k*Math.PI*2/3;
+          const r2=(9+5*pulse2)*this.scale;
+          if(k===0) ctx.moveTo(ax+r2*Math.cos(a2),ay+r2*Math.sin(a2));
+          else ctx.lineTo(ax+r2*Math.cos(a2),ay+r2*Math.sin(a2));
+        }
+        ctx.closePath(); ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  _drawLuminaGameBubble(ctx, lx, ly, ls) {
+    const c=this.CONST[this.levelIndex];
+    const done=this.currentTarget, total=c.stars.length;
+    const ratio=total>0?done/total:0;
+    let msg;
+    if      (ratio===0)   msg='Toc\u00e1 cada estrella en orden.';
+    else if (ratio<0.3)  msg='Muy bien! Segu\u00ed tocando.';
+    else if (ratio<0.6)  msg='Excelente! Ya casi terminas.';
+    else if (ratio<0.85) msg='Que bien! Ya falta poquito.';
+    else                 msg='Casi terminas! Una mas!';
+
+    if (this.isMobile) {
+      // ── MÓVIL: burbuja compacta a la DERECHA de Lumina (franja inferior) ──
+      // Al inicio de cada nivel (currentTarget===0 y !firstStarShown),
+      // Lumina muestra un mensaje de instrucción específico que enseña
+      // la mecánica: "¡Tocá la estrella 1 que brilla!".
+      // Tras el primer toque correcto, vuelve a los mensajes de progreso.
+      if (!this.firstStarShown && done === 0) {
+        msg = 'Tocá la estrella Nº1 que brilla';
+      }
+
+      const fSz = this._fs(0.030);
+      ctx.font = `${fSz}px 'Segoe UI',Arial,sans-serif`;
+      // Ancho máximo disponible a la derecha de Lumina, con margen al borde
+      const maxW  = Math.max(120, this.W - lx - ls - ls * 0.5 - 14);
+      const words = msg.split(' ');
+      let lines = [], cur = '';
+      for (const w of words) {
+        const test = cur + w + ' ';
+        if (ctx.measureText(test).width <= maxW) cur = test;
+        else { if (cur) lines.push(cur.trim()); cur = w + ' '; }
+      }
+      if (cur.trim()) lines.push(cur.trim());
+      const lineH = fSz * 1.32, padX = 10, padY = 7;
+      const bw = Math.min(maxW + padX * 2, this.W - lx - ls - 8);
+      const bh = lines.length * lineH + padY * 2;
+      const bx = lx + ls + 8;
+      // Centrar verticalmente con Lumina.
+      // El techo de la burbuja = gameBottom + 2px (no puede invadir las estrellas).
+      // El suelo = H - safeBottom - bh - 4px (respeta la misma safe-area que Lumina).
+      const safeBot = this._mobileSafeBottom || Math.max(50, this.H * 0.13);
+      const byRaw = ly - bh / 2;
+      const byC   = Math.max(
+        (this._mobileGameBottom || this.H * 0.78) + 2,
+        Math.min(this.H - safeBot - bh - 4, byRaw)
+      );
+      // Además clampar bx para que no salga por la derecha
+      const bxC = Math.min(bx, this.W - bw - 4);
+
+      // Aplicar alpha de fade-out: la burbuja se desvanece suavemente
+      // tras el primer toque correcto, liberando espacio sin cortes bruscos.
+      const bubAlpha = this._bubbleFadeT ?? 1.0;
+      if (bubAlpha <= 0) { /* burbuja invisible, no dibujar */ } else {
+      ctx.save();
+      ctx.globalAlpha = bubAlpha;
+      roundRect(ctx, bxC, byC, bw, bh, 8);
+      ctx.fillStyle = 'rgba(8,14,55,0.90)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(100,160,255,0.75)'; ctx.lineWidth = 1.5;
+      roundRect(ctx, bxC, byC, bw, bh, 8); ctx.stroke();
+      // Cola hacia Lumina
+      ctx.fillStyle = 'rgba(8,14,55,0.90)';
+      ctx.beginPath();
+      ctx.moveTo(bxC, byC + bh * 0.4);
+      ctx.lineTo(lx + ls, ly);
+      ctx.lineTo(bxC, byC + bh * 0.6);
+      ctx.closePath(); ctx.fill();
+      ctx.textAlign = 'center';
+      ctx.font = `${fSz}px 'Segoe UI',Arial,sans-serif`;
+      const startY = byC + padY + lineH * 0.82;
+      lines.forEach((ln, i) => {
+        ctx.fillStyle = (i === 0 && done === 0 && !this.firstStarShown)
+          ? 'rgba(255,240,80,0.97)'
+          : 'rgba(210,225,255,0.95)';
+        ctx.fillText(ln, bxC + bw / 2, startY + i * lineH);
+      });
+      ctx.restore();
+      } // end bubAlpha > 0
+    } else {
+      // ── DESKTOP: comportamiento original ──────────────────────────────────
+      const words=msg.split(' '), lines=[], fSz=this._fs(0.033);
+      ctx.font=`${fSz}px 'Segoe UI',Arial,sans-serif`;
+      const maxW=Math.min(this.W*0.3,220);
+      let cur='';
+      for (const w of words) {
+        const test=cur+w+' ';
+        if (ctx.measureText(test).width<=maxW) cur=test;
+        else { if(cur) lines.push(cur.trim()); cur=w+' '; }
+      }
+      if(cur.trim()) lines.push(cur.trim());
+      const lineH=fSz*1.35, padX=10, padY=8;
+      const bw=maxW+padX*2, bh=lines.length*lineH+padY*2;
+      const bx=lx+ls+this.W*0.01, by=Math.max(this._hudH()+8, ly-bh+ls*0.5);
+      ctx.save();
+      roundRect(ctx,bx,by,bw,bh,10);
+      ctx.fillStyle='rgba(240,246,255,0.95)'; ctx.fill();
+      ctx.strokeStyle='rgba(150,185,235,0.9)'; ctx.lineWidth=1.5;
+      roundRect(ctx,bx,by,bw,bh,10); ctx.stroke();
+      ctx.fillStyle='rgba(240,246,255,0.95)';
+      ctx.beginPath(); ctx.moveTo(bx,by+bh*0.6); ctx.lineTo(lx+ls,ly); ctx.lineTo(bx,by+bh*0.75); ctx.closePath(); ctx.fill();
+      ctx.textAlign='center'; ctx.fillStyle='rgba(15,15,55,0.95)';
+      const startY=by+padY+lineH*0.8;
+      lines.forEach((ln,i)=>{ ctx.fillText(ln,bx+bw/2,startY+i*lineH); });
+      ctx.restore();
+    }
+  }
+
+  _drawLevelDone(ctx) {
+    const W=this.W, H=this.H, cx=W/2;
+    const c=this.CONST[this.levelIndex];
+    const ficha=c.ficha;
+    // Overlay
+    ctx.fillStyle='rgba(0,0,15,0.82)'; ctx.fillRect(0,0,W,H);
+    // Panel
+    const pw=Math.min(W*0.88,560), ph=Math.min(H*0.88,520);
+    const px=cx-pw/2, py=(H-ph)/2;
+    const br2=Math.min(pw,ph)*0.04;
+    roundRect(ctx,px,py,pw,ph,br2); ctx.fillStyle='rgba(8,8,48,0.97)'; ctx.fill();
+    ctx.strokeStyle=`rgb(${c.color[0]},${c.color[1]},${c.color[2]})`; ctx.lineWidth=3;
+    roundRect(ctx,px,py,pw,ph,br2); ctx.stroke();
+    // Estrellas deco
+    const pulse=0.7+0.3*Math.sin(this.t*4);
+    ctx.fillStyle=`rgba(255,215,0,${pulse})`; ctx.textAlign='center';
+    ctx.font=`${this._fs(0.038)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillText(('* ').repeat(Math.min(c.stars.length,8)).trim(), cx, py+ph*0.09);
+    // Nombre
+    ctx.font=`bold ${this._fs(0.065)}px 'Segoe UI',Arial,sans-serif`;
+    const p2=0.82+0.18*Math.sin(this.t*2.5);
+    ctx.fillStyle=`rgba(${Math.round(c.color[0]*p2)},${Math.round(c.color[1]*p2)},${Math.round(c.color[2]*p2)},0.95)`;
+    ctx.shadowColor=`rgb(${c.color[0]},${c.color[1]},${c.color[2]})`; ctx.shadowBlur=12;
+    ctx.fillText(c.nombre, cx, py+ph*0.22);
+    ctx.shadowBlur=0;
+    // COMPLETADA
+    ctx.font=`${this._fs(0.033)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillStyle='rgba(180,200,255,0.9)'; ctx.fillText('COMPLETADA', cx, py+ph*0.32);
+    // Puntos
+    const pts=c.stars.length*POINTS_PER_STAR;
+    ctx.font=`bold ${this._fs(0.050)}px 'Segoe UI',Arial,sans-serif`;
+    ctx.fillStyle=C.GOLD; ctx.fillText(`+ ${pts} puntos`, cx, py+ph*0.42);
+    // Separador
+    ctx.strokeStyle=`rgba(${c.color[0]},${c.color[1]},${c.color[2]},0.4)`; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx-pw*0.3,py+ph*0.49); ctx.lineTo(cx+pw*0.3,py+ph*0.49); ctx.stroke();
+    // Dato curioso
+    if (ficha.datos) {
+      ctx.fillStyle='rgba(120,180,220,0.9)'; ctx.font=`${this._fs(0.031)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText('Dato curioso:', cx, py+ph*0.55);
+      const words2=ficha.datos.split(' '); let lines2=[], cur2='';
+      const maxW2=pw*0.82;
+      ctx.font=`${this._fs(0.030)}px 'Segoe UI',Arial,sans-serif`;
+      for (const w of words2) {
+        const test=cur2+w+' ';
+        if(ctx.measureText(test).width<=maxW2) cur2=test;
+        else { if(cur2) lines2.push(cur2.trim()); cur2=w+' '; }
+      }
+      if(cur2.trim()) lines2.push(cur2.trim());
+      ctx.fillStyle='rgba(210,228,255,0.9)';
+      const lh=this._fs(0.030)*1.35;
+      lines2.slice(0,3).forEach((ln,i)=>{ ctx.fillText(ln,cx,py+ph*0.62+i*lh); });
+    }
+    // Botón CONTINUAR (solo desktop; en móvil hay touch-controls)
+    const bw=Math.min(pw*0.68,300), bh=Math.max(48,H*0.075);
+    const bx=cx-bw/2, by2=py+ph*0.82;
+    if (!this.isMobile) {
+      const bp=0.82+0.18*Math.sin(this.t*2.2);
+      roundRect(ctx,bx,by2,bw,bh,bh*0.28);
+      ctx.fillStyle=`rgba(${Math.round(60*bp)},${Math.round(110*bp)},${Math.round(240*bp)},0.93)`; ctx.fill();
+      ctx.strokeStyle=C.GOLD; ctx.lineWidth=3; roundRect(ctx,bx,by2,bw,bh,bh*0.28); ctx.stroke();
+      const lbl=this.levelIndex<this.CONST.length-1?'CONTINUAR  >':'VER RESULTADOS  >';
+      ctx.fillStyle=C.WHITE; ctx.font=`bold ${this._fs(0.044)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.textAlign='center'; ctx.fillText(lbl,cx,by2+bh*0.63);
+      this._levelDoneBtn={x:bx,y:by2,w:bw,h:bh};
+    }
+  }
+
+  // ── Pantalla final ───────────────────────────────────
+  _drawFinal(ctx) {
+    const W=this.W, H=this.H, cx=W/2, t=this.t;
+    ctx.fillStyle='rgba(0,0,25,0.88)'; ctx.fillRect(0,0,W,H);
+
+    // Partículas orbitales (solo desktop — en móvil ocupan espacio valioso)
+    if (!this.isMobile) {
+      for (let i=0;i<8;i++) {
+        const a=t*0.55+i*Math.PI*2/8;
+        const rx=cx+Math.min(W*0.22,240)*Math.cos(a);
+        const ry=H*0.42+Math.min(H*0.14,100)*Math.sin(a);
+        const colors=[[255,215,0],[255,200,80],[100,200,255],[200,100,255],[100,255,200],[255,150,100],[150,255,150],[255,200,150]];
+        const [r,g,b]=colors[i];
+        ctx.fillStyle=`rgb(${r},${g},${b})`;
+        ctx.beginPath(); ctx.arc(rx,ry,Math.max(2,H*0.006),0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    const pulse=0.80+0.20*Math.sin(t*2);
+    ctx.textAlign='center';
+
+    if (this.isMobile) {
+      // ── MÓVIL: layout top-down con cursor acumulativo ─────────────────────
+      //
+      // PROBLEMA DEL LAYOUT ANTERIOR:
+      // La posición de cada elemento se calculaba con porcentajes absolutos de H
+      // (panelTop = H*0.23, btn1y = min(H*0.80, lumY+...), etc.).
+      // Eso hacía que la burbuja, calculada hacia arriba desde Lumina,
+      // terminara DENTRO del área del panel → superposición de ~58px en todos
+      // los teléfonos probados.
+      //
+      // SOLUCIÓN: cursor acumulativo estricto.
+      // Un único puntero "cursor" avanza hacia abajo bloque a bloque.
+      // Cada elemento conoce exactamente su top = cursor, y al terminar
+      // avanza cursor += altura_del_bloque + gap.
+      // Así es imposible que un bloque solape al anterior.
+      //
+      // Los gaps son relativos a H (sin valores fijos de px) y el panel
+      // se dimensiona para ocupar el espacio disponible entre los bloques
+      // fijos, garantizando que todo cabe en cualquier altura de viewport.
+
+      // ── Medidas base (todas relativas) ─────────────────────────────────
+      const GAP_S = Math.max(6,  H * 0.010);  // gap pequeño  (~8–10px)
+      const GAP_M = Math.max(10, H * 0.016);  // gap medio    (~12–14px)
+      const GAP_L = Math.max(14, H * 0.022);  // gap grande   (~17–22px)
+
+      const titleSz = this._fs(0.078);
+      const subSz   = this._fs(0.034);
+      const fBub    = this._fs(0.030);
+      const lumR    = Math.max(22, Math.min(W, H) * 0.055);
+      const bh      = Math.max(48, H * 0.075);
+      const btn2h   = Math.max(44, H * 0.065);
+      const bhB     = 2 * fBub * 1.35 + 14;  // altura burbuja (2 líneas)
+      const pw      = Math.min(W * 0.90, 460);
+
+      // Altura que consumen todos los bloques EXCEPTO el panel.
+      // Calculada de forma idéntica a cómo se irá dibujando abajo.
+      const fixedH =
+          GAP_S                  // margen superior
+        + titleSz + GAP_S        // título
+        + subSz * 2.5 + GAP_M   // subtítulo 2 líneas
+        // (panel aquí — tamaño variable)
+        + GAP_L                  // gap panel → burbuja
+        + bhB + GAP_S            // burbuja
+        + lumR * 2 + GAP_L      // Lumina
+        + bh + GAP_S             // botón 1
+        + btn2h + GAP_S;         // botón 2 + margen inferior
+
+      // El panel ocupa lo que sobre; acotado entre 120 y 180px para que
+      // las filas de stats sean legibles en cualquier teléfono.
+      const ph = Math.max(120, Math.min(180, H - fixedH));
+
+      // ── CURSOR: empieza en el margen superior ───────────────────────────
+      let cur = GAP_S;
+
+      // ── Bloque 1: Título ────────────────────────────────────────────────
+      cur += titleSz;   // baseline del texto = cur
+      ctx.font=`bold ${titleSz}px 'Segoe UI',Arial,sans-serif`;
+      ctx.shadowColor='rgba(180,110,0,0.7)'; ctx.shadowBlur=14;
+      ctx.fillStyle=`rgb(${Math.round(255*pulse)},${Math.round(210*pulse)},${Math.round(40*pulse)})`;
+      ctx.fillText('FELICIDADES!', cx, cur);
+      ctx.shadowBlur=0;
+      cur += GAP_S;
+
+      // ── Bloque 2: Subtítulo (2 líneas) ──────────────────────────────────
+      ctx.font=`${subSz}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillStyle='rgba(190,215,255,0.9)';
+      cur += subSz;
+      ctx.fillText('Exploraste todas las constelaciones', cx, cur);
+      cur += subSz * 1.4;
+      ctx.fillText('del Cielo Cordobes!', cx, cur);
+      cur += GAP_M;
+
+      // ── Bloque 3: Panel de stats ─────────────────────────────────────────
+      // py = top del panel = cur; el panel empuja el cursor hacia abajo.
+      const py = cur;
+      const px = cx - pw / 2;
+      const br2 = Math.min(pw, ph) * 0.06;
+      roundRect(ctx,px,py,pw,ph,br2);
+      ctx.fillStyle='rgba(6,10,50,0.96)'; ctx.fill();
+      const brdC=`rgb(${Math.round(180+75*pulse)},${Math.round(150+65*pulse)},${Math.round(20*pulse)})`;
+      ctx.strokeStyle=brdC; ctx.lineWidth=2.5;
+      roundRect(ctx,px,py,pw,ph,br2); ctx.stroke();
+      const stats=[
+        ['Puntos Totales', `${this.starsEarned}`, '#FFD700'],
+        ['Constelaciones', `${this.CONST.length}`, 'rgba(100,200,255,0.95)'],
+        ['Nivel',          this._getTitle(),       '#C896FF'],
+      ];
+      const rowH = ph / stats.length;
+      stats.forEach(([label,value,vc],i) => {
+        const ry2 = py + i * rowH;
+        if (i > 0) {
+          ctx.strokeStyle='rgba(40,65,160,0.4)'; ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(px+pw*0.04,ry2); ctx.lineTo(px+pw*0.96,ry2); ctx.stroke();
+        }
+        ctx.textAlign='center';
+        ctx.font=`${this._fs(0.030)}px 'Segoe UI',Arial,sans-serif`;
+        ctx.fillStyle='rgba(155,178,225,0.9)';
+        ctx.fillText(label, cx, ry2 + rowH * 0.34);
+        ctx.font=`bold ${this._fs(0.042)}px 'Segoe UI',Arial,sans-serif`;
+        ctx.fillStyle=vc;
+        ctx.fillText(value, cx, ry2 + rowH * 0.76);
+      });
+      cur = py + ph + GAP_L;  // cursor avanza DESPUÉS del panel + gap
+
+      // ── Bloque 4: Burbuja de Lumina ──────────────────────────────────────
+      // La burbuja va DEBAJO del panel (cursor ya superó el panel + gap).
+      // Nunca puede solapar el panel porque el cursor es estrictamente mayor.
+      const bwB = Math.min(W * 0.72, 260);
+      const bxB = cx - bwB / 2;
+      const byB = cur;
+      roundRect(ctx,bxB,byB,bwB,bhB,8);
+      ctx.fillStyle='rgba(8,14,55,0.90)'; ctx.fill();
+      ctx.strokeStyle='rgba(100,160,255,0.75)'; ctx.lineWidth=1.5;
+      roundRect(ctx,bxB,byB,bwB,bhB,8); ctx.stroke();
+      // Cola de la burbuja apuntando hacia abajo (a Lumina)
+      ctx.fillStyle='rgba(8,14,55,0.90)';
+      ctx.beginPath();
+      ctx.moveTo(cx-8, byB+bhB); ctx.lineTo(cx, byB+bhB+10); ctx.lineTo(cx+8, byB+bhB);
+      ctx.closePath(); ctx.fill();
+      const bubLines = ['Excelente trabajo!','Descubriste todo!'];
+      ctx.textAlign='center';
+      bubLines.forEach((ln,i)=>{
+        ctx.font=`${fBub}px 'Segoe UI',Arial,sans-serif`;
+        ctx.fillStyle = i===0 ? 'rgba(255,240,80,0.97)' : 'rgba(210,225,255,0.95)';
+        ctx.fillText(ln, cx, byB + 7 + fBub * (0.85 + i * 1.35));
+      });
+      cur = byB + bhB + GAP_S + 10; // +10 por la cola
+
+      // ── Bloque 5: Lumina ─────────────────────────────────────────────────
+      // lumY = center de Lumina; top = cur, center = cur + lumR
+      const lumX = cx;
+      const lumY = cur + lumR;
+      this._draw_lumina(ctx, lumX, lumY, lumR);
+      cur = lumY + lumR + GAP_L;
+
+      // ── Bloque 6: Botón JUGAR DE NUEVO ───────────────────────────────────
+      const bw = Math.min(W * 0.80, 320);
+      const btn1y = cur;
+      const btn1x = cx - bw / 2;
+      const bp=0.80+0.20*Math.sin(t*2.5);
+      roundRect(ctx,btn1x,btn1y,bw,bh,bh*0.28);
+      ctx.fillStyle=`rgba(${Math.round(60*bp)},${Math.round(110*bp)},${Math.round(240*bp)},0.93)`; ctx.fill();
+      ctx.strokeStyle=C.GOLD; ctx.lineWidth=3;
+      roundRect(ctx,btn1x,btn1y,bw,bh,bh*0.28); ctx.stroke();
+      ctx.fillStyle=C.WHITE; ctx.font=`bold ${this._fs(0.042)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.textAlign='center'; ctx.fillText('JUGAR DE NUEVO', cx, btn1y+bh*0.63);
+      this._finalBtn1={x:btn1x,y:btn1y,w:bw,h:bh};
+      cur = btn1y + bh + GAP_S;
+
+      // ── Bloque 7: Botón SALIR ────────────────────────────────────────────
+      const btn2y = cur;
+      roundRect(ctx,btn1x,btn2y,bw,btn2h,btn2h*0.28);
+      ctx.fillStyle='rgba(80,22,22,0.9)'; ctx.fill();
+      ctx.strokeStyle=C.RED; ctx.lineWidth=2.5;
+      roundRect(ctx,btn1x,btn2y,bw,btn2h,btn2h*0.28); ctx.stroke();
+      ctx.fillStyle=C.WHITE; ctx.font=`bold ${this._fs(0.038)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText('SALIR', cx, btn2y+btn2h*0.63);
+      this._finalBtn2={x:btn1x,y:btn2y,w:bw,h:btn2h};
+
+    } else {
+      // ── DESKTOP: layout vertical con cursor acumulativo y distribución
+      // proporcional del espacio (simula justify-content: space-between
+      // con pesos por sección, igual que el branch móvil).
+      //
+      // PROBLEMAS DEL LAYOUT ANTERIOR (porcentajes absolutos de H):
+      //   1. Burbuja y Lumina se solapaban: burbuja calculada "encima" de
+      //      lumY=H*0.60, pero bhB era suficientemente grande para invadir
+      //      el área de Lumina → gap negativo de hasta 103px.
+      //   2. Créditos solapaban con Btn2: créditos en H*0.940 y btn2 terminaba
+      //      en H*0.95 → colisión garantizada en todas las resoluciones.
+      //   3. Contenido comprimido en el 60% superior de la pantalla con el
+      //      40% inferior prácticamente vacío.
+      //
+      // NUEVA ESTRATEGIA: cursor acumulativo + gaps proporcionales.
+      //   - Se mide el contenido fijo total (títulos, panel, burbuja, Lumina,
+      //     botones, créditos) y el espacio sobrante se distribuye como gaps
+      //     con pesos distintos para cada transición.
+      //   - El panel crece/decrece para absorber el espacio disponible
+      //     (acotado entre 140px mínimo y 260px máximo).
+      //   - Los créditos usan el cursor como todos los demás bloques,
+      //     por lo que NUNCA pueden solapar con los botones.
+
+      // ── Medidas constantes ───────────────────────────────────────────────
+      const titleSz  = this._fs(0.085);
+      const subSz    = this._fs(0.036);
+      const fBub     = this._fs(0.030);
+      const lumR     = Math.max(30, Math.min(W, H) * 0.060);
+      const bh       = Math.max(52, H * 0.08);
+      const btn2h    = Math.max(46, H * 0.07);
+      const creditSz = this._fs(0.022);
+      const pw       = Math.min(W * 0.54, 520);
+      const bhBcola  = 2 * fBub * 1.5 + 18 + 10;  // burbuja + cola
+
+      // ── Distribución proporcional del espacio ─────────────────────────────
+      // 9 gaps con pesos relativos. Los pesos mayores corresponden a las
+      // transiciones más importantes visualmente:
+      //   panel→burbuja (1.8) y btn2→créditos (1.8): deben ser los más amplios
+      //   Lumina→btn1 (1.2): separación media-grande
+      //   entre botones (0.6): solo un pequeño espacio
+      //
+      //  Índice: [0]=top, [1]=tit→sub, [2]=sub→panel, [3]=panel→bub,
+      //          [4]=bub→lum, [5]=lum→btn1, [6]=btn1→btn2,
+      //          [7]=btn2→cr, [8]=cr→bottom
+      const W_GAPS    = [0.8, 0.4, 0.8, 1.8, 0.8, 1.2, 0.6, 1.8, 0.8];
+      const TOTAL_W   = W_GAPS.reduce((a, b) => a + b, 0); // 9.0
+      const MIN_UNIT  = 9;  // mínimo 9px por unidad de peso → 81px mínimo total de gaps
+
+      // Contenido fijo (todo excepto el panel y los gaps).
+      // Los créditos ocupan: creditSz (línea 1) + creditSz*0.4 (espacio inter-línea)
+      // + creditSz (línea 2) = creditSz * 2.4 total.
+      // Incluirlos aquí garantiza que el panel y los gaps se calculen de forma
+      // que el último elemento (crédito 2) NUNCA salga del viewport.
+      const fixedNoPanel =
+          titleSz + subSz + bhBcola + lumR * 2 + bh + btn2h + creditSz * 2.4;
+
+      // Panel: ocupa lo que reste tras reservar contenido+gaps mínimos,
+      // acotado entre 140px (legible mínimo) y 260px (máximo cómodo).
+      // MIN_UNIT=5: cada unidad de peso vale al menos 5px (total mín. de gaps=45px),
+      // suficiente para evitar que los bloques se toquen.
+      const panelH = Math.max(140, Math.min(260, H - fixedNoPanel - TOTAL_W * 5));
+
+      // Espacio disponible para los 9 gaps
+      const availForGaps = Math.max(0, H - fixedNoPanel - panelH);
+      const unit = availForGaps / TOTAL_W;
+      const G = W_GAPS.map(w => unit * w);  // array de 9 gaps calculados
+
+      // ── CURSOR: avanza de arriba a abajo sin retroceder ─────────────────
+      let cur = G[0];  // margen superior
+
+      // ── Bloque 1: Título ─────────────────────────────────────────────────
+      cur += titleSz;
+      ctx.font = `bold ${titleSz}px 'Segoe UI',Arial,sans-serif`;
+      ctx.shadowColor='rgba(180,110,0,0.7)'; ctx.shadowBlur=18;
+      ctx.fillStyle=`rgb(${Math.round(255*pulse)},${Math.round(210*pulse)},${Math.round(40*pulse)})`;
+      ctx.fillText('FELICIDADES!', cx, cur);
+      ctx.shadowBlur=0;
+      cur += G[1];
+
+      // ── Bloque 2: Subtítulo ──────────────────────────────────────────────
+      cur += subSz;
+      ctx.font=`${subSz}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillStyle='rgba(190,215,255,0.9)';
+      ctx.fillText('Exploraste todas las constelaciones del Cielo Cordobes!', cx, cur);
+      cur += G[2];
+
+      // ── Bloque 3: Panel de resultados ────────────────────────────────────
+      const py = cur;
+      const px = cx - pw / 2;
+      const ph = panelH;
+      const br2 = Math.min(pw, ph) * 0.05;
+      roundRect(ctx, px, py, pw, ph, br2);
+      ctx.fillStyle='rgba(6,10,50,0.96)'; ctx.fill();
+      const brdC=`rgb(${Math.round(180+75*pulse)},${Math.round(150+65*pulse)},${Math.round(20*pulse)})`;
+      ctx.strokeStyle=brdC; ctx.lineWidth=3;
+      roundRect(ctx, px, py, pw, ph, br2); ctx.stroke();
+      const stats=[
+        ['Puntos Totales',     `${this.starsEarned}`, '#FFD700'],
+        ['Constelaciones',     `${this.CONST.length}`, 'rgba(100,200,255,0.95)'],
+        ['Nivel Explorador/a', this._getTitle(),       '#C896FF'],
+      ];
+      const rowH     = ph / stats.length;
+      const labelSz  = this._fs(0.026);
+      const valueSz  = this._fs(0.044);
+      stats.forEach(([label, value, vc], i) => {
+        const ry = py + i * rowH;
+        if (i > 0) {
+          ctx.strokeStyle='rgba(40,65,160,0.45)'; ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(px+pw*0.06,ry); ctx.lineTo(px+pw*0.94,ry); ctx.stroke();
+        }
+        ctx.textAlign='center';
+        ctx.font=`${labelSz}px 'Segoe UI',Arial,sans-serif`;
+        ctx.fillStyle='rgba(155,178,225,0.85)';
+        ctx.fillText(label, cx, ry + rowH * 0.32);
+        ctx.font=`bold ${valueSz}px 'Segoe UI',Arial,sans-serif`;
+        ctx.fillStyle=vc;
+        ctx.fillText(value, cx, ry + rowH * 0.74);
+      });
+      cur = py + ph + G[3];
+
+      // ── Bloque 4: Burbuja de Lumina ──────────────────────────────────────
+      // Va ENTRE el panel y Lumina (encima de Lumina, debajo del panel).
+      // El cursor garantiza que byB > panelBot siempre.
+      const bubLines = ['Excelente trabajo!', 'Descubriste todo!'];
+      const bhB      = 2 * fBub * 1.5 + 18;
+      const bwB      = Math.min(pw * 0.85, 320);
+      const bxB      = cx - bwB / 2;
+      const byB      = cur;
+      const bubPulse = 0.55 + 0.45 * Math.sin(t * 1.8);
+      roundRect(ctx, bxB, byB, bwB, bhB, 10);
+      ctx.fillStyle='rgba(8,14,55,0.92)'; ctx.fill();
+      const bubBorder=`rgb(${Math.round(80+120*bubPulse)},${Math.round(140+80*bubPulse)},255)`;
+      ctx.strokeStyle=bubBorder; ctx.lineWidth=2;
+      roundRect(ctx, bxB, byB, bwB, bhB, 10); ctx.stroke();
+      // Cola apuntando hacia abajo (a Lumina)
+      ctx.fillStyle='rgba(8,14,55,0.92)';
+      ctx.beginPath();
+      ctx.moveTo(cx-10, byB+bhB); ctx.lineTo(cx, byB+bhB+10); ctx.lineTo(cx+10, byB+bhB);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle=bubBorder; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(cx-10, byB+bhB); ctx.lineTo(cx, byB+bhB+10); ctx.lineTo(cx+10, byB+bhB);
+      ctx.stroke();
+      ctx.textAlign='center';
+      bubLines.forEach((ln, i) => {
+        ctx.font=`${fBub}px 'Segoe UI',Arial,sans-serif`;
+        ctx.fillStyle = i===0 ? 'rgba(255,240,80,0.97)' : 'rgba(210,225,255,0.95)';
+        ctx.fillText(ln, cx, byB + 10 + fBub * (0.85 + i * 1.5));
+      });
+      cur = byB + bhB + 10 + G[4];  // +10 por la cola
+
+      // ── Bloque 5: Lumina (con animación flotante) ─────────────────────────
+      const lumX     = cx;
+      const lumFloat = Math.sin(t * 1.2) * lumR * 0.08;  // oscilación suave ±8%
+      const lumY     = cur + lumR + lumFloat;
+      this._draw_lumina(ctx, lumX, lumY, lumR);
+      cur = cur + lumR * 2 + G[5];
+
+      // ── Bloque 6: Botón JUGAR DE NUEVO ───────────────────────────────────
+      const bw     = Math.min(W * 0.36, 340);
+      const btn1y  = cur;
+      const btn1x  = cx - bw / 2;
+      const bp     = 0.80 + 0.20 * Math.sin(t * 2.5);
+      roundRect(ctx, btn1x, btn1y, bw, bh, bh*0.28);
+      ctx.fillStyle=`rgba(${Math.round(60*bp)},${Math.round(110*bp)},${Math.round(240*bp)},0.93)`; ctx.fill();
+      ctx.strokeStyle=C.GOLD; ctx.lineWidth=3;
+      roundRect(ctx, btn1x, btn1y, bw, bh, bh*0.28); ctx.stroke();
+      ctx.fillStyle=C.WHITE; ctx.font=`bold ${this._fs(0.036)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.textAlign='center'; ctx.fillText('JUGAR DE NUEVO', cx, btn1y+bh*0.62);
+      this._finalBtn1={x:btn1x, y:btn1y, w:bw, h:bh};
+      cur = btn1y + bh + G[6];
+
+      // ── Bloque 7: Botón SALIR ────────────────────────────────────────────
+      const btn2y = cur;
+      roundRect(ctx, btn1x, btn2y, bw, btn2h, btn2h*0.28);
+      ctx.fillStyle='rgba(80,22,22,0.9)'; ctx.fill();
+      ctx.strokeStyle=C.RED; ctx.lineWidth=3;
+      roundRect(ctx, btn1x, btn2y, bw, btn2h, btn2h*0.28); ctx.stroke();
+      ctx.fillStyle=C.WHITE; ctx.font=`bold ${this._fs(0.032)}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillText('SALIR', cx, btn2y+btn2h*0.62);
+      this._finalBtn2={x:btn1x, y:btn2y, w:bw, h:btn2h};
+      cur = btn2y + btn2h + G[7];
+
+      // ── Bloque 8: Créditos ───────────────────────────────────────────────
+      // Usan el cursor → imposible que solapen con Btn2 (siempre cur > btn2Bot).
+      ctx.font=`${creditSz}px 'Segoe UI',Arial,sans-serif`;
+      ctx.fillStyle='rgba(180,200,240,0.7)';
+      cur += creditSz;
+      ctx.fillText('Gracias por explorar El Cielo Cordobes', cx, cur);
+      ctx.fillStyle='rgba(255,215,0,0.75)';
+      ctx.fillText('Desarrollado por Aleida Appendino', cx, cur + creditSz * 1.4);
+    }
+  }
+
+  _getTitle() {
+    // Umbrales actualizados para 12 constelaciones (max ~860pts)
+    if (this.starsEarned>=800) return 'Astronoma Suprema';
+    if (this.starsEarned>=600) return 'Exploradora Galactica';
+    if (this.starsEarned>=380) return 'Navegante Estelar';
+    return 'Aprendiz del Cosmos';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILIDADES
+// ═══════════════════════════════════════════════════════
+function rnd(a,b) { return a + Math.random()*(b-a); }
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function rectHit(sx, sy, r) {
+  return r && sx>=r.x && sx<=r.x+r.w && sy>=r.y && sy<=r.y+r.h;
+}
+
+// ═══════════════════════════════════════════════════════
+// INICIO
+// ═══════════════════════════════════════════════════════
+window.addEventListener('load', () => { window.GAME = new Game(); });
+</script>
+</body>
+</html>

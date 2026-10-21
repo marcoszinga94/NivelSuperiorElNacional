@@ -19,8 +19,8 @@ const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : nul
 ---
 
 <Base
-  title={`Muestra Institucional 2026 · Jugando a ${game.title}`}
-  description={`${game.description} Juego hecho en Python y Pygame por ${game.author}. Se juega online, sin instalar nada.`}
+  title={`Muestra Institucional 2026 · ${game.video ? game.title : `Jugando a ${game.title}`}`}
+  description={`${game.description} Juego hecho en Python y Pygame por ${game.author}. ${game.video ? "Mirá el video del juego funcionando." : "Se juega online, sin instalar nada."}`}
 >
   <Section id="jugar" class="game-section">
     <div class="flex flex-col">
@@ -52,20 +52,74 @@ const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : nul
         </h1>
 
         <p class="max-w-[680px] text-base font-light leading-relaxed text-t2">
-          Por <span class="font-medium text-t1">{game.author}</span>. Corre en el navegador con el
-          motor de Python compilado a WebAssembly: no hay que bajar ni instalar nada.
+          Por <span class="font-medium text-t1">{game.author}</span>.{" "}
+          {
+            game.video ? (
+              <>Acá podés ver el juego funcionando, tal como lo presentamos en la muestra.</>
+            ) : game.html ? (
+              <>
+                Esta versión está hecha en HTML y JavaScript y corre directo en el navegador: no hay
+                que bajar ni instalar nada.
+              </>
+            ) : (
+              <>
+                Corre en el navegador con el motor de Python compilado a WebAssembly: no hay que
+                bajar ni instalar nada.
+              </>
+            )
+          }
         </p>
       </header>
 
       <div class="order-2 mb-8 lg:order-3 lg:mb-0">
-        <GamePlayer slug={game.web as string} title={game.title} gradient={game.gradient} />
+        {
+          game.video ? (
+            <div class="reveal overflow-hidden rounded-xl border border-line1 bg-black">
+              <video
+                src={game.video}
+                controls
+                playsinline
+                preload="metadata"
+                class="aspect-video w-full"
+                aria-label={`Video de ${game.title}`}
+              />
+              <p class="border-t border-line1 bg-bg3 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.14em] text-t3">
+                Video del juego · {game.title}
+              </p>
+            </div>
+          ) : (
+            <GamePlayer
+              slug={game.web as string}
+              title={game.title}
+              gradient={game.gradient}
+              src={game.html}
+            />
+          )
+        }
 
         <p class="reveal mt-4 max-w-[680px] text-sm leading-relaxed text-t3">
-          La primera carga descarga el motor del juego (unos 10 MB) y después el navegador lo guarda
-          en caché, así que los demás juegos abren mucho más rápido. Si algo queda raro, probá con
-          Reiniciar. Los juegos se manejan con teclado y mouse. En el celular se mantienen
-          apaisados también en vertical, con el gamepad 🎮 y el teclado ⌨; para más comodidad,
-          girate y entrá en pantalla completa.
+          {
+            game.video ? (
+              <>
+                El video muestra el juego funcionando. Si querés probarlo vos mismo, más abajo está
+                la versión para Windows.
+              </>
+            ) : game.html ? (
+              <>
+                Esta versión corre directo en el navegador, sin descargar ningún motor. Los juegos se
+                manejan con teclado y mouse; en el celular aparecen los controles en pantalla y, para
+                más comodidad, podés girarte y entrar en pantalla completa.
+              </>
+            ) : (
+              <>
+                La primera carga descarga el motor del juego (unos 10 MB) y después el navegador lo
+                guarda en caché, así que los demás juegos abren mucho más rápido. Si algo queda
+                raro, probá con Reiniciar. Los juegos se manejan con teclado y mouse. En el celular
+                se mantienen apaisados también en vertical, con el gamepad 🎮 y el teclado ⌨; para
+                más comodidad, girate y entrá en pantalla completa.
+              </>
+            )
+          }
         </p>
       </div>
     </div>

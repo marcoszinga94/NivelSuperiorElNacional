@@ -113,7 +113,7 @@ const stats = [
                   href={`/jugar/${g.web}`}
                   class="rounded-lg border border-a1/30 bg-a1/15 px-3.5 py-1.5 text-[11px] font-semibold text-a1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-a1/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
                 >
-                  ▶ Jugar online
+                  ▶ {g.video ? "Ver juego" : "Jugar online"}
                 </a>
               ) : (
                 g.exe && (

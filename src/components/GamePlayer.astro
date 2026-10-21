@@ -10,10 +10,12 @@ interface Props {
   title: string;
   /** Card gradient reused behind the frame while the engine downloads. */
   gradient?: string;
+  /** Archivo a embeber. Por defecto, el build de pygbag en `juego/index.html`. */
+  src?: string;
 }
 
-const { slug, title, gradient } = Astro.props;
-const frameSrc = `/jugar/${slug}/juego/index.html`;
+const { slug, title, gradient, src } = Astro.props;
+const frameSrc = src ?? `/jugar/${slug}/juego/index.html`;
 ---
 
 <div class="game-player reveal flex flex-col" data-player>
