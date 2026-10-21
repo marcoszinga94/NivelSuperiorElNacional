@@ -51,13 +51,13 @@ const carreras = [
       <div class="reveal reveal-d3 mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <a
           href="/#carrera"
-          class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-a1 px-6 py-3.5 text-base font-semibold sm:w-auto text-white shadow-[0_10px_30px_rgba(79,127,255,.28)] transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
+          class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-a1 px-6 py-3.5 text-base font-semibold sm:w-auto text-white  transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]  hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
         >
           Conocé la carrera →
         </a>
         <a
           href="/#inscripcion"
-          class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-line2 px-6 py-3.5 text-base font-medium sm:w-auto text-t1 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:bg-bg3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
+          class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-line2 px-6 py-3.5 text-base font-medium sm:w-auto text-t1 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]  hover:bg-bg3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
         >
           Inscribite 2026
         </a>
@@ -76,7 +76,7 @@ const carreras = [
     </div>
 
     <div class="reveal reveal-d2">
-      <div class="rounded-2xl bg-white p-8 shadow-[0_30px_80px_rgba(0,0,0,.55)] md:p-10">
+      <div class="rounded-2xl bg-white p-8  md:p-10">
         <img
           src="/logo_el_nacional.png"
           alt="Escuela Superior El Nacional"
@@ -89,17 +89,6 @@ const carreras = [
       <div class="mt-5 flex flex-wrap items-center justify-between gap-3 font-mono text-xs uppercase tracking-[0.12em] text-t3">
         <span>La Carlota · Córdoba</span>
         <span>Argentina</span>
-      </div>
-
-      <div class="mt-5 grid grid-cols-2 gap-3">
-        <div class="rounded-xl border border-line1 bg-bg3 px-4 py-3">
-          <div class="text-sm font-semibold text-t1">Nivel secundario</div>
-          <div class="text-xs text-t3">Bachillerato</div>
-        </div>
-        <div class="rounded-xl border border-line1 bg-bg3 px-4 py-3">
-          <div class="text-sm font-semibold text-t1">Nivel superior</div>
-          <div class="text-xs text-t3">Dos tecnicaturas</div>
-        </div>
       </div>
     </div>
   </div>
@@ -127,7 +116,7 @@ const carreras = [
             class:list={[
               "reveal",
               `reveal-d${i + 1}`,
-              "group flex flex-col gap-4 rounded-2xl border p-7 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1",
+              "group flex flex-col gap-4 rounded-2xl border p-7 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1",
               c.destacada
                 ? "border-a1/40 bg-bg3 hover:border-a1/70"
                 : "border-line1 bg-bg2 hover:border-line2",

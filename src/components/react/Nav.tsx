@@ -111,7 +111,7 @@ export default function Nav({ active = "/" }: Props) {
                   <div className="absolute left-0 top-full z-[600] pt-2">
                     <div
                       className={[
-                        "rounded-xl border border-line1 bg-bg2 p-2 shadow-[0_20px_60px_rgba(0,0,0,.6)]",
+                        "rounded-xl border border-line1 bg-bg2 p-2 ",
                         entry.id === "proyecto" ? "w-[330px]" : "w-64",
                       ].join(" ")}
                     >
@@ -140,7 +140,7 @@ export default function Nav({ active = "/" }: Props) {
         <div className="flex shrink-0 items-center gap-2">
           <a
             href="/#inscripcion"
-            className="hidden rounded-full bg-a1 px-4.5 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition hover:-translate-y-px hover:opacity-85 min-[880px]:inline-block"
+            className="hidden rounded-full bg-a1 px-4.5 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition  hover:opacity-85 min-[880px]:inline-block"
           >
             Inscribite →
           </a>
