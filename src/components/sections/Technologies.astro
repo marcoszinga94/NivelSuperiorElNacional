@@ -1,6 +1,6 @@
 ---
 import Section from "../Section.astro";
-import SectionHeader from "../SectionHeader.astro";
+import BlockHeader from "../BlockHeader.astro";
 
 const tech = [
   { logo: "Py", logoStyle: "background:linear-gradient(135deg,#306998,#ffd43b)", role: "Lenguaje principal", name: "Python", desc: "El lenguaje que usamos para programar. Versátil, claro y muy pedido en la industria.", bridge: "IA · datos · backend" },
@@ -12,19 +12,18 @@ const tech = [
 ];
 ---
 
-<Section id="tecnologias" bg="bg2">
-  <SectionHeader
-    eyebrow="Herramientas"
+<Section id="tecnologias" bg="bg">
+  <BlockHeader
+    index="03"
+    title={"Con qué <span class='text-gradient-2'>programamos</span>"}
     sub="Lo que usamos para hacer los juegos y esta página. Las mismas herramientas que se usan en la industria."
-  >
-    Con qué <span class="text-gradient-2">programamos</span>
-  </SectionHeader>
+  />
 
   <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {
       tech.map((t, i) => (
         <div
-          class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex flex-col gap-3.5 rounded-xl border border-line1 bg-bg3 p-6 transition hover:-translate-y-0.5 hover:border-a1/30"]}
+          class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex flex-col gap-3.5 rounded-2xl border border-line1 bg-bg3 p-6 transition hover:-translate-y-0.5 hover:border-a1/30"]}
         >
           <div class="flex items-center gap-3.5">
             <div

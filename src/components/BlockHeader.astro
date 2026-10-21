@@ -1,0 +1,18 @@
+---
+interface Props {
+  /** Número del bloque dentro de la página ("02"). */
+  index: string;
+  title: string;
+  sub?: string;
+}
+
+const { index, title, sub } = Astro.props;
+---
+
+<div class="reveal mb-10 flex flex-col gap-4 border-t border-line1 pt-10 sm:flex-row sm:items-end sm:justify-between">
+  <div class="flex items-baseline gap-4">
+    <span class="font-mono text-xs text-a1">{index}</span>
+    <h2 class="text-balance text-2xl font-bold tracking-[-0.02em] text-t1 sm:text-3xl" set:html={title} />
+  </div>
+  {sub && <p class="max-w-[340px] text-sm leading-relaxed text-t3">{sub}</p>}
+</div>

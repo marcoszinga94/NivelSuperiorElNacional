@@ -52,9 +52,7 @@ export const routes: RouteInfo[] = [
   { href: "/proyecto", label: "Astrónomos por un día", icon: "🔭", blurb: "La muestra, el proceso, el impacto y los testimonios.", group: "proyecto" },
   { href: "/administrativas", label: "Aplicaciones administrativas", icon: "🗂️", blurb: "El proyecto de sistemas de gestión.", group: "proyecto" },
 
-  { href: "/juegos", label: "Los juegos", icon: "🎮", blurb: "Los ocho videojuegos que hicimos.", group: "juegos" },
-  { href: "/equipo", label: "Estudiantes", icon: "🧑‍💻", blurb: "Quién hizo cada juego.", group: "juegos" },
-  { href: "/tecnologias", label: "Herramientas", icon: "🐍", blurb: "Python, Pygame y todo lo demás.", group: "juegos" },
+  { href: "/juegos", label: "Los juegos", icon: "🎮", blurb: "Los ocho juegos, sus autores y las herramientas.", group: "juegos" },
 
   { href: "/aplicaciones", label: "Aplicaciones", icon: "📱", blurb: "Las apps que ya están en uso.", group: "aplicaciones" },
 ];

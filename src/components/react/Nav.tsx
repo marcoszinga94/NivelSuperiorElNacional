@@ -41,7 +41,7 @@ export default function Nav({ active = "/" }: Props) {
       label: "Proyecto",
       links: projects.map((p) => ({ href: p.href, label: p.label, blurb: p.blurb })),
     },
-    { id: "juegos", label: "Juegos", links: groupLinks("juegos") },
+    { id: "juegos", label: "Juegos", href: "/juegos" },
     {
       id: "aplicaciones",
       label: "Aplicaciones",

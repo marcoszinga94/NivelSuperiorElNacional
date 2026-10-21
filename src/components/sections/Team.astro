@@ -1,6 +1,6 @@
 ---
 import Section from "../Section.astro";
-import SectionHeader from "../SectionHeader.astro";
+import BlockHeader from "../BlockHeader.astro";
 import { games } from "../../data/games";
 
 // Una ficha por estudiante, por si alguien firma más de un juego.
@@ -8,17 +8,16 @@ const estudiantes = games.filter((g, i, todos) => todos.findIndex((x) => x.autho
 ---
 
 <Section id="equipo" bg="bg2">
-  <SectionHeader
-    eyebrow="Los desarrolladores"
+  <BlockHeader
+    index="02"
+    title={"Los <span class='text-gradient-2'>estudiantes</span>"}
     sub="Ocho estudiantes, ocho juegos. Cada uno lo pensó, lo programó y lo presentó por su cuenta."
-  >
-    Los <span class="text-gradient-2">estudiantes</span> que lo hicieron
-  </SectionHeader>
+  />
 
   <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
     {
       estudiantes.map((g, i) => (
-        <article class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex flex-col overflow-hidden rounded-xl border border-line1 bg-bg3"]}>
+        <article class:list={["reveal", `reveal-d${(i % 6) + 1}`, "flex flex-col overflow-hidden rounded-2xl border border-line1 bg-bg3"]}>
           <div class="flex items-center gap-4 border-b border-line1 p-5">
             <div
               class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full font-mono text-base font-semibold text-white"

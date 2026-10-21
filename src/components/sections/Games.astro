@@ -1,22 +1,69 @@
 ---
 import Section from "../Section.astro";
-import SectionHeader from "../SectionHeader.astro";
 import { games } from "../../data/games";
+
+const stats = [
+  { value: String(games.length), label: "Juegos" },
+  { value: String(games.length), label: "Estudiantes" },
+  { value: "6", label: "Herramientas" },
+];
 ---
 
 <Section id="juegos" bg="bg">
-  <SectionHeader
-    eyebrow="Estación 05 · Nuestros juegos"
-    sub="Ocho juegos, ocho estudiantes, cada uno con su estilo. Todos hechos desde cero y probados con los nenes de primer grado."
-  >
-    Los juegos que <span class="text-gradient-2">hicimos</span>
-  </SectionHeader>
+  <div class="grid items-end gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+    <div>
+      <div class="reveal flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.2em] text-a1">
+        <span class="h-1.5 w-1.5 rounded-full bg-a1"></span>
+        Estación 05 · Los juegos
+      </div>
 
-  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <h1
+        class="reveal reveal-d1 mt-6 max-w-[680px] text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-t1 sm:text-5xl"
+      >
+        Ocho juegos<br /><span class="text-gradient">hechos en el aula</span>
+      </h1>
+
+      <p class="reveal reveal-d2 mt-6 max-w-[560px] text-lg font-light leading-relaxed text-t2">
+        Cada juego lo pensó, lo programó y lo presentó un estudiante. Los probamos con los nenes de primer grado en la
+        muestra y quedaron andando.
+      </p>
+    </div>
+
+    <div class="reveal reveal-d3 grid grid-cols-3 gap-3">
+      {
+        stats.map((s) => (
+          <div class="rounded-xl border border-line1 bg-bg3 px-4 py-5 text-center">
+            <div class="font-mono text-3xl font-medium leading-none text-t1">{s.value}</div>
+            <div class="mt-2 text-xs uppercase tracking-[0.08em] text-t3">{s.label}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="reveal mt-10 flex flex-wrap items-center gap-2.5">
+    <a
+      href="#equipo"
+      class="rounded-full border border-line2 px-4 py-2 text-sm text-t2 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:text-t1"
+    >
+      Los estudiantes
+    </a>
+    <a
+      href="#tecnologias"
+      class="rounded-full border border-line2 px-4 py-2 text-sm text-t2 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:text-t1"
+    >
+      Las herramientas
+    </a>
+    <span class="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-t3">
+      ▶ jugar online · ⬇ sólo windows
+    </span>
+  </div>
+
+  <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
     {
       games.map((g, i) => (
         <article
-          class:list={["reveal reveal-seq", "group flex flex-col overflow-hidden rounded-[20px] border border-line1 bg-bg2 transition hover:-translate-y-1 hover:border-a1/35 hover:shadow-[0_16px_48px_rgba(0,0,0,.5),0_0_32px_rgba(79,127,255,.1)]"]}
+          class:list={["reveal reveal-seq", "group flex flex-col overflow-hidden rounded-2xl border border-line1 bg-bg2 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:border-a1/35 hover:shadow-[0_16px_48px_rgba(0,0,0,.5),0_0_32px_rgba(79,127,255,.1)]"]}
           style={`--reveal-i:${i}`}
         >
           <div class="relative aspect-video overflow-hidden">

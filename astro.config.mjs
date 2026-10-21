@@ -18,6 +18,9 @@ export default defineConfig({
     '/impacto': '/proyecto#impacto',
     '/testimonios': '/proyecto#testimonios',
     '/competencias': '/proyecto#competencias',
+    // Los juegos, el equipo y las herramientas viven en una sola página.
+    '/equipo': '/juegos#equipo',
+    '/tecnologias': '/juegos#tecnologias',
   },
 
   vite: {
