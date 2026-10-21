@@ -6,7 +6,7 @@ export const site = {
   location: "La Carlota · Córdoba",
   title: "Astrónomos por un día · Muestra Institucional 2026 · Escuela Superior El Nacional",
   description:
-    "Ocho videojuegos de astronomía que hicimos nosotros, los estudiantes de la Tecnicatura en Programación Full Stack de la Escuela Superior El Nacional, para que los nenes de primer grado aprendan jugando. La Carlota, Córdoba.",
+    "Ocho videojuegos de astronomía que hicimos nosotros, los estudiantes de la Tecnicatura Superior en Desarrollo de Software de la Escuela Superior El Nacional, para que los nenes de primer grado aprendan jugando. La Carlota, Córdoba.",
   youtube:
     "https://www.youtube.com/embed/aYXByxcr6zE?autoplay=1&mute=1&controls=0&loop=1&playlist=aYXByxcr6zE&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3",
 };

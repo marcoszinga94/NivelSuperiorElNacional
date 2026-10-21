@@ -2,25 +2,25 @@
 import Section from "../Section.astro";
 import Divider from "../Divider.astro";
 
-const pruebas = ["Título oficial de la UPC", "Práctica desde primer año", "Secundario y superior"];
+const pruebas = ["Título oficial de la escuela", "Práctica desde primer año", "Secundario y superior"];
 
 const carreras = [
   {
-    nombre: "Desarrollo de Software",
+    nombre: "Tecnicatura Superior en Desarrollo de Software",
     badge: "La carrera de esta muestra",
     texto:
       "Programación, bases de datos, desarrollo web, inteligencia artificial y videojuegos. Los juegos de este sitio salieron de las materias de segundo año.",
-    meta: "3 años · presencial · título UPC",
+    meta: "3 años · presencial · título oficial",
     cta: "Ver el plan de estudios",
     href: "/#carrera",
     destacada: true,
   },
   {
-    nombre: "Administración de Empresas",
+    nombre: "Tecnicatura Superior en Administración",
     badge: "También en el nivel superior",
     texto:
-      "Formación en gestión, organización y administración de empresas, con la misma titulación universitaria de la UPC.",
-    meta: "Nivel superior · título UPC",
+      "Formación en gestión, organización y administración de empresas, con título oficial de la Escuela Superior El Nacional.",
+    meta: "Nivel superior · título oficial",
     cta: "Consultá por la carrera",
     href: "/#inscripcion",
     destacada: false,
@@ -43,21 +43,21 @@ const carreras = [
       </h1>
 
       <p class="reveal reveal-d2 mt-6 max-w-[680px] text-lg font-light leading-relaxed text-t2">
-        Nivel secundario y nivel superior en la misma escuela. Acá se cursa la tecnicatura en{" "}
-        <strong class="font-medium text-t1">Desarrollo de Software</strong>, la carrera de esta muestra, y también{" "}
-        <strong class="font-medium text-t1">Administración de Empresas</strong>.
+        Nivel secundario y nivel superior en la misma escuela. En el nivel superior se dictan dos carreras:{" "}
+        <strong class="font-medium text-t1">Tecnicatura Superior en Desarrollo de Software</strong>, la de esta muestra, y{" "}
+        <strong class="font-medium text-t1">Tecnicatura Superior en Administración</strong>.
       </p>
 
-      <div class="reveal reveal-d3 mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div class="reveal reveal-d3 mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <a
           href="/#carrera"
-          class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-a1 px-6 py-3.5 text-base font-semibold sm:w-auto text-white shadow-[0_10px_30px_rgba(79,127,255,.28)] transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
+          class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-a1 px-6 py-3.5 text-base font-semibold sm:w-auto text-white shadow-[0_10px_30px_rgba(79,127,255,.28)] transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
         >
-          Conocé Desarrollo de Software →
+          Conocé la carrera →
         </a>
         <a
           href="/#inscripcion"
-          class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-line2 px-6 py-3.5 text-base font-medium sm:w-auto text-t1 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:bg-bg3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
+          class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-line2 px-6 py-3.5 text-base font-medium sm:w-auto text-t1 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:bg-bg3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1 active:translate-y-px"
         >
           Inscribite 2026
         </a>
@@ -116,7 +116,7 @@ const carreras = [
           Las dos tecnicaturas de la escuela
         </h2>
       </div>
-      <p class="max-w-[320px] text-sm text-t3">Las dos con título oficial de la Universidad Provincial de Córdoba.</p>
+      <p class="max-w-[320px] text-sm text-t3">Las dos con título oficial de la Escuela Superior El Nacional.</p>
     </div>
 
     <div class="mt-8 grid gap-4 md:grid-cols-2">
@@ -141,7 +141,7 @@ const carreras = [
             >
               {c.badge}
             </div>
-            <h3 class="text-xl font-semibold tracking-[-0.01em] text-t1">{c.nombre}</h3>
+            <h3 class="text-balance text-xl font-semibold tracking-[-0.01em] text-t1">{c.nombre}</h3>
             <p class="text-sm leading-relaxed text-t2">{c.texto}</p>
             <div class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-2">
               <span class="font-mono text-xs uppercase tracking-[0.1em] text-t3">{c.meta}</span>
