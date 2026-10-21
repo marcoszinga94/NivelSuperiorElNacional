@@ -1,0 +1,60 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+import { apps } from "../../data/apps";
+---
+
+<Section id="aplicaciones" bg="bg">
+  <SectionHeader
+    eyebrow="Aplicaciones · 2026"
+    sub="Las aplicaciones administrativas que salen del proyecto: software de gestión que resuelve problemas concretos de la escuela."
+  >
+    Aplicaciones <span class="text-gradient-2">en uso</span>
+  </SectionHeader>
+
+  {
+    apps.length > 0 ? (
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {apps.map((app, i) => (
+          <a
+            href={app.href ?? "/aplicaciones"}
+            class:list={[
+              "reveal",
+              `reveal-d${(i % 6) + 1}`,
+              "group flex items-start gap-4 rounded-xl border border-line1 bg-bg3 p-5 transition hover:-translate-y-0.5 hover:border-a1/40 hover:bg-bg4",
+            ]}
+          >
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-line1 bg-bg4 text-xl">
+              {app.icon}
+            </span>
+            <span class="min-w-0">
+              <span class="block text-[14px] font-semibold text-t1">{app.name}</span>
+              <span class="block text-[12px] leading-snug text-t3">{app.description}</span>
+              <span class="mt-1.5 inline-block font-mono text-[9px] uppercase tracking-[0.14em] text-a1/80">
+                {app.status}
+              </span>
+            </span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="reveal flex flex-col items-start gap-4 rounded-xl border border-dashed border-line2 bg-bg3 p-7 sm:p-9">
+        <div class="inline-flex items-center gap-2 rounded-full border border-line2 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.16em] text-a1">
+          Sin publicaciones
+        </div>
+        <h3 class="text-[clamp(18px,2.2vw,24px)] font-semibold tracking-[-0.02em] text-t1">
+          Todavía no hay aplicaciones publicadas
+        </h3>
+        <p class="max-w-[620px] text-[14px] font-light leading-[1.75] text-t2">
+          A medida que las vayamos terminando, cada una va a aparecer acá con su descripción y su estado.
+        </p>
+        <a
+          href="/administrativas"
+          class="mt-1 rounded-[10px] border border-line2 px-5 py-2.5 text-[13px] font-medium text-t1 transition hover:bg-line1"
+        >
+          Conocer el proyecto →
+        </a>
+      </div>
+    )
+  }
+</Section>

@@ -13,31 +13,54 @@ export interface RouteGroup {
   icon: string;
 }
 
+/** Un proyecto de la muestra — es lo que se despliega en "Proyecto" del nav. */
+export interface ProjectInfo {
+  href: string;
+  label: string;
+  blurb: string;
+}
+
 /** Navigation sections — every page belongs to one of these. */
 export const groups: RouteGroup[] = [
-  { id: "escuela", label: "La escuela", icon: "🏫" },
-  { id: "proyecto", label: "El proyecto", icon: "🔭" },
-  { id: "produccion", label: "Los juegos", icon: "🎮" },
-  { id: "muestra", label: "La muestra", icon: "🎪" },
+  { id: "escuela", label: "Escuela", icon: "🏫" },
+  { id: "proyecto", label: "Proyecto", icon: "🔭" },
+  { id: "juegos", label: "Juegos", icon: "🎮" },
+  { id: "aplicaciones", label: "Aplicaciones", icon: "📱" },
+];
+
+/** Los dos proyectos que se muestran en el desplegable "Proyecto". */
+export const projects: ProjectInfo[] = [
+  {
+    href: "/proyecto",
+    label: "Astrónomos por un día",
+    blurb: "La muestra de astronomía, sus estaciones y los ocho juegos.",
+  },
+  {
+    href: "/administrativas",
+    label: "Desarrollo de aplicaciones administrativas",
+    blurb: "Sistemas de gestión hechos por los estudiantes de la tecnicatura.",
+  },
 ];
 
 /** Ordered list of the site's routes (one per former section). */
 export const routes: RouteInfo[] = [
-  { href: "/institucion", label: "Escuela Superior El Nacional", icon: "🏫", blurb: "La escuela y la tecnicatura.", group: "escuela" },
+  { href: "/institucion", label: "La escuela", icon: "🏫", blurb: "Quiénes somos y qué enseñamos.", group: "escuela" },
   { href: "/carrera", label: "La carrera", icon: "🎓", blurb: "Plan, materias y duración.", group: "escuela" },
   { href: "/inscripcion", label: "Inscribite", icon: "✍️", blurb: "Cómo anotarte en la carrera.", group: "escuela" },
 
-  { href: "/proyecto", label: "El proyecto", icon: "🔭", blurb: "Un día como astrónomos, en 5 estaciones.", group: "proyecto" },
+  { href: "/proyecto", label: "Astrónomos por un día", icon: "🔭", blurb: "Un día como astrónomos, en 5 estaciones.", group: "proyecto" },
   { href: "/proceso", label: "Cómo lo hicimos", icon: "🛠️", blurb: "Del boceto al juego, en 4 pasos.", group: "proyecto" },
   { href: "/cronologia", label: "Cronología", icon: "🗓️", blurb: "La línea de tiempo del cuatrimestre.", group: "proyecto" },
+  { href: "/impacto", label: "Impacto", icon: "📊", blurb: "Los números del proyecto.", group: "proyecto" },
+  { href: "/testimonios", label: "Testimonios", icon: "💬", blurb: "Lo que dijeron los protagonistas.", group: "proyecto" },
+  { href: "/competencias", label: "Competencias", icon: "💪", blurb: "Lo que nos llevamos para el trabajo.", group: "proyecto" },
+  { href: "/administrativas", label: "Aplicaciones administrativas", icon: "🗂️", blurb: "El proyecto de sistemas de gestión.", group: "proyecto" },
 
-  { href: "/juegos", label: "Los juegos", icon: "🎮", blurb: "Los ocho videojuegos que hicimos.", group: "produccion" },
-  { href: "/equipo", label: "Estudiantes", icon: "🧑‍💻", blurb: "Quién hizo cada juego.", group: "produccion" },
-  { href: "/tecnologias", label: "Herramientas", icon: "🐍", blurb: "Python, Pygame y todo lo demás.", group: "produccion" },
+  { href: "/juegos", label: "Los juegos", icon: "🎮", blurb: "Los ocho videojuegos que hicimos.", group: "juegos" },
+  { href: "/equipo", label: "Estudiantes", icon: "🧑‍💻", blurb: "Quién hizo cada juego.", group: "juegos" },
+  { href: "/tecnologias", label: "Herramientas", icon: "🐍", blurb: "Python, Pygame y todo lo demás.", group: "juegos" },
 
-  { href: "/impacto", label: "Impacto", icon: "📊", blurb: "Los números del proyecto.", group: "muestra" },
-  { href: "/testimonios", label: "Testimonios", icon: "💬", blurb: "Lo que dijeron los protagonistas.", group: "muestra" },
-  { href: "/competencias", label: "Competencias", icon: "💪", blurb: "Lo que nos llevamos para el trabajo.", group: "muestra" },
+  { href: "/aplicaciones", label: "Aplicaciones", icon: "📱", blurb: "Las apps que ya están en uso.", group: "aplicaciones" },
 ];
 
 /** Routes grouped by section, ready to render in nav / grids / footer. */
