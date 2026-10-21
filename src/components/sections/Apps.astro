@@ -31,11 +31,13 @@ const items = apps.map((app) => {
           >
               <div class="grid lg:grid-cols-[1.2fr_0.8fr]">
                 {app.cover ? (
-                  <a
-                    href={app.cover.src}
-                    target="_blank"
-                    rel="noopener"
-                    class="group relative flex aspect-[16/10] items-center justify-center overflow-hidden border-b border-line1 bg-bg3 lg:border-b-0 lg:border-r"
+                  <button
+                    type="button"
+                    data-lightbox
+                    data-lightbox-src={app.cover.src}
+                    data-lightbox-caption={app.cover.caption}
+                    data-lightbox-alt={app.cover.alt}
+                    class="group relative flex aspect-[16/10] w-full cursor-zoom-in items-center justify-center overflow-hidden border-b border-line1 bg-bg3 p-2.5 lg:border-b-0 lg:border-r"
                     aria-label={`Ampliar captura: ${app.cover.caption}`}
                   >
                     <img
@@ -43,12 +45,12 @@ const items = apps.map((app) => {
                       alt={app.cover.alt}
                       loading="eager"
                       decoding="async"
-                      class="h-full w-full object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02]"
+                      class="h-full w-full object-contain transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02]"
                     />
                     <span class="pointer-events-none absolute right-3 bottom-3 rounded-full border border-line1 bg-bg/85 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-t2 opacity-0 backdrop-blur transition group-hover:opacity-100">
                       Ampliar ↗
                     </span>
-                  </a>
+                  </button>
                 ) : (
                   <div class="flex aspect-[16/10] items-center justify-center border-b border-line1 bg-bg3 text-6xl lg:border-b-0 lg:border-r">
                     {app.icon}
@@ -105,11 +107,13 @@ const items = apps.map((app) => {
                 <div class="border-t border-line1 bg-bg p-4 sm:p-5">
                   <div class:list={["grid gap-3.5", app.gallery.length > 1 ? "sm:grid-cols-2 lg:grid-cols-3" : ""]}>
                     {app.gallery.map((shot) => (
-                      <a
-                        href={shot.src}
-                        target="_blank"
-                        rel="noopener"
-                        class="group block"
+                      <button
+                        type="button"
+                        data-lightbox
+                        data-lightbox-src={shot.src}
+                        data-lightbox-caption={shot.caption}
+                        data-lightbox-alt={shot.alt}
+                        class="group block w-full cursor-zoom-in text-left"
                         aria-label={`Ampliar captura: ${shot.caption}`}
                       >
                         <div class="flex aspect-[16/10] items-center justify-center overflow-hidden rounded-lg border border-line1 bg-bg3 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:border-a1/35">
@@ -127,7 +131,7 @@ const items = apps.map((app) => {
                             Ampliar ↗
                           </span>
                         </div>
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -155,4 +159,95 @@ const items = apps.map((app) => {
       </div>
     )
   }
+
+  {
+    items.length > 0 && (
+      <dialog
+        data-apps-lightbox
+        aria-label="Captura ampliada"
+        class="m-auto w-[min(94vw,1180px)] max-w-none rounded-2xl border border-line1 bg-bg2 p-0 text-t1 shadow-[0_30px_80px_rgba(0,0,0,0.6)] backdrop:bg-black/80 backdrop:backdrop-blur-sm"
+      >
+        <div class="relative flex max-h-[88vh] flex-col">
+          <button
+            type="button"
+            data-lightbox-close
+            class="absolute right-3 top-3 z-[1] inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-black/60 text-lg leading-none text-white/90 backdrop-blur transition hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+
+          <div class="flex min-h-0 items-center justify-center bg-bg p-3 sm:p-4">
+            <img data-lightbox-img alt="" class="max-h-[76vh] w-auto max-w-full object-contain" />
+          </div>
+
+          <div class="flex items-center justify-between gap-3 border-t border-line1 px-4 py-3">
+            <p data-lightbox-caption class="text-[12px] font-medium text-t2"></p>
+            <p class="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-t3 sm:block">
+              Esc para cerrar
+            </p>
+          </div>
+        </div>
+      </dialog>
+    )
+  }
 </Section>
+
+<script>
+  // Las capturas se abren en una modal (nativo <dialog>) en vez de una pestaña.
+  const setupLightbox = () => {
+    // Con el ClientRouter la página se vuelve a montar: limpiamos el bloqueo de
+    // scroll y no volvemos a enganchar los listeners.
+    document.documentElement.style.overflow = "";
+    if (document.documentElement.dataset.appsLightboxReady === "1") return;
+    document.documentElement.dataset.appsLightboxReady = "1";
+
+    const getDialog = () =>
+      document.querySelector<HTMLDialogElement>("dialog[data-apps-lightbox]");
+
+    document.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement;
+
+      if (target.closest("[data-lightbox-close]")) {
+        getDialog()?.close();
+        return;
+      }
+
+      const trigger = target.closest<HTMLButtonElement>("[data-lightbox]");
+
+      if (trigger) {
+        const dialog = getDialog();
+        if (!dialog) return;
+
+        const img = dialog.querySelector<HTMLImageElement>("[data-lightbox-img]");
+        const caption = dialog.querySelector<HTMLElement>("[data-lightbox-caption]");
+
+        if (img) {
+          img.src = trigger.dataset.lightboxSrc ?? "";
+          img.alt = trigger.dataset.lightboxAlt ?? "";
+        }
+        if (caption) caption.textContent = trigger.dataset.lightboxCaption ?? "";
+
+        if (!dialog.open) {
+          dialog.showModal();
+          document.documentElement.style.overflow = "hidden";
+          dialog.addEventListener(
+            "close",
+            () => {
+              document.documentElement.style.overflow = "";
+            },
+            { once: true },
+          );
+        }
+        return;
+      }
+
+      // Clic en el fondo oscuro (el ::backdrop no es un elemento: el evento
+      // llega con el <dialog> como target).
+      const dialog = getDialog();
+      if (dialog?.open && target === dialog) dialog.close();
+    });
+  };
+
+  setupLightbox();
+</script>
