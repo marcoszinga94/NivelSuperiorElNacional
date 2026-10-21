@@ -4,7 +4,7 @@ export const site = {
   eventShort: "Muestra 2026",
   institution: "Escuela Superior El Nacional",
   location: "La Carlota · Córdoba",
-  title: "Astrónomos por un día · Muestra Institucional 2026 · Escuela Superior El Nacional",
+  title: "Muestra Institucional 2026 · Escuela Superior El Nacional",
   description:
     "Ocho videojuegos de astronomía que hicimos nosotros, los estudiantes de la Tecnicatura Superior en Desarrollo de Software de la Escuela Superior El Nacional, para que los nenes de primer grado aprendan jugando. La Carlota, Córdoba.",
   youtube:
