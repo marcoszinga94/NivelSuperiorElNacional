@@ -12,7 +12,7 @@ Astro 7 + Tailwind v4 + React 19 port of `/astronomos.html` (see the repo-root `
 
 La home es la página de la escuela (institución + carrera + inscripción) y "Astrónomos por un día" junta todo su proyecto en una sola página. El resto de las secciones sigue en rutas cortas. `src/pages/*.astro` son finas: cada una importa `Base`, una o más secciones, y `PageNav`.
 
-- `src/pages/index.astro` — home **de la escuela**: `Hero` + `Institution` + `Career` + `Enroll` + `ExploreGrid` (mapa del sitio) + banda CTA. Las anclas son `#institucion`, `#carrera`, `#inscripcion`; las viejas rutas `/institucion`, `/carrera` e `/inscripcion` redirigen a su ancla (ver `astro.config.mjs`).
+- `src/pages/index.astro` — home **de la escuela**: `Institution` (hace de hero: nombre, dos tecnicaturas y CTAs) + `Career` + `Enroll` + `ExploreGrid` (mapa del sitio) + banda CTA. Las anclas son `#institucion`, `#carrera`, `#inscripcion`; las viejas rutas `/institucion`, `/carrera` e `/inscripcion` redirigen a su ancla (ver `astro.config.mjs`). No hay `Hero.astro`: el video del proyecto vive en `/proyecto`.
 - `src/pages/proyecto.astro` — "Astrónomos por un día" completo: `Project` + `Process` + `Chronology` + `Impact` + `Testimonials` + `Skills`, con anclas `#proceso`, `#cronologia`, `#impacto`, `#testimonios`, `#competencias`. Las viejas rutas de esas secciones redirigen acá.
 - `src/pages/jugar/[slug].astro` — one page per playable game (`/jugar/arcspace`), generated from the games that have `web` set in `games.ts`. Embeds the game with `GamePlayer.astro`, which iframes `public/jugar/<slug>/juego/`.
 - `public/jugar/player.js` — runs the recovered games in the browser (Pyodide + pygame-ce). See `tools/README.md` for how the games are recovered and rebuilt.

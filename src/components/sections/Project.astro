@@ -1,6 +1,7 @@
 ---
 import Section from "../Section.astro";
 import SectionHeader from "../SectionHeader.astro";
+import { site } from "../../data/site";
 
 const facts = [
   {
@@ -109,6 +110,19 @@ const programa = [
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="reveal mt-14">
+    <div class="mb-4 font-mono text-[9px] uppercase tracking-[0.18em] text-a1">El video del proyecto</div>
+    <div class="relative overflow-hidden rounded-[20px] border border-a1/20 shadow-[0_0_0_1px_rgba(79,127,255,.06),0_32px_80px_rgba(0,0,0,.7)]">
+      <iframe
+        class="block aspect-video w-full border-0"
+        src={site.youtube}
+        loading="lazy"
+        allowfullscreen
+        allow="autoplay; encrypted-media; picture-in-picture"
+        title="Astrónomos por un día — Video del proyecto"></iframe>
     </div>
   </div>
 </Section>

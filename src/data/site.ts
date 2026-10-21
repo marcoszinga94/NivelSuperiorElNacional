@@ -22,11 +22,6 @@ export const enrollment = {
   phoneLabel: "358 442-3142",
 };
 
-export const heroStats = [  { target: 8, suffix: "", label: "Juegos" },
-  { target: 8, suffix: "", label: "Estudiantes" },
-  { target: 150, suffix: "+", label: "Horas de código" },
-];
-
 export const metrics = [
   { icon: "🎮", target: 8, suffix: "", label: "Juegos\nterminados", delay: "reveal-d1" },
   { icon: "🎓", target: 8, suffix: "", label: "Estudiantes\nmetidos", delay: "reveal-d2" },
