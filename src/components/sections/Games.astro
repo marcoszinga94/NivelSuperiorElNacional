@@ -43,12 +43,6 @@ const stats = [
 
   <div class="reveal mt-10 flex flex-wrap items-center gap-2.5">
     <a
-      href="#equipo"
-      class="rounded-full border border-line2 px-4 py-2 text-sm text-t2 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:text-t1"
-    >
-      Los estudiantes
-    </a>
-    <a
       href="#tecnologias"
       class="rounded-full border border-line2 px-4 py-2 text-sm text-t2 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-a1/40 hover:text-t1"
     >
@@ -59,7 +53,7 @@ const stats = [
     </span>
   </div>
 
-  <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+  <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
     {
       games.map((g, i) => (
         <article
@@ -69,7 +63,7 @@ const stats = [
           <div class="relative aspect-video overflow-hidden">
             <div class="absolute inset-0 flex items-center justify-center p-6" style={`background:${g.gradient}`}>
               {g.logo ? (
-                <div class="flex h-24 w-full items-center justify-center md:h-32 lg:h-24">
+                <div class="flex h-24 w-full items-center justify-center md:h-32 lg:h-28">
                   <img
                     src={g.logo}
                     alt={`Ícono del ejecutable de ${g.title}`}
@@ -86,35 +80,29 @@ const stats = [
             </div>
           </div>
 
-          <div class="flex flex-1 flex-col gap-3 p-5.5">
-            <div class="flex flex-wrap gap-1.5 lg:min-h-10">
-              <span class="inline-flex items-center rounded border border-a1/20 bg-a1/10 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-a1">
-                {g.category}
-              </span>
-              <span class="inline-flex items-center rounded border border-green/20 bg-green/8 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-green">
-                1° Grado
-              </span>
-              {g.featuredBadge && (
-                <span class="inline-flex items-center rounded border border-orange/25 bg-orange/8 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-orange">
-                  {g.featuredBadge}
-                </span>
-              )}
-              {g.weeks && (
-                <span class="inline-flex items-center rounded border border-line1 bg-bg4 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-t3">
-                  {g.weeks}
-                </span>
-              )}
+          <div class="flex flex-1 flex-col gap-4 p-5.5">
+            <div class="text-balance text-lg font-bold leading-tight tracking-[-0.02em] text-t1">{g.title}</div>
+
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold text-white"
+                style={`background:${g.accent}`}
+              >
+                {g.initials}
+              </div>
+              <div class="min-w-0">
+                <div class="truncate text-[13px] font-semibold text-t1">{g.author}</div>
+                <div class="truncate text-[11px] text-t3">{g.role}</div>
+              </div>
             </div>
 
-            <div class="flex flex-col gap-0.5">
-              <div class="text-balance text-lg font-bold leading-tight tracking-[-0.02em] text-t1">{g.title}</div>
-              <p class="text-[12px] text-t3">
-                por <span class="font-medium text-a1/75">{g.author}</span>
-              </p>
-            </div>
-            <div class="rounded-lg border border-line1 bg-bg3 px-3 py-2 text-[11px] leading-relaxed text-t2">
-              {g.objective}
-            </div>
+            <p class="text-[12px] leading-relaxed text-t2">{g.objective}</p>
+
+            {g.quote && (
+              <blockquote class="border-l-2 border-a1 py-0.5 pl-3 text-[12px] italic leading-relaxed text-t2">
+                "{g.quote}"
+              </blockquote>
+            )}
 
             <div class="mt-auto flex flex-wrap items-center justify-between gap-2.5 border-t border-line1 pt-3.5">
               <div class="flex flex-wrap gap-1.5">

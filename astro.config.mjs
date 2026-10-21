@@ -19,7 +19,7 @@ export default defineConfig({
     '/testimonios': '/proyecto#testimonios',
     '/competencias': '/proyecto#competencias',
     // Los juegos, el equipo y las herramientas viven en una sola página.
-    '/equipo': '/juegos#equipo',
+    '/equipo': '/juegos',
     '/tecnologias': '/juegos#tecnologias',
   },
 
