@@ -148,8 +148,9 @@
   text-underline-offset: 6px;
 }
 
-/* En celulares apaisados el juego tiene que quedar lo más arriba posible. */
-@media (max-height: 560px) and (max-width: 1024px) {
+/* En el celular el juego tiene que quedar arriba, también en portrait, para
+   que el teclado en pantalla no lo tape. */
+@media (max-width: 1023px) {
   .game-section {
     padding-top: 1.5rem;
     padding-bottom: 2.5rem;

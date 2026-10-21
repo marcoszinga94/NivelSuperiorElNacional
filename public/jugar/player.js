@@ -50,7 +50,8 @@
   const fitCanvas = () => {
     const c = document.getElementById("canvas");
     if (!c || !c.width || !c.height) return;
-    const pad = 8;
+    // En stages chicos (portrait) no dejamos marco: el juego usa todo el ancho.
+    const pad = window.innerWidth < 600 ? 0 : 8;
     const s = Math.min(
       (window.innerWidth - pad) / c.width,
       (window.innerHeight - pad) / c.height
@@ -199,7 +200,7 @@
         bottom: max(14px, env(safe-area-inset-bottom));
         display: grid;
         grid-template-columns: repeat(3, 46px);
-        grid-template-rows: repeat(3, 46px);
+        grid-template-rows: repeat(2, 46px);
         gap: 6px;
       }
       .pg-touch-actions {
@@ -251,11 +252,47 @@
       @media (max-height: 380px) {
         .pg-touch-dpad {
           grid-template-columns: repeat(3, 40px);
-          grid-template-rows: repeat(3, 40px);
+          grid-template-rows: repeat(2, 40px);
           gap: 5px;
         }
         .pg-touch-a { width: 52px; height: 52px; }
         .pg-touch-b { width: 46px; height: 46px; }
+      }
+      /* Stage de 16:9 en portrait: los controles tienen que tapar menos. */
+      @media (max-height: 250px) {
+        #pg-touch-toggle,
+        #pg-touch-keyboard {
+          top: max(8px, env(safe-area-inset-top));
+          width: 34px;
+          height: 34px;
+          font-size: 15px;
+        }
+        #pg-touch-toggle { left: max(8px, env(safe-area-inset-left)); }
+        #pg-touch-keyboard {
+          left: calc(max(8px, env(safe-area-inset-left)) + 40px);
+        }
+        .pg-touch-dpad {
+          left: max(8px, env(safe-area-inset-left));
+          bottom: max(8px, env(safe-area-inset-bottom));
+          grid-template-columns: repeat(3, 34px);
+          grid-template-rows: repeat(2, 34px);
+          gap: 4px;
+        }
+        .pg-touch-btn {
+          width: 34px;
+          height: 34px;
+          border-radius: 9px;
+          background: rgba(10, 16, 32, 0.55);
+          font-size: 13px;
+        }
+        .pg-touch-a { width: 42px; height: 42px; font-size: 15px; }
+        .pg-touch-b { width: 38px; height: 38px; }
+        .pg-touch-menu { width: 30px; height: 30px; font-size: 11px; }
+        .pg-touch-actions {
+          right: max(8px, env(safe-area-inset-right));
+          bottom: max(8px, env(safe-area-inset-bottom));
+          gap: 5px;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -323,7 +360,8 @@
         return;
       }
       keyboardInput.value = "";
-      keyboardInput.focus();
+      // preventScroll mantiene el juego a la vista cuando se abre el teclado.
+      keyboardInput.focus({ preventScroll: true });
     });
 
     keyboardInput.addEventListener("input", () => {
@@ -635,13 +673,15 @@ with zipfile.ZipFile("/tmp/game.zip") as archive:
 
     pyodide.globals.set("GAME_TITLE", cfg.title || "Juego");
     pyodide.globals.set("GAME_ENTRY", cfg.entry || "main.pyc");
-    pyodide.globals.set("GAME_SCREEN", cfg.screen || null);
-    if (cfg.screen) {
-      const [w, h] = cfg.screen;
-      if (canvas) {
-        canvas.width = w;
-        canvas.height = h;
-      }
+    // Los juegos se diseñaron en landscape. En portrait igual usamos un
+    // framebuffer 16:9: sin esto, los que consultan display.Info() toman
+    // el alto del teléfono y quedan como una tira vertical diminuta.
+    const gameScreen = cfg.screen || [1280, 720];
+    pyodide.globals.set("GAME_SCREEN", gameScreen);
+    const [screenW, screenH] = gameScreen;
+    if (canvas) {
+      canvas.width = screenW;
+      canvas.height = screenH;
     }
     await pyodide.runPythonAsync(PYTHON);
 
@@ -666,6 +706,7 @@ await _boot()
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    fitCanvas();
     installTouchControls();
     const button = document.getElementById("player-start");
     if (!button) return;

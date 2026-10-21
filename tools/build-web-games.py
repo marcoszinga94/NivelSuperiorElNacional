@@ -237,6 +237,9 @@ PAGE = """<!doctype html>
       html, body {{ height: 100%; margin: 0; background: #05060a; overflow: hidden;
         font-family: system-ui, sans-serif; }}
       body {{ display: grid; place-items: center; }}
+      @media (orientation: portrait) {{
+        body {{ place-items: start center; padding-top: 8px; }}
+      }}
       #canvas {{ display: block; background: #000; }}
       #player-overlay {{ position: fixed; inset: 0; display: grid; place-items: center;
         padding: 24px; text-align: center; z-index: 10;
@@ -255,6 +258,14 @@ PAGE = """<!doctype html>
       button:hover {{ background: #4f7fff; }}
       button:focus-visible {{ outline: 2px solid #9bb0ff; outline-offset: 2px; }}
       .hint {{ margin: 0; font-size: 12px; color: #64708c; }}
+      @media (max-height: 300px) {{
+        #player-overlay {{ padding: 10px 16px; overflow-y: auto; }}
+        .panel {{ gap: 8px; }}
+        h1 {{ font-size: 18px; }}
+        #player-status {{ font-size: 11px; line-height: 1.35; }}
+        button {{ padding: 6px 10px; font-size: 14px; }}
+        .hint {{ font-size: 10px; }}
+      }}
     </style>
   </head>
   <body>
@@ -263,7 +274,7 @@ PAGE = """<!doctype html>
       <div class="panel">
         <h1>{title}</h1>
         <p id="player-status">
-          Se juega con teclado. La primera vez tarda unos segundos en cargar el motor.
+          Se juega con teclado. En el celular, después de cargar usá 🎮 para los controles y ⌨ para escribir. La primera vez tarda unos segundos.
         </p>
         <button id="player-start" type="button">▶ Jugar</button>
         <p class="hint">Si el teclado no responde, hacé clic sobre la imagen.</p>
