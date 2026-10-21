@@ -62,12 +62,3 @@ export const routeGroups = groups.map((g) => ({
   ...g,
   routes: routes.filter((r) => r.group === g.id),
 }));
-
-/** Neighbours (for the prev/next links at the bottom of each page). */
-export function neighbours(href: string) {
-  const index = routes.findIndex((r) => r.href === href);
-  return {
-    prev: index > 0 ? routes[index - 1] : null,
-    next: index >= 0 && index < routes.length - 1 ? routes[index + 1] : null,
-  };
-}

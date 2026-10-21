@@ -10,7 +10,7 @@ Astro 7 + Tailwind v4 + React 19 port of `/astronomos.html` (see the repo-root `
 
 ## Layout — dos páginas largas + páginas cortas
 
-La home es la página de la escuela (institución + carrera + inscripción) y "Astrónomos por un día" junta todo su proyecto en una sola página. El resto de las secciones sigue en rutas cortas. `src/pages/*.astro` son finas: cada una importa `Base`, una o más secciones, y `PageNav`.
+La home es la página de la escuela (institución + carrera + inscripción) y "Astrónomos por un día" junta todo su proyecto en una sola página. El resto de las secciones sigue en rutas cortas. `src/pages/*.astro` son finas: cada una importa `Base` y una o más secciones.
 
 - `src/pages/index.astro` — home **de la escuela**: `Institution` (hace de hero: nombre, dos tecnicaturas y CTAs) + `Career` + `Enroll` + banda CTA. Las anclas son `#institucion`, `#carrera`, `#inscripcion`; las viejas rutas `/institucion`, `/carrera` e `/inscripcion` redirigen a su ancla (ver `astro.config.mjs`). No hay `Hero.astro`: el video del proyecto vive en `/proyecto`.
 - `src/pages/proyecto.astro` — "Astrónomos por un día" completo: `Project` + `Process` + `Chronology` + `Impact` + `Testimonials` + `Skills`, con anclas `#proceso`, `#cronologia`, `#impacto`, `#testimonios`, `#competencias`. Las viejas rutas de esas secciones redirigen acá.
@@ -22,7 +22,6 @@ La home es la página de la escuela (institución + carrera + inscripción) y "A
 - `src/components/react/Nav.tsx` — navigation: school logo (`/logo_el_nacional.png`, on a white chip because the artwork is dark) + Escuela (link a `/`) + Proyecto (desplegable con los dos proyectos) + Juegos y Aplicaciones como links directos + the "Inscribite" CTA; mobile hamburger shows the same sections expanded. It highlights the active route via the `active` prop (`Astro.url.pathname`, con la barra final normalizada). No icons in the header.
 - `src/pages/aplicaciones.astro` + `src/pages/administrativas.astro` — the second project: catalog of administrative apps (`src/data/apps.ts`, empty until the first one ships) and the project page.
 - `src/layouts/Base.astro` — head, Google Fonts, `<Particles>`/`<Nav>` islands, `<Footer>`, and the scroll-reveal `IntersectionObserver` script. Passes `Astro.url.pathname` to `Nav` for the active state.
-- `src/components/PageNav.astro` — prev/next footer nav (driven by `routes.ts`).
 - `src/components/sections/*.astro` — one section each; `Section.astro`, `SectionHeader.astro` are shared wrappers (`Divider.astro` is only for use *within* a page).
 - `src/components/react/*.tsx` — client islands. Everything else is static.
 - `src/data/games.ts` — single source of truth for the 8 games **and** the "Estudiantes" cards (author, initials, accent gradient, quote). Edit copy there, not in the section files. `web` is the slug of the browser build under `public/jugar/<web>/` (`null` = not playable online yet); `exe` is the Windows file in `public/Ejecutadores/`; `logo` is the icon pulled out of that `.exe` (`public/juegos/icono/<slug>.png`, see `tools/README.md`), `null` = the executable has no usable icon and the card falls back to the emoji.
