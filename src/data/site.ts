@@ -22,9 +22,12 @@ export const enrollment = {
   phoneLabel: "358 442-3142",
 };
 
+/** Cuántos estudiantes participaron del proyecto (son 8 juegos: Cartas Espaciales es de dos). */
+export const studentCount = 9;
+
 export const metrics = [
   { icon: "🎮", target: 8, suffix: "", label: "Juegos\nterminados", delay: "reveal-d1" },
-  { icon: "🎓", target: 8, suffix: "", label: "Estudiantes\nmetidos", delay: "reveal-d2" },
+  { icon: "🎓", target: studentCount, suffix: "", label: "Estudiantes\nmetidos", delay: "reveal-d2" },
   { icon: "⏱️", target: 150, suffix: "+", label: "Horas\nde código", delay: "reveal-d3" },
   { icon: "👶", target: 100, suffix: "+", label: "Nenes que\njugaron", delay: "reveal-d4" },
   { icon: "📚", target: 3, suffix: "", label: "Materias\nmezcladas", delay: "reveal-d5" },

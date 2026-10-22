@@ -1,10 +1,11 @@
 ---
 import Section from "../Section.astro";
 import { games } from "../../data/games";
+import { studentCount } from "../../data/site";
 
 const stats = [
   { value: String(games.length), label: "Juegos" },
-  { value: String(games.length), label: "Estudiantes" },
+  { value: String(studentCount), label: "Estudiantes" },
   { value: "6", label: "Herramientas" },
 ];
 ---
