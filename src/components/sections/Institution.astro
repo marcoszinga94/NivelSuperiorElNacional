@@ -30,22 +30,17 @@ const carreras = [
 ---
 
 <Section id="institucion" bg="bg">
-  <div class="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
+  <div class="grid items-stretch gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
     <div>
-      <div class="reveal flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.2em] text-a1">
-        <span class="h-1.5 w-1.5 rounded-full bg-a1"></span>
-        La Carlota · Córdoba · Argentina
-      </div>
-
       <h1
-        class="reveal reveal-d1 mt-6 max-w-[680px] text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-t1 sm:text-5xl lg:text-6xl"
+        class="reveal reveal-d1 max-w-[680px] text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-t1 sm:text-5xl lg:text-6xl"
       >
         Escuela Superior<br /><span class="text-gradient">El Nacional</span>
       </h1>
 
       <p class="reveal reveal-d2 mt-6 max-w-[680px] text-lg font-light leading-relaxed text-t2">
         Nivel secundario y nivel superior en la misma escuela. En el nivel superior se dictan dos carreras:{" "}
-        <strong class="font-medium text-t1">Tecnicatura Superior en Desarrollo de Software</strong>, la de esta muestra, y{" "}
+        <strong class="font-medium text-t1">Tecnicatura Superior en Desarrollo de Software</strong> y{" "}
         <strong class="font-medium text-t1">Tecnicatura Superior en Administración</strong>.
       </p>
 
@@ -76,16 +71,21 @@ const carreras = [
       </ul>
     </div>
 
-    <div class="reveal reveal-d2">
-      <div class="relative overflow-hidden rounded-2xl border border-line1 bg-black">
-        <iframe
-          class="block aspect-video w-full border-0"
-          src={site.schoolYoutube}
-          loading="lazy"
-          allowfullscreen
-          allow="autoplay; encrypted-media; picture-in-picture"
-          title="Escuela Superior El Nacional — Video institucional"
-        ></iframe>
+    <div class="reveal reveal-d2 flex flex-col">
+      <div
+        class="relative aspect-video overflow-hidden rounded-2xl border border-line1 bg-black lg:aspect-auto lg:flex-1"
+      >
+        <video
+          class="h-full w-full object-cover"
+          src={site.schoolVideo}
+          poster={site.schoolVideoPoster}
+          autoplay
+          muted
+          playsinline
+          controls
+          preload="metadata"
+          aria-label="Video institucional de la Escuela Superior El Nacional"
+        ></video>
       </div>
 
       <div class="mt-5 flex flex-wrap items-center justify-between gap-3 font-mono text-xs uppercase tracking-[0.12em] text-t3">

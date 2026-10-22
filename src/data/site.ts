@@ -7,10 +7,10 @@ export const site = {
   title: "Muestra Institucional 2026 · Escuela Superior El Nacional",
   description:
     "Ocho videojuegos de astronomía que hicimos nosotros, los estudiantes de la Tecnicatura Superior en Desarrollo de Software de la Escuela Superior El Nacional, para que los nenes de primer grado aprendan jugando. La Carlota, Córdoba.",
-  youtube:
-    "https://www.youtube.com/embed/aYXByxcr6zE?autoplay=1&mute=1&controls=0&loop=1&playlist=aYXByxcr6zE&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3",
-  schoolYoutube:
-    "https://www.youtube.com/embed/F59mmx8WrkY?rel=0&modestbranding=1&playsinline=1",
+  projectVideo: "/videos/astronomos-por-un-dia.mp4",
+  projectVideoPoster: "/videos/astronomos-por-un-dia-poster.jpg",
+  schoolVideo: "/videos/el-nacional.mp4",
+  schoolVideoPoster: "/videos/el-nacional-poster.jpg",
 };
 
 /**
