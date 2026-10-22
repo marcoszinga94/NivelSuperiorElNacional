@@ -24,29 +24,7 @@ const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : nul
 >
   <Section id="jugar" class="game-section">
     <div class="flex flex-col">
-      <nav class="reveal order-1 mb-8 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-t3">
-        <a href="/juegos" class="transition hover:text-a1">Los juegos</a>
-        <span aria-hidden="true">/</span>
-        <span class="text-t2">{game.title}</span>
-      </nav>
-
       <header class="reveal order-3 mb-8 flex flex-col gap-4 lg:order-2">
-        <div class="flex flex-wrap items-center gap-1.5">
-          <span class="inline-flex items-center rounded border border-a1/20 bg-a1/10 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-a1">
-            {game.category}
-          </span>
-          <span class="inline-flex items-center rounded border border-green/20 bg-green/8 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-green">
-            1° Grado
-          </span>
-          {
-            game.weeks && (
-              <span class="inline-flex items-center rounded border border-line1 bg-bg4 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.1em] text-t3">
-                {game.weeks}
-              </span>
-            )
-          }
-        </div>
-
         <h1 class="max-w-[680px] text-4xl font-bold leading-[1.1] tracking-[-0.03em] text-gradient">
           {game.title}
         </h1>
@@ -188,17 +166,6 @@ const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : nul
             <span class="text-sm font-semibold text-t1">{game.author}</span>
             <span class="font-mono text-[10px] uppercase tracking-[0.12em] text-t3">{game.role}</span>
           </span>
-        </div>
-
-        <div class="rounded-2xl border border-line1 bg-bg3 p-5">
-          <h2 class="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-a1/75">
-            Hecho con
-          </h2>
-          <div class="flex flex-wrap gap-1.5">
-            {game.studentTech.map((t) => (
-              <span class="rounded border border-line1 bg-bg5 px-2 py-0.5 font-mono text-[10px] text-t3">{t}</span>
-            ))}
-          </div>
         </div>
 
         {
