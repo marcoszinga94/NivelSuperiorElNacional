@@ -143,9 +143,9 @@ const exeHref = game.exe ? `/Ejecutadores/${encodeURIComponent(game.exe)}` : nul
           game.ported && (
             <p class="rounded-2xl border border-orange/25 bg-orange/8 p-5 text-sm leading-relaxed text-t2">
               <span class="font-medium text-t1">Versión web adaptada. </span>
-              El original es una aplicación de escritorio, así que esta versión se reescribió con
-              Pygame para que pueda correr en el navegador. Se mantienen las mismas reglas, los
-              mismos gráficos y el mismo contenido.
+              El original es una aplicación de escritorio, así que esta versión se reescribió
+              {game.html ? " en HTML y JavaScript" : " con Pygame"} para que pueda correr en el
+              navegador. Se mantienen las mismas reglas, los mismos gráficos y el mismo contenido.
             </p>
           )
         }

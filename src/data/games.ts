@@ -243,9 +243,10 @@ export const games: Game[] = [
     gradient: "linear-gradient(135deg,#0a1420 0%,#0d1c30 50%,#060e18 100%)",
     web: "viaje-galactico",
     exe: "íViaje Galactico!.exe",
+    html: "/jugar/viaje-galactico/viaje_galactico.html",
     logo: "/juegos/icono/viaje-galactico.png",
     controls:
-      "Tocá cada cuerpo celeste para leer su historia y escucharla en voz alta. C abre el cuestionario, V vuelve a escuchar y ESC cierra la ficha.",
+      "Escribí tu nombre para empezar. Hacé clic en cada planeta para ver su ficha y escuchar sus datos, y preguntale lo que quieras a la IA. Con M abrís las misiones, ESPACIO pausa y ESC vuelve la vista al inicio.",
     ported: true,
     objective: "Queríamos que fuera un viaje, no una lista de planetas.",
     description:

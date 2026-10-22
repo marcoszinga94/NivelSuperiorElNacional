@@ -13,6 +13,10 @@ public/Ejecutadores/
 # Carpeta local con los .exe originales (mismo contenido, otro nombre).
 public/Ejecutables/
 
+# Fuentes originales de los juegos (proyectos completos con build/dist).
+# No se sirven ni se versionan: de acá se extraen los builds web.
+tools/origen/
+
 # python
 __pycache__/
 
