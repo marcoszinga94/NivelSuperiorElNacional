@@ -1,6 +1,7 @@
 ---
 import Section from "../Section.astro";
 import Divider from "../Divider.astro";
+import { site } from "../../data/site";
 
 const pruebas = ["Título oficial de la escuela", "Práctica desde primer año", "Secundario y superior"];
 
@@ -76,14 +77,15 @@ const carreras = [
     </div>
 
     <div class="reveal reveal-d2">
-      <div class="rounded-2xl bg-white p-8  md:p-10">
-        <img
-          src="/logo_el_nacional.png"
-          alt="Escuela Superior El Nacional"
-          width="522"
-          height="130"
-          class="mx-auto h-auto w-full max-w-[320px]"
-        />
+      <div class="relative overflow-hidden rounded-2xl border border-line1 bg-black">
+        <iframe
+          class="block aspect-video w-full border-0"
+          src={site.schoolYoutube}
+          loading="lazy"
+          allowfullscreen
+          allow="autoplay; encrypted-media; picture-in-picture"
+          title="Escuela Superior El Nacional — Video institucional"
+        ></iframe>
       </div>
 
       <div class="mt-5 flex flex-wrap items-center justify-between gap-3 font-mono text-xs uppercase tracking-[0.12em] text-t3">
