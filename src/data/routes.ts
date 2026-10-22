@@ -21,8 +21,9 @@ export interface ProjectInfo {
 }
 
 /**
- * La home es la página de la escuela: institución, carrera e inscripción viven
- * todas en `/` con anclas (`#institucion`, `#carrera`, `#inscripcion`).
+ * La home es la página de la escuela: institución, las dos carreras e
+ * inscripción viven todas en `/` con anclas (`#institucion`, `#carrera`,
+ * `#administracion`, `#inscripcion`).
  */
 export const home = { href: "/", label: "Escuela" };
 

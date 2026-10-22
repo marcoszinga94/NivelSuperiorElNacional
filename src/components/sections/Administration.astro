@@ -1,0 +1,90 @@
+---
+import Section from "../Section.astro";
+import SectionHeader from "../SectionHeader.astro";
+
+const ejes = [
+  {
+    title: "Gestión y organización",
+    text: "Herramientas para organizar el trabajo, los procesos y los equipos dentro de una organización.",
+  },
+  {
+    title: "Administración de empresas",
+    text: "Formación en administración, con criterio para tomar decisiones y ordenar los recursos.",
+  },
+  {
+    title: "Título oficial",
+    text: "Al terminar, obtenés el título de la Escuela Superior El Nacional, con validez oficial.",
+  },
+];
+---
+
+<Section id="administracion" bg="bg">
+  <SectionHeader
+    eyebrow="Tecnicatura Superior · Título oficial"
+    sub="La segunda carrera del nivel superior de la escuela: formación en gestión y administración, con título oficial de la Escuela Superior El Nacional."
+  >
+    La carrera de <span class="text-gradient-2">Administración</span>
+  </SectionHeader>
+
+  <div class="grid gap-4 md:grid-cols-[1.1fr_1fr]">
+    <div class="reveal flex flex-col rounded-[20px] border border-ba bg-bg3 p-8 md:p-10">
+      <div class="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">
+        Título oficial · Escuela Superior El Nacional
+      </div>
+      <div class="mb-5 text-[clamp(20px,2.6vw,28px)] font-bold leading-tight text-t1">
+        Técnico Superior en<br />Administración
+      </div>
+      <p class="max-w-[420px] text-[13px] font-light leading-relaxed text-t2">
+        Una formación pensada para quienes quieren trabajar en la gestión de organizaciones y
+        empresas, entendiendo cómo se administran los recursos y cómo se arman los equipos.
+      </p>
+
+      <div class="mt-6 flex flex-wrap gap-2">
+        {
+          [
+            ["📍", "La Carlota, Córdoba"],
+            ["🎓", "Título oficial"],
+            ["🏫", "Nivel superior"],
+          ].map(([icon, label]) => (
+            <span class="inline-flex items-center gap-2 rounded-full border border-line1 bg-bg4 px-3.5 py-1.5 text-[12px] text-t2">
+              <span>{icon}</span>
+              {label}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="reveal reveal-d1 flex flex-col rounded-[20px] border border-line1 bg-bg2 p-8 md:p-10">
+      <div class="mb-5 font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">
+        Qué vas a encontrar
+      </div>
+
+      <div class="flex flex-col gap-4">
+        {
+          ejes.map((eje) => (
+            <div class="flex gap-3">
+              <span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-a1" />
+              <div>
+                <div class="mb-1 text-[13px] font-semibold text-t1">{eje.title}</div>
+                <p class="text-[12.5px] font-light leading-relaxed text-t2">{eje.text}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-auto flex flex-col gap-3 pt-6">
+        <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-t3">
+          Inscripciones abiertas · ciclo lectivo 2027
+        </span>
+        <a
+          href="/#inscripcion"
+          class="inline-flex w-fit items-center gap-2 rounded-[10px] border border-a1/30 bg-a1/15 px-5 py-2.5 text-[13px] font-semibold text-a1 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-a1/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+        >
+          Consultá por la carrera →
+        </a>
+      </div>
+    </div>
+  </div>
+</Section>

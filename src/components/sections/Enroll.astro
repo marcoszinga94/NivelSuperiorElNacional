@@ -4,15 +4,15 @@ import SectionHeader from "../SectionHeader.astro";
 import { enrollment } from "../../data/site";
 
 const items = [
-  { label: "Qué estudiás", text: "Tecnicatura Superior en Desarrollo de Software: desarrollo web, apps, bases de datos e IA." },
-  { label: "Cuánto dura", text: "3 años, presencial, en La Carlota, Córdoba. Con título oficial de la Escuela Superior El Nacional." },
-  { label: "Dónde trabajás", text: "Empresas tech, startups, sector público, docencia o como freelancer." },
+  { label: "Qué podés estudiar", text: "Dos tecnicaturas de nivel superior: Desarrollo de Software y Administración." },
+  { label: "Cómo es la cursada", text: "Presencial, en La Carlota, Córdoba, con título oficial de la Escuela Superior El Nacional." },
+  { label: "Cómo inscribirte", text: "Escribinos o llamá y te contamos los requisitos y los pasos para el ciclo lectivo 2027." },
 ];
 
 const info = [
   { icon: "📍", text: "Escuela Superior El Nacional · La Carlota, Córdoba" },
   { icon: "🎓", text: "Título oficial de la Escuela Superior El Nacional" },
-  { icon: "💼", text: "Práctica desde el primer año" },
+  { icon: "🎯", text: "Dos carreras de nivel superior" },
 ];
 ---
 
@@ -20,10 +20,10 @@ const info = [
   <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
     <div>
       <SectionHeader
-        eyebrow="Inscripciones abiertas · 2026"
+        eyebrow="Inscripciones abiertas · 2027"
         sub="Formación superior presencial en La Carlota, con título oficial de la Escuela Superior El Nacional."
       >
-        Conocé la <span class="text-gradient-2">carrera</span>
+        Inscribite en la <span class="text-gradient-2">escuela</span>
       </SectionHeader>
 
       <div class="flex flex-col gap-4">
@@ -42,12 +42,12 @@ const info = [
     </div>
 
     <div class="reveal reveal-d2 self-start rounded-[20px] border border-ba bg-[linear-gradient(135deg,rgba(79,127,255,.1),transparent)] p-8">
-      <div class="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1">Tecnicatura Superior</div>
+      <div class="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1">Nivel superior</div>
       <div class="mb-3 text-[clamp(20px,2.4vw,26px)] font-bold leading-tight text-t1">
-        Estudiá programación<br />en La Carlota
+        Estudiá en La Carlota
       </div>
       <p class="mb-5 text-[13px] font-light leading-relaxed text-t2">
-        Docentes especializados, proyectos reales de impacto comunitario y título oficial de la Escuela Superior El Nacional.
+        Dos carreras con título oficial, docentes especializados y proyectos reales de impacto comunitario.
       </p>
       <div class="mb-6 flex flex-col gap-2.5">
         {
