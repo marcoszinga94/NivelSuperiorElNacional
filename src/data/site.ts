@@ -21,7 +21,7 @@ export const site = {
 export const enrollment = {
   instagram: "https://www.instagram.com/nivelsuperiorelnacional?mdxt=OGRzNmJjOGxsbXgy",
   phone: "+543584423142" as string | null,
-  phoneLabel: "358 442-3142",
+  phoneLabel: "(3584) 423142",
 };
 
 /** Cuántos estudiantes participaron del proyecto (son 8 juegos: Cartas Espaciales es de dos). */

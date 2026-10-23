@@ -3,8 +3,6 @@ import Section from "../Section.astro";
 import Divider from "../Divider.astro";
 import { site } from "../../data/site";
 
-const pruebas = ["Título oficial de la escuela", "Práctica desde primer año", "Secundario y superior"];
-
 const carreras = [
   {
     nombre: "Tecnicatura Superior en Desarrollo de Software",
@@ -58,17 +56,6 @@ const carreras = [
           Contactate
         </a>
       </div>
-
-      <ul class="reveal reveal-d4 mt-10 flex flex-wrap gap-x-7 gap-y-3 border-t border-line1 pt-6 text-sm text-t2">
-        {
-          pruebas.map((p) => (
-            <li class="flex items-center gap-2">
-              <span class="text-green">✓</span>
-              {p}
-            </li>
-          ))
-        }
-      </ul>
     </div>
 
     <div class="reveal reveal-d2">
