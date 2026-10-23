@@ -38,7 +38,7 @@ export const apps: AppInfo[] = [
     description:
       "El sistema de gestión escolar de la escuela. Reúne en un solo lugar la matrícula de los alumnos, las carreras y sus materias, las notas, la regularidad y la asistencia, con usuarios y roles para el personal administrativo.",
     icon: "🎓",
-    status: "en uso",
+    status: "en desarrollo",
     authors: ["Marcos Zingaretti", "Celia Cassagne", "Agustín Godoy"],
     screenshots: [
       {
