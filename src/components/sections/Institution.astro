@@ -76,11 +76,12 @@ const carreras = [
         class="relative aspect-video overflow-hidden rounded-2xl border border-line1 bg-black lg:aspect-auto lg:flex-1"
       >
         <video
-          class="h-full w-full object-contain"
+          class="h-auto w-full object-contain"
           src={site.schoolVideo}
           poster={site.schoolVideoPoster}
           autoplay
           muted
+          loop
           playsinline
           controls
           preload="metadata"
