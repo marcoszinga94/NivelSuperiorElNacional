@@ -63,4 +63,51 @@ export const apps: AppInfo[] = [
       },
     ],
   },
+  {
+    slug: "surtech-financiero",
+    name: "SurTech Financiero",
+    // Descripción provisoria: reemplazar por el texto final del equipo.
+    description:
+      "El sistema financiero de la escuela: ventas, compras, control de stock y recordatorios de vencimientos, con cierre de ejercicio y balance de IVA. Cada movimiento impacta en el stock y en la contabilidad sin planillas aparte.",
+    icon: "💹",
+    status: "en uso",
+    authors: ["Ezequiel Stromberg", "Santiago Martino", "Aleida Appendino"],
+    screenshots: [
+      {
+        src: "/Aplicaciones/Surtech_02.jpeg",
+        alt: "Panel de inicio de SurTech Financiero con ventas, compras, productos y vencimientos del mes",
+        caption: "Panel de inicio",
+      },
+      {
+        src: "/Aplicaciones/Surtech_01.jpeg",
+        alt: "Pantalla de inicio de sesión de SurTech Financiero",
+        caption: "Inicio de sesión",
+      },
+      {
+        src: "/Aplicaciones/Surtech_03.jpeg",
+        alt: "Módulo de ventas con datos del cliente, IVA, ítems, descuentos y total",
+        caption: "Ventas",
+      },
+      {
+        src: "/Aplicaciones/Surtech_04.jpeg",
+        alt: "Módulo de compras con datos del proveedor, artículos y resumen de IVA",
+        caption: "Compras",
+      },
+      {
+        src: "/Aplicaciones/Surtech_05.jpeg",
+        alt: "Control de stock con código, descripción, precio y stock actual de cada artículo",
+        caption: "Stock",
+      },
+      {
+        src: "/Aplicaciones/Surtech_06.jpeg",
+        alt: "Panel de vencimientos y recordatorios con cuotas de venta y próximas fechas",
+        caption: "Recordatorios",
+      },
+      {
+        src: "/Aplicaciones/Surtech_07.jpeg",
+        alt: "Cierre de ejercicio con balance consolidado y saldo técnico de IVA",
+        caption: "Cierre de ejercicio",
+      },
+    ],
+  },
 ];
