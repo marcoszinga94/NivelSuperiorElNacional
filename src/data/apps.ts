@@ -66,11 +66,10 @@ export const apps: AppInfo[] = [
   {
     slug: "surtech-financiero",
     name: "SurTech Financiero",
-    // Descripción provisoria: reemplazar por el texto final del equipo.
     description:
-      "El sistema financiero de la escuela: ventas, compras, control de stock y recordatorios de vencimientos, con cierre de ejercicio y balance de IVA. Cada movimiento impacta en el stock y en la contabilidad sin planillas aparte.",
+      "Una herramienta para que los alumnos de la carrera de Administración de la escuela practiquen sistemas de contabilidad en entornos realistas, junto a la profesora. Ventas, compras, stock y cierre de ejercicio con IVA, todo en un mismo sistema.",
     icon: "💹",
-    status: "en uso",
+    status: "en desarrollo",
     authors: ["Ezequiel Stromberg", "Santiago Martino", "Aleida Appendino"],
     screenshots: [
       {
