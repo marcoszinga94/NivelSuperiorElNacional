@@ -1,5 +1,5 @@
 export interface AppScreenshot {
-  /** ruta en /public (ej. "/Aplicaciones/EduGestionAR_02.png") */
+  /** ruta en /public (ej. "/Aplicaciones/EduGestionAR_02.webp") */
   src: string;
   alt: string;
   /** epígrafe corto que se muestra debajo de la captura */
@@ -42,22 +42,22 @@ export const apps: AppInfo[] = [
     authors: ["Marcos Zingaretti", "Celia Cassagne", "Agustín Godoy"],
     screenshots: [
       {
-        src: "/Aplicaciones/EduGestionAR_02.png",
+        src: "/Aplicaciones/EduGestionAR_02.webp",
         alt: "Panel de inicio de EduGestionAR con los indicadores de alumnos, carreras, promedio y asistencia",
         caption: "Panel de inicio",
       },
       {
-        src: "/Aplicaciones/EduGestionAR_01.png",
+        src: "/Aplicaciones/EduGestionAR_01.webp",
         alt: "Pantalla de inicio de sesión de EduGestionAR",
         caption: "Inicio de sesión",
       },
       {
-        src: "/Aplicaciones/EduGestionAR_03.png",
+        src: "/Aplicaciones/EduGestionAR_03.webp",
         alt: "Listado de alumnos con su carrera, año, estado y promedio",
         caption: "Alumnos",
       },
       {
-        src: "/Aplicaciones/EduGestionAR_04.png",
+        src: "/Aplicaciones/EduGestionAR_04.webp",
         alt: "Gestión de materias por carrera y año, con clases y correlatividades",
         caption: "Materias",
       },
@@ -73,37 +73,37 @@ export const apps: AppInfo[] = [
     authors: ["Ezequiel Stromberg", "Santiago Martino", "Aleida Appendino"],
     screenshots: [
       {
-        src: "/Aplicaciones/Surtech_02.jpeg",
+        src: "/Aplicaciones/Surtech_02.webp",
         alt: "Panel de inicio de SurTech Financiero con ventas, compras, productos y vencimientos del mes",
         caption: "Panel de inicio",
       },
       {
-        src: "/Aplicaciones/Surtech_01.jpeg",
+        src: "/Aplicaciones/Surtech_01.webp",
         alt: "Pantalla de inicio de sesión de SurTech Financiero",
         caption: "Inicio de sesión",
       },
       {
-        src: "/Aplicaciones/Surtech_03.jpeg",
+        src: "/Aplicaciones/Surtech_03.webp",
         alt: "Módulo de ventas con datos del cliente, IVA, ítems, descuentos y total",
         caption: "Ventas",
       },
       {
-        src: "/Aplicaciones/Surtech_04.jpeg",
+        src: "/Aplicaciones/Surtech_04.webp",
         alt: "Módulo de compras con datos del proveedor, artículos y resumen de IVA",
         caption: "Compras",
       },
       {
-        src: "/Aplicaciones/Surtech_05.jpeg",
+        src: "/Aplicaciones/Surtech_05.webp",
         alt: "Control de stock con código, descripción, precio y stock actual de cada artículo",
         caption: "Stock",
       },
       {
-        src: "/Aplicaciones/Surtech_06.jpeg",
+        src: "/Aplicaciones/Surtech_06.webp",
         alt: "Panel de vencimientos y recordatorios con cuotas de venta y próximas fechas",
         caption: "Recordatorios",
       },
       {
-        src: "/Aplicaciones/Surtech_07.jpeg",
+        src: "/Aplicaciones/Surtech_07.webp",
         alt: "Cierre de ejercicio con balance consolidado y saldo técnico de IVA",
         caption: "Cierre de ejercicio",
       },
