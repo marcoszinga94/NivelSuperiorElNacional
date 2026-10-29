@@ -62,7 +62,7 @@ export default function Nav({ active = "/" }: Props) {
               alt="Nivel Superior El Nacional"
               width="1100"
               height="304"
-              className="h-[26px] w-auto"
+              className="h-[32px] w-auto"
             />
           </span>
         </a>
