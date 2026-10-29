@@ -1,10 +1,10 @@
 export const site = {
   /** Event framing — the page is an institutional showcase, not a career fair. */
-  event: "Muestra Institucional 2026",
-  eventShort: "Muestra 2026",
+  event: "Nivel Superior El Nacional",
+  eventShort: "Nivel Superior",
   institution: "Escuela Superior El Nacional",
   location: "La Carlota · Córdoba",
-  title: "Muestra Institucional 2026 · Escuela Superior El Nacional",
+  title: "Nivel Superior El Nacional",
   description:
     "Ocho videojuegos de astronomía que hicimos nosotros, los estudiantes de la Tecnicatura Superior en Desarrollo de Software de la Escuela Superior El Nacional, para que los nenes de primer grado aprendan jugando. La Carlota, Córdoba.",
   projectVideo: "/videos/astronomos-por-un-dia.mp4",

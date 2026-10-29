@@ -55,13 +55,13 @@ export default function Nav({ active = "/" }: Props) {
   return (
     <nav className="sticky top-0 z-[500] border-b border-line1 bg-bg/85 backdrop-blur-2xl">
       <div className="mx-auto flex h-[60px] max-w-[1120px] items-center justify-between gap-4 px-5 md:px-10">
-        <a href="/" aria-label="Escuela Superior El Nacional — Inicio" className="flex shrink-0 items-center">
+        <a href="/" aria-label="Nivel Superior El Nacional — Inicio" className="flex shrink-0 items-center">
           <span className="flex items-center rounded-md bg-white px-2 py-1.5">
             <img
-              src="/logo_el_nacional.png"
-              alt="Escuela Superior El Nacional"
-              width="522"
-              height="130"
+              src="/logo_superior.png"
+              alt="Nivel Superior El Nacional"
+              width="1100"
+              height="304"
               className="h-[26px] w-auto"
             />
           </span>
