@@ -1,49 +1,20 @@
 ---
 import Section from "../Section.astro";
 import SectionHeader from "../SectionHeader.astro";
+import CareerCard from "../CareerCard.astro";
 ---
 
 <Section id="carrera" bg="bg">
   <SectionHeader
     eyebrow="Tecnicatura Superior · Título oficial"
-    sub="Tres años, presencial, en La Carlota. Título oficial de la Escuela Superior El Nacional y práctica desde el primer año: los juegos que ves en esta página son la prueba."
+    sub="Tres años, presencial, en La Carlota. Título oficial de la Escuela Superior El Nacional y práctica desde segundo año: los juegos que ves en esta página son la prueba."
   >
     La carrera de <span class="text-gradient-2">Desarrollo de Software</span>
   </SectionHeader>
 
-  <div class="reveal grid gap-8 rounded-[20px] border border-ba bg-bg3 p-8 md:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
-    <div>
-      <div class="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-a1/75">
-        Título oficial · Escuela Superior El Nacional
-      </div>
-      <div class="mb-5 text-[clamp(20px,2.6vw,28px)] font-bold leading-tight text-t1">
-        Técnico Superior en<br />Desarrollo de Software
-      </div>
-      <div class="flex flex-wrap gap-2">
-        {
-          [
-            ["📍", "La Carlota, Córdoba"],
-            ["🎓", "Título oficial"],
-            ["💼", "Práctica desde 1° año"],
-            ["🏫", "Escuela Superior El Nacional"],
-          ].map(([icon, label]) => (
-            <span class="inline-flex items-center gap-2 rounded-full border border-line1 bg-bg4 px-3.5 py-1.5 text-[12px] text-t2">
-              <span>{icon}</span>
-              {label}
-            </span>
-          ))
-        }
-      </div>
-    </div>
-    <div class="flex gap-4">
-      <div class="rounded-2xl border border-line1 bg-bg4 px-6 py-5 text-center">
-        <div class="font-mono text-3xl font-medium text-t1">3<span class="ml-1 text-sm text-t3">años</span></div>
-        <div class="mt-1 text-[10px] uppercase tracking-[0.08em] text-t3">Duración</div>
-      </div>
-      <div class="rounded-2xl border border-line1 bg-bg4 px-6 py-5 text-center">
-        <div class="font-mono text-3xl font-medium text-t1">100<span class="text-sm text-t3">%</span></div>
-        <div class="mt-1 text-[10px] uppercase tracking-[0.08em] text-t3">Presencial</div>
-      </div>
-    </div>
-  </div>
+  <CareerCard
+    name="Desarrollo de Software"
+    description="Programación, bases de datos, desarrollo web, inteligencia artificial y videojuegos. Los juegos de este sitio salieron de las materias de segundo año."
+    duration="3"
+  />
 </Section>
