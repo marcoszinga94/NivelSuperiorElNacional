@@ -1,6 +1,7 @@
 ---
 import Section from "../Section.astro";
 import Divider from "../Divider.astro";
+import PlanModal from "../PlanModal.astro";
 import { site } from "../../data/site";
 
 const carreras = [
@@ -10,8 +11,9 @@ const carreras = [
     texto:
       "Programación, bases de datos, desarrollo web, inteligencia artificial y videojuegos. Los juegos de este sitio salieron de las materias de segundo año.",
     meta: "3 años · presencial · título oficial",
-    cta: "Ver el plan de estudios",
     href: "/#carrera",
+    plan: "/planes/plan-desarrollo-software.webp",
+    planTitle: "Plan de estudios · Desarrollo de Software",
     destacada: true,
   },
   {
@@ -20,8 +22,9 @@ const carreras = [
     texto:
       "Formación en gestión, organización y administración de empresas, con título oficial de la Escuela Superior El Nacional.",
     meta: "2½ años · presencial · título oficial",
-    cta: "Ver la carrera",
     href: "/#administracion",
+    plan: "/planes/plan-administracion.webp",
+    planTitle: "Plan de estudios · Administración",
     destacada: false,
   },
 ];
@@ -99,12 +102,11 @@ const carreras = [
     <div class="mt-8 grid gap-4 md:grid-cols-2">
       {
         carreras.map((c, i) => (
-          <a
-            href={c.href}
+          <div
             class:list={[
               "reveal",
               `reveal-d${i + 1}`,
-              "group flex flex-col gap-4 rounded-2xl border p-7 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1",
+              "group relative flex flex-col gap-4 rounded-2xl border p-7 transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
               c.destacada
                 ? "border-a1/40 bg-bg3 hover:border-a1/70"
                 : "border-line1 bg-bg2 hover:border-line2",
@@ -118,20 +120,34 @@ const carreras = [
             >
               {c.badge}
             </div>
-            <h3 class="text-balance text-xl font-semibold tracking-[-0.01em] text-t1">{c.nombre}</h3>
+            <h3 class="text-balance text-xl font-semibold tracking-[-0.01em] text-t1">
+              <a
+                href={c.href}
+                class="after:absolute after:inset-0 after:z-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+              >
+                {c.nombre}
+              </a>
+            </h3>
             <p class="text-sm leading-relaxed text-t2">{c.texto}</p>
             <div class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-2">
               <span class="font-mono text-xs uppercase tracking-[0.1em] text-t3">{c.meta}</span>
-              <span class="flex items-center gap-1.5 text-sm font-medium text-a1">
-                {c.cta}
+              <button
+                type="button"
+                data-plan-src={c.plan}
+                data-plan-title={c.planTitle}
+                class="relative z-[1] flex items-center gap-1.5 rounded text-sm font-medium text-a1 transition-colors hover:text-a1/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+              >
+                Ver plan de estudios
                 <span class="transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1">
                   →
                 </span>
-              </span>
+              </button>
             </div>
-          </a>
+          </div>
         ))
       }
     </div>
+
+    <PlanModal />
   </div>
 </Section>

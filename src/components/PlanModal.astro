@@ -1,0 +1,104 @@
+---
+/**
+ * Modal con los planes de estudio. Se reutiliza uno solo para las dos carreras:
+ * el botón que lo abre define la imagen y el título con `data-plan-*`.
+ */
+---
+
+<dialog
+  data-plan-modal
+  aria-label="Plan de estudios"
+  class="m-auto w-[min(96vw,900px)] max-w-none overflow-hidden rounded-2xl border border-line1 bg-bg2 p-0 text-t1 shadow-[0_30px_80px_rgba(0,0,0,0.6)] backdrop:bg-black/80 backdrop:backdrop-blur-sm"
+>
+  <div class="flex max-h-[90vh] flex-col">
+    <div class="flex items-center justify-between gap-3 border-b border-line1 px-4 py-3">
+      <p data-plan-title class="text-[13px] font-semibold text-t1">Plan de estudios</p>
+      <div class="flex shrink-0 items-center gap-2">
+        <a
+          data-plan-open
+          href="#"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-line1 bg-bg3 px-3 py-1.5 text-[11px] font-medium text-t2 transition hover:border-a1/40 hover:text-t1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+        >
+          Abrir ↗
+        </a>
+        <button
+          type="button"
+          data-plan-close
+          autofocus
+          class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-line1 bg-bg3 text-base leading-none text-t2 transition hover:border-a1/40 hover:text-t1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+
+    <div data-plan-body class="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-bg3 p-2 sm:p-3">
+      <img data-plan-img alt="" class="mx-auto block w-full rounded-lg bg-white" />
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const setupPlanModal = () => {
+    // Con el ClientRouter la página se vuelve a montar: no reengachamos listeners.
+    document.documentElement.style.overflow = "";
+    if (document.documentElement.dataset.planModalReady === "1") return;
+    document.documentElement.dataset.planModalReady = "1";
+
+    const getDialog = () =>
+      document.querySelector<HTMLDialogElement>("dialog[data-plan-modal]");
+
+    document.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement;
+
+      if (target.closest("[data-plan-close]")) {
+        getDialog()?.close();
+        return;
+      }
+
+      const trigger = target.closest<HTMLElement>("[data-plan-src]");
+
+      if (trigger) {
+        const dialog = getDialog();
+        if (!dialog) return;
+
+        const img = dialog.querySelector<HTMLImageElement>("[data-plan-img]");
+        const title = dialog.querySelector<HTMLElement>("[data-plan-title]");
+        const openLink = dialog.querySelector<HTMLAnchorElement>("[data-plan-open]");
+        const body = dialog.querySelector<HTMLElement>("[data-plan-body]");
+        const src = trigger.dataset.planSrc ?? "";
+        const label = trigger.dataset.planTitle ?? "Plan de estudios";
+
+        if (img) {
+          img.src = src;
+          img.alt = label;
+        }
+        if (title) title.textContent = label;
+        if (openLink) openLink.href = src;
+
+        if (!dialog.open) {
+          if (body) body.scrollTop = 0;
+          dialog.showModal();
+          document.documentElement.style.overflow = "hidden";
+          dialog.addEventListener(
+            "close",
+            () => {
+              document.documentElement.style.overflow = "";
+            },
+            { once: true },
+          );
+        }
+        return;
+      }
+
+      // Clic en el fondo oscuro (el ::backdrop llega con el <dialog> como target).
+      const dialog = getDialog();
+      if (dialog?.open && target === dialog) dialog.close();
+    });
+  };
+
+  setupPlanModal();
+</script>
