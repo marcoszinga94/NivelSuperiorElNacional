@@ -109,4 +109,46 @@ export const apps: AppInfo[] = [
       },
     ],
   },
+  {
+    slug: "gestion-de-mab",
+    name: "Gestión de MAB",
+    // Descripción provisoria: reemplazar por el texto final del equipo.
+    description:
+      "El sistema de altas y bajas docentes de la escuela: carga los MAB desde un PDF o a mano, busca los registros por vencimiento y deja recordatorios para retomar las tareas. Con usuarios y roles, modo claro/oscuro e idioma.",
+    icon: "📋",
+    status: "en desarrollo",
+    authors: ["New Byte Unlimited Software"],
+    screenshots: [
+      {
+        src: "/Aplicaciones/GestionMAB_03.webp",
+        alt: "Inicio de Gestión de MAB con accesos para extraer desde PDF, completar a mano o consultar registros",
+        caption: "Inicio",
+      },
+      {
+        src: "/Aplicaciones/GestionMAB_05.webp",
+        alt: "Pantalla de inicio de sesión de Gestión de MAB",
+        caption: "Iniciar sesión",
+      },
+      {
+        src: "/Aplicaciones/GestionMAB_04.webp",
+        alt: "Carga de un MAB con datos extraídos del PDF y campos editables",
+        caption: "Cargar MAB",
+      },
+      {
+        src: "/Aplicaciones/GestionMAB_02.webp",
+        alt: "Búsqueda de MAB con resultados por vencimiento y ficha del registro seleccionado",
+        caption: "Buscar registros",
+      },
+      {
+        src: "/Aplicaciones/GestionMAB_06.webp",
+        alt: "Recordatorios y tareas pendientes para retomar una carga",
+        caption: "Tareas",
+      },
+      {
+        src: "/Aplicaciones/GestionMAB_01.webp",
+        alt: "Configuración de apariencia, idioma y usuarios de Gestión de MAB",
+        caption: "Configuración",
+      },
+    ],
+  },
 ];
