@@ -70,13 +70,15 @@ export const games: Game[] = [
     weeks: "~3 sem.",
     gradient: "linear-gradient(135deg,#0a1a30 0%,#0d2040 50%,#061018 100%)",
     web: "arcspace",
+    // Versión web propia (HTML + JS, sin Pyodide): se embebe tal cual.
+    html: "/jugar/arcspace/web/index.html",
     exe: "ARCSPACE.exe",
     // El .exe solo trae el ícono genérico de PyInstaller, así que la tarjeta
     // arma el logo con lo que sí es del juego: el fondo del menú y la tipografía
     // Silkscreen que viajan adentro del ejecutable, con el título tal cual.
     logo: "/juegos/arcspace-logo.png",
     controls:
-      "Escribí tu nombre con el teclado y apretá ESPACIO para empezar. ESC vuelve al menú y con PUNTAJES ves la tabla de mejores puntajes.",
+      "Escribí tu nombre y apretá ESPACIO para empezar. Movete con el mouse o las flechas, ESPACIO saca la foto y ESC pausa. En el celular tenés joystick y botón en pantalla.",
     objective: "Queríamos que los chicos reconocieran planetas y astros mirando, sin depender de leer.",
     description:
       "Te ponés el traje de astrónomo, agarrás un telescopio digital y fotografiás planetas, estrellas y lo que se cruce. Cada foto suma a tu álbum cósmico personal.",

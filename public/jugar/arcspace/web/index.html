@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcSpace</title>
+<link rel="stylesheet" href="style.css">
+<style>
+@font-face { font-family: 'Silkscreen'; src: url('./assets/Fonts/Silkscreen/Silkscreen-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Silkscreen-Bold'; src: url('./assets/Fonts/Silkscreen/Silkscreen-Bold.ttf') format('truetype'); }
+@font-face { font-family: 'Audiowide'; src: url('./assets/Fonts/Audiowide,Lato/Audiowide/Audiowide-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Lato-Thin'; src: url('./assets/Fonts/Audiowide,Lato/Lato/Lato-Thin.ttf') format('truetype'); }
+</style>
+</head>
+<body>
+<div id="rotate-device">
+  <div class="icon">📱</div>
+  <p>Gira tu dispositivo<br>para jugar</p>
+</div>
+<div id="loader">
+  <div id="loader-spinner"></div>
+  <div id="loader-text">Cargando...</div>
+  <div id="loader-progress"><div id="loader-bar"></div></div>
+</div>
+<canvas id="game"></canvas>
+<input id="name-input" type="text" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="10">
+<div id="touch-controls">
+  <div id="joystick-area"><div id="joystick-knob"></div></div>
+  <div id="action-btn"></div>
+  <div id="back-btn"></div>
+  <div id="fullscreen-btn"></div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

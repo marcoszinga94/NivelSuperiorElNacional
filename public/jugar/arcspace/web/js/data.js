@@ -1,0 +1,18 @@
+export const ASTROS_DATA = [
+  {"nombre": "Luna", "puntos": 100, "texto": "El único satélite natural de la Tierra", "cantidad": 1, "nivel": 1, "real": "Luna-Real", "posicion": 0},
+  {"nombre": "Estrella", "puntos": 100, "texto": "Bolas de gas que brillan en el cielo", "cantidad": 4, "nivel": 1, "real": "Estrella-Real", "posicion": 1},
+  {"nombre": "Estacion", "nombre_mostrar": "Estación Internacional", "puntos": 150, "texto": "Hogar de los astronautas en el espacio", "cantidad": 1, "nivel": 1, "real": "Estacion-Real", "posicion": 2},
+  {"nombre": "Marte", "puntos": 200, "texto": "El planeta rojo, vecino de la Tierra", "cantidad": 1, "nivel": 1, "real": "Marte-Real", "posicion": 3},
+  {"nombre": "Venus", "puntos": 250, "texto": "El planeta más caliente del sistema solar", "cantidad": 1, "nivel": 2, "real": "Venus-Real", "posicion": 4},
+  {"nombre": "Mercurio", "puntos": 300, "texto": "El planeta más pequeño y cercano al Sol", "cantidad": 1, "nivel": 2, "real": "Mercurio-Real", "posicion": 5},
+  {"nombre": "Jupiter", "nombre_mostrar": "Júpiter", "puntos": 400, "texto": "El planeta más grande de todos", "cantidad": 1, "nivel": 2, "real": "Jupiter-Real", "posicion": 6},
+  {"nombre": "Saturno", "puntos": 500, "texto": "Famoso por sus hermosos anillos", "cantidad": 1, "nivel": 2, "real": "Saturno-Real", "posicion": 7},
+  {"nombre": "Urano", "puntos": 600, "texto": "Un gigante de hielo que rota completamente de lado", "cantidad": 1, "nivel": 3, "real": "Urano-Real", "posicion": 8},
+  {"nombre": "Neptuno", "puntos": 700, "texto": "El planeta más lejano y ventoso", "cantidad": 1, "nivel": 3, "real": "Neptuno-Real", "posicion": 9},
+  {"nombre": "CometaHalley", "nombre_mostrar": "Cometa Halley", "puntos": 800, "texto": "Es un cometa grande y brillante que orbita alrededor del Sol cada 75 años", "cantidad": 1, "nivel": 3, "real": "Cometa-Real", "posicion": 10},
+  {"nombre": "AgujeroNegro", "nombre_mostrar": "Agujero Negro", "puntos": 900, "texto": "Un lugar con tanta gravedad que ni la luz puede escapar", "cantidad": 1, "nivel": 3, "real": "Agujero-Real", "posicion": 11},
+  {"nombre": "Nebulosa", "puntos": 1000, "texto": "Cunas estelares hechas de inmensas nubes de gas", "cantidad": 1, "nivel": 4, "real": "Nebulosa-Real", "posicion": 12},
+  {"nombre": "Galaxia", "puntos": 1200, "texto": "Una enorme familia de miles de millones de estrellas", "cantidad": 1, "nivel": 4, "real": "Galaxia-Real", "posicion": 13},
+  {"nombre": "Agujero De Gusano", "puntos": 1400, "texto": "Un túnel en el espacio-tiempo que conecta lugares lejanos", "cantidad": 1, "nivel": 4, "real": "Gusano-Real", "posicion": 14},
+  {"nombre": "Exoplaneta", "puntos": 5000, "texto": "Un planeta que orbita una estrella fuera de nuestro sistema solar", "cantidad": 1, "nivel": 5, "real": "Exoplaneta-Real", "posicion": 15},
+];
