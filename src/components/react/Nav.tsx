@@ -38,7 +38,7 @@ export default function Nav({ active = "/" }: Props) {
     { id: "escuela", label: home.label, href: home.href },
     {
       id: "proyecto",
-      label: "Proyecto",
+      label: "Proyectos",
       links: projects.map((p) => ({ href: p.href, label: p.label, blurb: p.blurb })),
     },
     { id: "juegos", label: "Juegos", href: "/juegos" },
