@@ -117,7 +117,7 @@ export const apps: AppInfo[] = [
       "El sistema de altas y bajas docentes de la escuela: carga los MAB desde un PDF o a mano, busca los registros por vencimiento y deja recordatorios para retomar las tareas. Con usuarios y roles, modo claro/oscuro e idioma.",
     icon: "📋",
     status: "en desarrollo",
-    authors: ["New Byte Unlimited Software"],
+    authors: ["Ulises Sosa", "Nahuel Pedraza", "Benjamín Basiluk"],
     screenshots: [
       {
         src: "/Aplicaciones/GestionMAB_03.webp",

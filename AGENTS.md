@@ -31,6 +31,7 @@ Las rutas cortas usan rutas reales (`/juegos`, `/equipo`, ...). La escuela y "As
 
 ## Conventions
 
+- Después de terminar un cambio: `npm run build` y push a `origin/main`.
 - Languages: Spanish (es-AR) only.
 - Design tokens (`--color-a1`, `--color-bg`, fonts) are defined in `src/styles/global.css` under `@theme`; style markup with Tailwind utilities. The `.reveal` animation classes and `.text-gradient` live there too.
 - `@theme` color names map to utilities: `--color-a1` → `bg-a1/text-a1`, `--color-bg2` → `bg-bg2`, `--color-line1` → `border-line1`, `--color-t2` → `text-t2`.
