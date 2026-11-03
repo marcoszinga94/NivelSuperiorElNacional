@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { home, projects, routeGroups, routes } from "../../data/routes";
+import { workshop } from "../../data/site";
 
 interface Props {
   active?: string;
@@ -212,6 +213,18 @@ export default function Nav({ active = "/" }: Props) {
           >
             Contactate →
           </a>
+          <a
+            href={workshop.form}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-[linear-gradient(135deg,var(--color-a2),var(--color-a3))] px-4.5 py-2 text-[12px] font-semibold text-white shadow-[0_6px_20px_-6px_rgba(124,77,255,0.6)] transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a3 min-[880px]:inline-flex"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6-5.6-1.9 5.6-1.9L12 2.5z" />
+            </svg>
+            Mi Primera App
+            <span className="sr-only"> (se abre en una pestaña nueva)</span>
+          </a>
           <button
             type="button"
             aria-label="Menú"
@@ -228,6 +241,20 @@ export default function Nav({ active = "/" }: Props) {
       {/* Mobile */}
       {open && (
         <div className="absolute inset-x-0 top-[60px] max-h-[calc(100vh-60px)] overflow-y-auto border-b border-line1 bg-bg2 px-5 py-4 min-[880px]:hidden">
+          <a
+            href={workshop.form}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setOpen(false)}
+            className="mb-4 flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,var(--color-a2),var(--color-a3))] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_6px_20px_-6px_rgba(124,77,255,0.6)] transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a3"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6-5.6-1.9 5.6-1.9L12 2.5z" />
+            </svg>
+            Mi Primera App
+            <span className="sr-only"> (se abre en una pestaña nueva)</span>
+          </a>
+
           {entries.map((entry) =>
             entry.href ? (
               <a
