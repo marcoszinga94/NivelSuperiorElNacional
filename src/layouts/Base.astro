@@ -30,8 +30,6 @@ const { title = site.title, description = site.description } = Astro.props;
           const system = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
           const theme = pref === "light" || pref === "dark" ? pref : system;
           document.documentElement.dataset.theme = theme;
-          document.documentElement.dataset.themePref =
-            pref === "light" || pref === "dark" ? pref : "system";
           document
             .querySelector('meta[name="theme-color"]')
             ?.setAttribute("content", theme === "light" ? "#f7f8fc" : "#07090f");
@@ -61,46 +59,47 @@ const { title = site.title, description = site.description } = Astro.props;
     <Footer />
 
     <script>
-      // Tema claro/oscuro. La preferencia vive en localStorage ("theme");
-      // si no hay ninguna, manda el sistema.
+      // Tema claro/oscuro. Solo hay dos estados; la primera vez manda el
+      // sistema y después se recuerda la elección en localStorage ("theme").
       const themeSystem = () =>
         matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
 
-      const themePref = () => {
+      const themeStored = () => {
         try {
           const stored = localStorage.getItem("theme");
-          return stored === "light" || stored === "dark" ? stored : "system";
+          return stored === "light" || stored === "dark" ? stored : null;
         } catch {
-          return "system";
+          return null;
         }
       };
 
-      const applyTheme = (pref = themePref(), animate = false) => {
+      const currentTheme = () => themeStored() ?? themeSystem();
+
+      const applyTheme = (theme = currentTheme(), animate = false) => {
         const root = document.documentElement;
-        const theme = pref === "system" ? themeSystem() : pref;
+        const value = theme === "light" || theme === "dark" ? theme : themeSystem();
         if (animate) {
           root.classList.add("theme-switching");
           setTimeout(() => root.classList.remove("theme-switching"), 320);
         }
-        root.dataset.theme = theme;
-        root.dataset.themePref = pref;
+        root.dataset.theme = value;
         document
           .querySelector('meta[name="theme-color"]')
-          ?.setAttribute("content", theme === "light" ? "#f7f8fc" : "#07090f");
-        window.dispatchEvent(new CustomEvent("themechange", { detail: { pref, theme } }));
+          ?.setAttribute("content", value === "light" ? "#f7f8fc" : "#07090f");
+        window.dispatchEvent(new CustomEvent("themechange", { detail: { theme: value } }));
       };
 
       window.__applyTheme = applyTheme;
-      window.__themePref = themePref;
+      window.__currentTheme = currentTheme;
 
       applyTheme();
 
       if (!window.__themeBound) {
         window.__themeBound = true;
 
-        // Si el usuario nunca eligió, seguimos al sistema en vivo.
+        // Mientras no haya elección guardada, seguimos al sistema en vivo.
         matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
-          if (themePref() === "system") applyTheme("system");
+          if (!themeStored()) applyTheme();
         });
 
         // El ClientRouter reemplaza los atributos del <html> en cada navegación.

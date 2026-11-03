@@ -5,22 +5,16 @@ interface Props {
   active?: string;
 }
 
-type ThemePref = "system" | "light" | "dark";
+type Theme = "light" | "dark";
 
 declare global {
   interface Window {
-    __applyTheme?: (pref: ThemePref, animate?: boolean) => void;
-    __themePref?: () => ThemePref;
+    __applyTheme?: (theme: Theme, animate?: boolean) => void;
+    __currentTheme?: () => Theme;
   }
 }
 
-const themeLabels: Record<ThemePref, string> = {
-  system: "sistema",
-  light: "claro",
-  dark: "oscuro",
-};
-
-function ThemeIcon({ pref }: { pref: ThemePref }) {
+function ThemeIcon({ theme }: { theme: Theme }) {
   const common = {
     width: 16,
     height: 16,
@@ -33,7 +27,7 @@ function ThemeIcon({ pref }: { pref: ThemePref }) {
     "aria-hidden": true,
   };
 
-  if (pref === "light") {
+  if (theme === "light") {
     return (
       <svg {...common}>
         <circle cx="12" cy="12" r="4" />
@@ -42,18 +36,9 @@ function ThemeIcon({ pref }: { pref: ThemePref }) {
     );
   }
 
-  if (pref === "dark") {
-    return (
-      <svg {...common}>
-        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
-      </svg>
-    );
-  }
-
   return (
     <svg {...common}>
-      <rect x="2.5" y="4" width="19" height="13" rx="2" />
-      <path d="M8 21h8M12 17v4" />
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
     </svg>
   );
 }
@@ -76,20 +61,19 @@ interface NavEntry {
 export default function Nav({ active = "/" }: Props) {
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
-  const [themePref, setThemePref] = useState<ThemePref>("system");
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    const sync = () => setThemePref(window.__themePref?.() ?? "system");
+    const sync = () => setTheme(window.__currentTheme?.() ?? "dark");
     sync();
     window.addEventListener("themechange", sync);
     return () => window.removeEventListener("themechange", sync);
   }, []);
 
-  const cycleTheme = () => {
-    const next: ThemePref = themePref === "system" ? "light" : themePref === "light" ? "dark" : "system";
+  const toggleTheme = () => {
+    const next: Theme = theme === "light" ? "dark" : "light";
     try {
-      if (next === "system") localStorage.removeItem("theme");
-      else localStorage.setItem("theme", next);
+      localStorage.setItem("theme", next);
     } catch {}
     window.__applyTheme?.(next, true);
   };
@@ -215,12 +199,12 @@ export default function Nav({ active = "/" }: Props) {
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
-            onClick={cycleTheme}
-            aria-label={`Tema ${themeLabels[themePref]}. Cambiar de tema`}
-            title={`Tema: ${themeLabels[themePref]}`}
+            onClick={toggleTheme}
+            aria-label={`Cambiar a tema ${theme === "light" ? "oscuro" : "claro"}`}
+            title={`Tema ${theme === "light" ? "claro" : "oscuro"}`}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-line1 text-t2 transition-colors hover:bg-bg3 hover:text-t1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
           >
-            <ThemeIcon pref={themePref} />
+            <ThemeIcon theme={theme} />
           </button>
           <a
             href="/#inscripcion"
