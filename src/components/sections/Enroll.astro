@@ -6,7 +6,7 @@ import { enrollment } from "../../data/site";
 const items = [
   { label: "Qué podés estudiar", text: "Dos tecnicaturas de nivel superior: Desarrollo de Software y Administración." },
   { label: "Cómo es la cursada", text: "Presencial, en La Carlota, Córdoba, con título oficial de la Escuela Superior El Nacional." },
-  { label: "Cómo inscribirte", text: "Completá el formulario online o escribinos y te contamos los requisitos y los pasos para el ciclo lectivo 2027." },
+  { label: "Cómo inscribirte", text: "Escribinos o llamá y te contamos los requisitos y los pasos para el ciclo lectivo 2027." },
 ];
 
 const info = [
@@ -60,20 +60,12 @@ const info = [
         }
       </div>
       <a
-        href={enrollment.form}
+        href={enrollment.instagram}
         target="_blank"
         rel="noopener noreferrer"
         class="mb-2.5 block w-full rounded-[10px] bg-a1 px-6 py-3.5 text-center text-sm font-semibold text-white  transition  hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
       >
-        Completar el formulario de inscripción →
-      </a>
-      <a
-        href={enrollment.instagram}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mb-2.5 block w-full rounded-[10px] border border-line2 px-6 py-3.5 text-center text-sm font-medium text-t1 transition hover:bg-line1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
-      >
-        Escribinos por Instagram
+        Contactate →
       </a>
       {
         enrollment.phone && (

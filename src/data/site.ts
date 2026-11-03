@@ -14,16 +14,25 @@ export const site = {
 };
 
 /**
- * Dónde se anota la gente. `form` es el formulario de inscripción (Google
- * Forms) y el destino del botón principal; `instagram` queda como contacto
- * alternativo. `phone` es el número para "Más información" (formato
- * internacional para `tel:`) y `phoneLabel` es cómo se muestra en pantalla.
+ * Dónde se anota la gente. `instagram` es el destino del botón de inscripción;
+ * `phone` es el número para "Más información" (formato internacional para
+ * `tel:`) y `phoneLabel` es cómo se muestra en pantalla.
  */
 export const enrollment = {
-  form: "https://docs.google.com/forms/d/e/1FAIpQLScZFjEvfVUh_kdbjoDssyRI2g8RFGkV4BwbhT9lSDZe16cDjg/viewform",
   instagram: "https://www.instagram.com/nivelsuperiorelnacional?mdxt=OGRzNmJjOGxsbXgy",
   phone: "+543584423142" as string | null,
   phoneLabel: "(3584) 423142",
+};
+
+/**
+ * Taller gratuito que se promociona en la banda debajo del hero de la home.
+ * `form` es el Google Forms donde se anota la gente.
+ */
+export const workshop = {
+  title: "Introducción a la Programación en C#",
+  description:
+    "Un taller abierto a la comunidad para dar los primeros pasos en programación con C#, el lenguaje de .NET.",
+  form: "https://docs.google.com/forms/d/e/1FAIpQLScZFjEvfVUh_kdbjoDssyRI2g8RFGkV4BwbhT9lSDZe16cDjg/viewform",
 };
 
 /** Cuántos estudiantes participaron del proyecto (son 8 juegos: Cartas Espaciales es de dos). */
