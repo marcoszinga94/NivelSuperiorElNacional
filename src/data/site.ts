@@ -29,9 +29,9 @@ export const enrollment = {
  * `form` es el Google Forms donde se anota la gente.
  */
 export const workshop = {
-  title: "Introducción a la Programación en C#",
+  title: "Mi Primera App",
   description:
-    "Un taller abierto a la comunidad para dar los primeros pasos en programación con C#, el lenguaje de .NET.",
+    "Taller gratuito de Introducción a la Programación en C#: un primer acercamiento al lenguaje de .NET, abierto a la comunidad.",
   form: "https://docs.google.com/forms/d/e/1FAIpQLScZFjEvfVUh_kdbjoDssyRI2g8RFGkV4BwbhT9lSDZe16cDjg/viewform",
 };
 
