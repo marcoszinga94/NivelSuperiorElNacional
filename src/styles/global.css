@@ -35,6 +35,107 @@
 }
 
 /* ═══════════════════════════════════════════════════════
+   TEMA CLARO
+   Los tokens de @theme son el tema oscuro (el original). Acá
+   se pisan con la misma especificidad que :root pero mayor
+   (html[data-theme]) para que las utilidades de Tailwind
+   (bg-bg, text-t1, border-line1, ...) cambien en caliente.
+   ═══════════════════════════════════════════════════════ */
+html {
+  color-scheme: dark;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --color-a1: #2f5fe0;
+  --color-a2: #6d3af0;
+  --color-a3: #0089c4;
+  --color-green: #1f9d5a;
+  --color-orange: #d97a1a;
+  --color-red: #dc4c4c;
+
+  --color-bg: #f7f8fc;
+  --color-bg2: #ffffff;
+  --color-bg3: #eef1f8;
+  --color-bg4: #e3e7f1;
+  --color-bg5: #d6dcea;
+
+  --color-t1: #0b1020;
+  --color-t2: #475069;
+  --color-t3: #6a7387;
+
+  --color-line1: rgba(11, 16, 32, 0.07);
+  --color-line2: rgba(11, 16, 32, 0.14);
+  --color-ba: rgba(47, 95, 224, 0.28);
+  --color-ba2: rgba(47, 95, 224, 0.08);
+}
+
+/* Sin JS (o antes de que corra) seguimos la preferencia del sistema. */
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) {
+    color-scheme: light;
+
+    --color-a1: #2f5fe0;
+    --color-a2: #6d3af0;
+    --color-a3: #0089c4;
+    --color-green: #1f9d5a;
+    --color-orange: #d97a1a;
+    --color-red: #dc4c4c;
+
+    --color-bg: #f7f8fc;
+    --color-bg2: #ffffff;
+    --color-bg3: #eef1f8;
+    --color-bg4: #e3e7f1;
+    --color-bg5: #d6dcea;
+
+    --color-t1: #0b1020;
+    --color-t2: #475069;
+    --color-t3: #6a7387;
+
+    --color-line1: rgba(11, 16, 32, 0.07);
+    --color-line2: rgba(11, 16, 32, 0.14);
+    --color-ba: rgba(47, 95, 224, 0.28);
+    --color-ba2: rgba(47, 95, 224, 0.08);
+  }
+}
+
+/* Cambio de tema: transición breve para que no sea un flash. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    fill 0.25s ease,
+    stroke 0.25s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
+  }
+}
+
+/* Logos de la escuela: el de tinta oscura va sobre fondo claro y el de
+   tinta clara sobre fondo oscuro. Ambos PNG son transparentes. */
+.logo-on-light { display: none; }
+.logo-on-dark { display: block; }
+
+html[data-theme="light"] .logo-on-light { display: block; }
+html[data-theme="light"] .logo-on-dark { display: none; }
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .logo-on-light { display: block; }
+  html:not([data-theme]) .logo-on-dark { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════
    BASE
    ═══════════════════════════════════════════════════════ */
 @layer base {
@@ -48,6 +149,9 @@
     line-height: 1.65;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
   }
 
   img,
@@ -139,6 +243,18 @@
   background: rgba(240, 242, 247, 0.28);
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+html[data-theme="light"] .paper-note::after {
+  background: rgba(11, 16, 32, 0.08);
+  border-color: rgba(11, 16, 32, 0.08);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .paper-note::after {
+    background: rgba(11, 16, 32, 0.08);
+    border-color: rgba(11, 16, 32, 0.08);
+  }
 }
 
 .hand-underline {

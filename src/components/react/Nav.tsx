@@ -1,8 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { home, projects, routeGroups, routes } from "../../data/routes";
 
 interface Props {
   active?: string;
+}
+
+type ThemePref = "system" | "light" | "dark";
+
+declare global {
+  interface Window {
+    __applyTheme?: (pref: ThemePref, animate?: boolean) => void;
+    __themePref?: () => ThemePref;
+  }
+}
+
+const themeLabels: Record<ThemePref, string> = {
+  system: "sistema",
+  light: "claro",
+  dark: "oscuro",
+};
+
+function ThemeIcon({ pref }: { pref: ThemePref }) {
+  const common = {
+    width: 16,
+    height: 16,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.9,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+
+  if (pref === "light") {
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+      </svg>
+    );
+  }
+
+  if (pref === "dark") {
+    return (
+      <svg {...common}>
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <rect x="2.5" y="4" width="19" height="13" rx="2" />
+      <path d="M8 21h8M12 17v4" />
+    </svg>
+  );
 }
 
 interface NavLink {
@@ -23,6 +76,23 @@ interface NavEntry {
 export default function Nav({ active = "/" }: Props) {
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [themePref, setThemePref] = useState<ThemePref>("system");
+
+  useEffect(() => {
+    const sync = () => setThemePref(window.__themePref?.() ?? "system");
+    sync();
+    window.addEventListener("themechange", sync);
+    return () => window.removeEventListener("themechange", sync);
+  }, []);
+
+  const cycleTheme = () => {
+    const next: ThemePref = themePref === "system" ? "light" : themePref === "light" ? "dark" : "system";
+    try {
+      if (next === "system") localStorage.removeItem("theme");
+      else localStorage.setItem("theme", next);
+    } catch {}
+    window.__applyTheme?.(next, true);
+  };
 
   // Astro entrega "/juegos/" y las rutas están sin barra final: normalizamos.
   const path = active.replace(/\/+$/, "") || "/";
@@ -56,15 +126,20 @@ export default function Nav({ active = "/" }: Props) {
     <nav className="sticky top-0 z-[500] border-b border-line1 bg-bg/85 backdrop-blur-2xl">
       <div className="mx-auto flex h-[60px] max-w-[1120px] items-center justify-between gap-4 px-5 md:px-10">
         <a href="/" aria-label="Nivel Superior El Nacional — Inicio" className="flex shrink-0 items-center">
-          <span className="flex items-center rounded-md bg-white px-2 py-1.5">
-            <img
-              src="/logo_superior.png"
-              alt="Nivel Superior El Nacional"
-              width="1100"
-              height="304"
-              className="h-[32px] w-auto"
-            />
-          </span>
+          <img
+            src="/logo_superior.png"
+            alt="Nivel Superior El Nacional"
+            width="1100"
+            height="304"
+            className="logo-on-light h-[32px] w-auto"
+          />
+          <img
+            src="/logo_superior_dark.png"
+            alt="Nivel Superior El Nacional"
+            width="1100"
+            height="304"
+            className="logo-on-dark h-[32px] w-auto"
+          />
         </a>
 
         {/* Desktop */}
@@ -138,6 +213,15 @@ export default function Nav({ active = "/" }: Props) {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={cycleTheme}
+            aria-label={`Tema ${themeLabels[themePref]}. Cambiar de tema`}
+            title={`Tema: ${themeLabels[themePref]}`}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-line1 text-t2 transition-colors hover:bg-bg3 hover:text-t1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-a1"
+          >
+            <ThemeIcon pref={themePref} />
+          </button>
           <a
             href="/#inscripcion"
             className="hidden rounded-full bg-a1 px-4.5 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-white transition  hover:opacity-85 min-[880px]:inline-block"

@@ -21,6 +21,23 @@ const { title = site.title, description = site.description } = Astro.props;
     <meta name="description" content={description} />
     <title>{title}</title>
     <ClientRouter />
+    <meta name="theme-color" content="#07090f" />
+    <script is:inline>
+      // Tema antes del primer paint: guardado > preferencia del sistema.
+      (() => {
+        try {
+          const pref = localStorage.getItem("theme");
+          const system = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+          const theme = pref === "light" || pref === "dark" ? pref : system;
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.dataset.themePref =
+            pref === "light" || pref === "dark" ? pref : "system";
+          document
+            .querySelector('meta[name="theme-color"]')
+            ?.setAttribute("content", theme === "light" ? "#f7f8fc" : "#07090f");
+        } catch {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -44,6 +61,52 @@ const { title = site.title, description = site.description } = Astro.props;
     <Footer />
 
     <script>
+      // Tema claro/oscuro. La preferencia vive en localStorage ("theme");
+      // si no hay ninguna, manda el sistema.
+      const themeSystem = () =>
+        matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+
+      const themePref = () => {
+        try {
+          const stored = localStorage.getItem("theme");
+          return stored === "light" || stored === "dark" ? stored : "system";
+        } catch {
+          return "system";
+        }
+      };
+
+      const applyTheme = (pref = themePref(), animate = false) => {
+        const root = document.documentElement;
+        const theme = pref === "system" ? themeSystem() : pref;
+        if (animate) {
+          root.classList.add("theme-switching");
+          setTimeout(() => root.classList.remove("theme-switching"), 320);
+        }
+        root.dataset.theme = theme;
+        root.dataset.themePref = pref;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", theme === "light" ? "#f7f8fc" : "#07090f");
+        window.dispatchEvent(new CustomEvent("themechange", { detail: { pref, theme } }));
+      };
+
+      window.__applyTheme = applyTheme;
+      window.__themePref = themePref;
+
+      applyTheme();
+
+      if (!window.__themeBound) {
+        window.__themeBound = true;
+
+        // Si el usuario nunca eligió, seguimos al sistema en vivo.
+        matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+          if (themePref() === "system") applyTheme("system");
+        });
+
+        // El ClientRouter reemplaza los atributos del <html> en cada navegación.
+        document.addEventListener("astro:after-swap", () => applyTheme());
+      }
+
       // Con el ClientRouter la página se cambia sin recargar: hay que volver a
       // observar los .reveal de la página nueva en cada navegación.
       const initReveals = () => {
